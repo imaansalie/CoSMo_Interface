@@ -1,0 +1,74 @@
+/* .App {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+} */
+
+/* tool box */
+.editor{
+  width: 70%;
+  height: 600px;
+  border: solid 2px grey;
+  float: left;
+  margin: 20px;
+  text-align: center;
+}
+
+.editor p{
+  margin: 0;
+  position: relative;
+  top: 50%;
+}
+
+.tools{
+  list-style: none;
+  column-count: 2;
+  width: 200px;
+}
+
+.tools li {
+  display: flex;
+  align-items: center;
+  border: solid 2px gray;
+  margin-bottom: 1em;
+  height: 60px;
+  text-align: center;
+}
+
+.tools li .label{
+  background:white;
+  transition: .5s ease;
+  opacity:0;
+  color: rgb(0, 0, 0);
+  border: solid 1px grey;
+  position:fixed;
+}
+
+.tools li:hover .label {
+  opacity: 1;
+}
+
+.tools-thumb{
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: white;
+  text-align: center;
+}
+
+.tools-thumb img{
+  display: block;
+  max-width: 80px;
+  max-height: 60px;
+  text-align: center;
+}
+
+.ConstructorBuilder{
+  /* margin: auto; */
+  text-align: center;
+}
+
+.ConstructorBuilder .Textbox{
+  border: solid 1px grey;
+  width: 1000px;
+  height: 200px;
+}

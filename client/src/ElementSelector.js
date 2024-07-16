@@ -6,9 +6,24 @@ import { useReactFlow } from 'reactflow';
 const elements =[
     {code:"Ob", name:"Object"},
     {code:"Func", name:"Function"},
+    {code:"Arg", name:"Arguments"},
+    {code:"Inst", name:"Instance"},
+    {code:"InstCo", name:"InstanceConstructor"},
+    {code:"InstCo1", name:"InstanceConstructor_Connector"},
+    {code:"Man", name:"IsMandatory"},
+    {code:"Join", name:"Join"},
+    {code:"POO", name:"PartOf_Object"},
+    {code:"POT", name:"PartOf_Type"},
+    {code:"Prop", name:"Property"},
+    {code:"RN", name:"Role_name"},
+    {code:"Role", name:"Role"},
+    {code:"SC", name:"Sub-constructor"},
+    {code:"TC", name:"TypeConstructor_Connector"},
+    {code:"TC1", name:"TypeConstructor"},
+    {code:"VC", name:"ValueConstraint"},
 ];
 
-const ElementSector= () =>{
+const ElementSelector= () =>{
 
     const {setNodes} =useReactFlow();
     const generateUniqueId = () => `node_${Math.random().toString(36).substr(2, 9)}`;
@@ -36,13 +51,13 @@ const ElementSector= () =>{
 
     return(
         <Menu>
-            <MenuButton as={Button} rightIcon={<ChevronBarDown/>}>
+            <MenuButton as={Button} rightIcon={<ChevronBarDown/>} className='Element-Dropdown'>
                 Add Element
             </MenuButton>
             <MenuList>
                 {elements.map( (element)=> (
                     <MenuItem onClick={() => onProviderClick(element)}>
-                        {element.name}
+                       {element.name}
                     </MenuItem>
                 ))}
             </MenuList>
@@ -50,4 +65,4 @@ const ElementSector= () =>{
     );
 };
 
-export default ElementSector;
+export default ElementSelector;

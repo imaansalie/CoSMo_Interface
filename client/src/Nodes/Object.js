@@ -10,7 +10,11 @@ const Object = ({ id, data }) => {
     <div>
       {/* <strong>{data.label}</strong> */}
       <img src={imageUrl} alt={`${data.label}`}></img>
-      <Handle type="source"/>
+      <div class="label">{data.label}</div>
+       {/* Source Handle */}
+       <Handle type="source" position="right" />
+      {/* Target Handle */}
+      <Handle type="target" position="left" />
       <IconButton
         aria-label="Delete element"
         pointerEvents="all"

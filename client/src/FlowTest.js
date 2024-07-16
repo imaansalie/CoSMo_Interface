@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import {Box, position} from "@chakra-ui/react";
+import {Box, Button, position} from "@chakra-ui/react";
 import ReactFlow, {
   addEdge,
   applyEdgeChanges,
@@ -13,15 +13,32 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import Object from './Nodes/Object';
-import Function from './Nodes/Function';
 import ElementSelector from './ElementSelector';
 import CustomEdge from './Edges/CustomEdge';
 import { animate } from 'framer-motion';
+import { Text } from '@chakra-ui/react';
 
+
+// 
 const nodeTypes = {
   'Object': Object,
-  'Function': Function,
-  'ElementSelector': ElementSelector
+  'Function': Object,
+  'ElementSelector': ElementSelector,
+  'Arguments': Object,
+  'Instance': Object,
+  'InstanceConstructor': Object,
+  'InstanceConstructor_Connector': Object,
+  'IsMandatory': Object,
+  'Join': Object,
+  'PartOf_Object': Object,
+  'PartOf_Type': Object,
+  'Property': Object,
+  'Role_name': Object,
+  'Role': Object,
+  'Sub-constructor': Object,
+  'TypeConstructor_Connector': Object,
+  'TypeConstructor': Object,
+  'ValueConstraint': Object,
 };
 
 const edgeTypes = {
@@ -33,7 +50,7 @@ const initialNodes = [
     id:'1',
     type: 'ElementSelector',
     data: {label: 'ElementSelector'},
-    position: {x:250, y:100},
+    position: {x:450, y:25},
   }
 ];
 
@@ -45,16 +62,23 @@ export const FlowTest = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const onConnect = (params) => setEdges((eds) => addEdge({...params, type:'customEdge'}, eds));
 
+  const [nodeLabels, setNodeLabels] = useState([]);
+
+  const printNodeLabels = () => {
+    const labels = nodes.filter(node => node.data.label !== 'ElementSelector').map(node => `Node ID: ${node.id}, Label: ${node.data.label}`);
+    setNodeLabels(labels);
+  };
+
   return (
     <div className="ConstructorBuilder">
-      <Box height={"500px"} width="1000px" border="1px solid black">
+      <Box height={"400px"} width="1000px" border="1px solid gray" className='Builder'>
         <ReactFlow
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
-          fitView
+          // fitView
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
         >
@@ -63,9 +87,15 @@ export const FlowTest = () => {
           <Background />
         </ReactFlow>
       </Box>
+      
+      <Button onClick={printNodeLabels} mb={2} className='TextGenerator'>Generate Text</Button>
+
       <div className='Textbox'>
-        <p>Text generated here</p>
+        {nodeLabels.map((label, index) => (
+          <p key={index}>{label}</p>
+        ))}
       </div>
+        
     </div>
   );
 };

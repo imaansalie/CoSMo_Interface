@@ -156,22 +156,22 @@ body{
   transform: translate(-50%, -50%);
 }
 
-.Element-Dropdown{
+/* .Element-Dropdown{
   padding: 4px;
   background-color: rgb(30, 54, 89);
   border: 2px solid rgb(30, 54, 89);
   border-radius: 6px;
   color: white;
-}
+} */
 
-.selector-img{
+/* .selector-img{
   max-width: 30px;
   max-height: 20px;
   display: block;
   padding-right: 10px;
   padding-left: 10px;
   margin: auto;
-}
+} */
 
 .TextGenerator{
   padding: 10px;
@@ -182,8 +182,80 @@ body{
   margin: 10px;
 }
 
-.toolbox-elements{
-  height: 400px;
-  width: 200px;
-  background-color: blueviolet;
+/* TOOLBOX */
+.toolbox {
+  /* display: grid; */
+  grid-template-columns: repeat(2, 1fr); /* Two columns with equal width */
+  gap: 5px; /* Adjust the gap between items as needed */
+  padding: 5px; /* Add some padding around the container */
+}
+
+.toolbox ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two columns within the UL */
+  gap: 2px; /* Adjust the gap between items as needed */
+}
+
+.toolbox li {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px; /* Fixed width for each item */
+  height: 80px; /* Fixed height for each item */
+  background-color: #f0f0f0; /* Background color for each item */
+  border: 1px solid #ccc; /* Border for each item */
+  border-radius: 4px; /* Optional: rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: shadow effect */
+}
+
+.toolbox button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.toolbox .selector-img {
+  max-width: 60%;
+  max-height: 60%; /* Adjust as needed to fit within the button */
+  margin-bottom: 2px; /* Space between image and text */
+  display: block;
+}
+
+.toolbox .connectors .name {
+  font-size: 12px; /* Adjust font size as needed */
+  line-height: 1.2; /* Adjust line height for better spacing */
+  white-space: normal; /* Allow text to wrap */
+  word-wrap: break-word; /* Break long words if necessary */
+  overflow-wrap: break-word; /* Ensures long words break properly */
+  text-align: center;
+  width: 100%;
+}
+
+.name{
+  font-size: 12px; /* Adjust font size as needed */
+  line-height: 1.2; /* Adjust line height for better spacing */
+  white-space: normal; /* Allow text to wrap */
+  word-wrap: break-word; /* Break long words if necessary */
+  overflow-wrap: break-word; /* Ensures long words break properly */
+  text-align: center;
+  width: 100%;
+}
+
+.toolbox .elements{
+  margin-top: 20px;
+}
+
+.toolbox .connectors{
+  margin-top: 30px;
 }

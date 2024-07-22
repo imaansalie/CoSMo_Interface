@@ -1,6 +1,4 @@
 import React from 'react';
-import {Menu, MenuButton, MenuList, MenuItem, Button, position} from "@chakra-ui/react";
-import {ChevronBarDown} from "react-bootstrap-icons";
 import { useReactFlow } from 'reactflow';
 
 const elements =[
@@ -21,7 +19,7 @@ const ElementSelector= () =>{
     const {setNodes} =useReactFlow();
     const generateUniqueId = () => `node_${Math.random().toString(36).substr(2, 9)}`;
 
-    const onProviderClick = ({name}) => {
+    const onElementClick = (element) => {
 
         const x= Math.random() * 100;
         const y= Math.random() * 100;
@@ -30,32 +28,26 @@ const ElementSelector= () =>{
             ...prevNodes, 
             {
                 id: generateUniqueId(), 
-                data: {label:name }, 
-                type: `${name}`,
+                data: {label:element.name }, 
+                type: `${element.name}`,
                 position: {x:x, y:y},
             },
         ]);     
         
-        console.log(`Added node: ${name} with ID ${generateUniqueId}`);
+        console.log(`Added node: ${element.name} with ID ${generateUniqueId}`);
     };
 
-    
-    
-
     return(
-        <Menu>
-            <MenuButton as={Button} rightIcon={<ChevronBarDown/>} className='Element-Dropdown'>
-                Add Element
-            </MenuButton>
-            <MenuList>
-                {elements.map( (element)=> (
-                    <MenuItem onClick={() => onProviderClick(element)}>
-                       <div><img src={"/icons/"+element.name+".png"} className='selector-img'/></div>
-                       {element.name}
-                    </MenuItem>
-                ))}
-            </MenuList>
-        </Menu>
+        <ul>
+          {elements.map((element,index)=>(
+            <li key={index}>
+              <button onClick={() => onElementClick(element)}>
+                <img src={"/icons/"+element.name+".png"} className='selector-img'/>
+                  <span className='name'>{element.name}</span>
+              </button>  
+            </li>
+          ))}
+        </ul>
     );
 };
 

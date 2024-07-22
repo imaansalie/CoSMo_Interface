@@ -15,21 +15,27 @@ const nodeTypes = {
   'Function': Object,
   'ElementSelector': ElementSelector,
   'Arguments': Object,
-  'Instance': Object,
-  'InstanceConstructor': Object,
-  'InstanceConstructor_Connector': Object,
   'IsMandatory': Object,
+  'InstanceConstructor': Object,
   'Join': Object,
-  'PartOf_Object': Object,
-  'PartOf_Type': Object,
   'Property': Object,
   'Role_name': Object,
-  'Role': Object,
-  'Sub-constructor': Object,
-  'TypeConstructor_Connector': Object,
   'TypeConstructor': Object,
   'ValueConstraint': Object,
 };
+
+const elements =[
+  {code:"Ob", name:"Object"},
+  {code:"Func", name:"Function"},
+  {code:"Arg", name:"Arguments"},
+  {code:"InstCo", name:"InstanceConstructor"},
+  {code:"Man", name:"IsMandatory"},
+  {code:"Join", name:"Join"},
+  {code:"Prop", name:"Property"},
+  {code:"RN", name:"Role_name"},
+  {code:"TC1", name:"TypeConstructor"},
+  {code:"VC", name:"ValueConstraint"},
+];
 
 const edgeTypes = {
   'role-edge': Role,
@@ -47,6 +53,23 @@ const initialNodes = [
     position: {x:450, y:25},
   }
 ];
+
+//  const onElementClick= ({name}) =>{
+//   const x= Math.random() * 100;
+//       const y= Math.random() * 100;
+
+//       setNodes( (prevNodes) => [
+//           ...prevNodes, 
+//           {
+//               id: generateUniqueId(), 
+//               data: {label:name }, 
+//               type: `${name}`,
+//               position: {x:x, y:y},
+//           },
+//       ]);     
+      
+//       console.log(`Added node: ${name} with ID ${generateUniqueId}`);
+//  }
 
 const initialEdges = [];
 
@@ -73,17 +96,19 @@ export const ConstructorBuilder = () => {
 
   return (
     <div className="FlowTest">
-      <h1>Constructor Builder</h1>
-
-      <select value={selectedEdgeType} onChange={handleEdgeChange}>
-        <option value='role-edge' > <div className='dropdown-icon'><img src="/icons/Role.png"></img></div> Role </option>
-        <option value='subco-edge'> Sub Constructor </option>
-        <option value='instance-edge'>Instance Of</option>
-        <option value='part-of-edge'>Part Of</option>
-        <option value='instance-co-edge'>Instance Constructor</option>
-      </select>
+      
 
       <div className="ConstructorBuilder">
+        <h1>Constructor Builder</h1>
+
+        <select value={selectedEdgeType} onChange={handleEdgeChange}>
+          <option value='role-edge' > <div className='dropdown-icon'><img src="/icons/Role.png"></img></div> Role </option>
+          <option value='subco-edge'> Sub Constructor </option>
+          <option value='instance-edge'>Instance Of</option>
+          <option value='part-of-edge'>Part Of</option>
+          <option value='instance-co-edge'>Instance Constructor</option>
+        </select>
+
         <Box height={"400px"} width="1000px" border="1px solid gray" className='Builder'>
           <ReactFlow
             nodes={nodes}
@@ -98,7 +123,7 @@ export const ConstructorBuilder = () => {
             <Background />
           </ReactFlow>
         </Box>
-        
+          
         <Button onClick={printNodeLabels} mb={2} className='TextGenerator'>Generate Text</Button>
 
         <div className='Textbox'>
@@ -106,8 +131,13 @@ export const ConstructorBuilder = () => {
             <p key={index}>{label}</p>
           ))}
         </div>
-          
       </div>
+      
+      <div className='toolbox-elements'></div>
+          <li>
+            
+          </li>
+
     </div>
     
   );

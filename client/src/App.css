@@ -6,6 +6,13 @@
 
 body{
   margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.FlowTest{
+  display: flex;
 }
 
 /* NAV BAR */
@@ -97,19 +104,6 @@ body{
   text-align: center;
 }
 
-/* .tools li .label{
-  background:white;
-  transition: .5s ease;
-  opacity:0;
-  color: rgb(0, 0, 0);
-  border: solid 1px grey;
-  position:fixed;
-}
-
-.tools li:hover .label {
-  opacity: 1;
-} */
-
 .tools-thumb{
   overflow: hidden;
   flex-shrink: 0;
@@ -126,17 +120,14 @@ body{
 
 /* REACT FLOW */
 
-.FlowTest{
-  text-align: center;
-}
-
 .FlowTest h1{
   font-family: sans-serif;
   margin-top: 50px;
 }
 
 .ConstructorBuilder{
-  margin: 20px 100px 20px 80px;
+  margin-left: 50px;
+  margin-right: 50px;
   text-align: center;
   /* margin-left: 260px; */
 }
@@ -189,4 +180,10 @@ body{
   border-radius: 6px;
   color: white;
   margin: 10px;
+}
+
+.toolbox-elements{
+  height: 400px;
+  width: 200px;
+  background-color: blueviolet;
 }

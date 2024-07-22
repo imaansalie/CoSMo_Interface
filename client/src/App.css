@@ -156,26 +156,9 @@ body{
   transform: translate(-50%, -50%);
 }
 
-/* .Element-Dropdown{
-  padding: 4px;
-  background-color: rgb(30, 54, 89);
-  border: 2px solid rgb(30, 54, 89);
-  border-radius: 6px;
-  color: white;
-} */
-
-/* .selector-img{
-  max-width: 30px;
-  max-height: 20px;
-  display: block;
-  padding-right: 10px;
-  padding-left: 10px;
-  margin: auto;
-} */
-
 .TextGenerator{
   padding: 10px;
-  background-color: rgb(30, 54, 89);
+  background-color: rgb(30, 47, 89);
   border: 2px solid rgb(30, 54, 89);
   border-radius: 6px;
   color: white;
@@ -225,6 +208,10 @@ body{
   box-sizing: border-box;
 }
 
+.toolbox li :hover{
+  background-color: #e0e0e0;
+}
+
 .toolbox .selector-img {
   max-width: 60%;
   max-height: 60%; /* Adjust as needed to fit within the button */
@@ -252,10 +239,22 @@ body{
   width: 100%;
 }
 
+.toolbox p{
+  font-family: sans-serif;
+}
+
 .toolbox .elements{
-  margin-top: 20px;
+  max-height: 190px;
+  overflow-y: auto;
 }
 
 .toolbox .connectors{
-  margin-top: 30px;
+  max-height: 190px;
+  overflow-y: auto;
+}
+
+.toolbox .adornments{
+  max-height: 190px;
+  overflow-y: auto;
+  width: 166px;
 }

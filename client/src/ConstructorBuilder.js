@@ -9,6 +9,10 @@ import SubConstructorEdge from './Edges/SubConstructorEdge'
 import InstanceEdge from './Edges/InstanceEdge';
 import PartOfEdge from './Edges/PartOfEdge';
 import InstanceConstructorEdge from './Edges/InstanceConstructorEdge';
+import InputNode from './Nodes/InputNode';
+import AdornmentIconSelector from './Nodes/AdornmentIconSelector';
+import JoinEdge from './Edges/JoinEdge';
+import IsMandatory from './Edges/IsMandatory';
 
 const nodeTypes = {
   'Object': Object,
@@ -19,9 +23,9 @@ const nodeTypes = {
   'InstanceConstructor': Object,
   'Join': Object,
   'Property': Object,
-  'Role_name': Object,
+  'Role_name': InputNode,
   'TypeConstructor': Object,
-  'ValueConstraint': Object,
+  'ValueConstraint': InputNode,
 };
 
 const edgeTypes = {
@@ -29,8 +33,15 @@ const edgeTypes = {
   'Sub-constructor': SubConstructorEdge,
   'Instance': InstanceEdge,
   'PartOf_Object': PartOfEdge,
-  'InstanceConstructor_Connector':InstanceConstructorEdge
+  'InstanceConstructor_Connector':InstanceConstructorEdge,
+  'Join': JoinEdge,
+  'IsMandatory': IsMandatory
 }
+
+const adornment_connectors =[
+  {code: "IM", name:"IsMandatory"},
+  {code: "JO", name:"Join"},
+]
 
 const connectors = [
   {code: "RE", name:"Role"},
@@ -105,10 +116,12 @@ export const ConstructorBuilder = () => {
           </div>
           
           <div className='toolbox'>
+            <p>Add elements</p>
             <div className='elements'>
               <ElementSelector/>  
             </div>
            
+          <p>Choose a connector</p>
            <div className='connectors'>
             <ul>
               {connectors.map((connector, index)=>(
@@ -119,8 +132,23 @@ export const ConstructorBuilder = () => {
                   </button>  
                 </li>
               ))}
-              </ul>
+            </ul>
            </div>
+
+           <p>Add an adornment icon</p>
+           <div className='adornments'>
+              <AdornmentIconSelector/>
+              <ul>
+              {adornment_connectors.map((adco, index)=>(
+                <li key={index}>
+                  <button onClick={() => handleEdgeChange (adco)}>
+                    <img src={"/icons/"+adco.name+".png"} className='selector-img'/>
+                      <span className='name'>{adco.name}</span>
+                  </button>  
+                </li>
+              ))}
+            </ul>
+            </div>
           </div>
 
       </div>

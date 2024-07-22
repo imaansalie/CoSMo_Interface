@@ -85,43 +85,43 @@ const finalElements = [
 ]
 
 export const Main = () =>{
-    const [elements, updateElements] = useState(finalElements)
+    // const [elements, updateElements] = useState(finalElements)
 
-    function handleOnDragEnd(result){
-        if(!result.destination) return;
-        const items= Array.from(elements); //create copy array
-        const [reorderedItem]=items.splice(result.source.index, 1); //use splice to find original index and store value
-        items.splice(result.destination.index, 0, reorderedItem); //find destination index and inject moved item
+    // function handleOnDragEnd(result){
+    //     if(!result.destination) return;
+    //     const items= Array.from(elements); //create copy array
+    //     const [reorderedItem]=items.splice(result.source.index, 1); //use splice to find original index and store value
+    //     items.splice(result.destination.index, 0, reorderedItem); //find destination index and inject moved item
 
-        updateElements(items);
-    }
-    return (
-        <div className ="Main">
-            <DragDropContext onDragEnd={handleOnDragEnd}>
-                <div className='editor'>
-                    <p>Drop elements here.</p>
-                </div>
-                <Droppable droppableId="elements">
-                    {(provided) => (
-                        <ul className="tools" {...provided.droppableProps} ref={provided.innerRef}>
-                        {elements.map(({id, name, thumb}, index) =>{
-                            return (
-                                <Draggable key={id} draggableId={id} index={index}>
-                                    {(provided) => (
-                                        <li ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} >
-                                            <div className="tools-thumb">
-                                                <img src={thumb} alt={`${name} Thumb`}/>
-                                            </div>
-                                            {/* <div class="label">{name}</div> */}
-                                        </li>
-                                    )}
-                                </Draggable>
-                            );
-                        })}
-                        </ul>
-                    )} 
-                </Droppable>
-            </DragDropContext>
-        </div>
-    );
+    //     updateElements(items);
+    // }
+    // return (
+    //     <div className ="Main">
+    //         <DragDropContext onDragEnd={handleOnDragEnd}>
+    //             <div className='editor'>
+    //                 <p>Drop elements here.</p>
+    //             </div>
+    //             <Droppable droppableId="elements">
+    //                 {(provided) => (
+    //                     <ul className="tools" {...provided.droppableProps} ref={provided.innerRef}>
+    //                     {elements.map(({id, name, thumb}, index) =>{
+    //                         return (
+    //                             <Draggable key={id} draggableId={id} index={index}>
+    //                                 {(provided) => (
+    //                                     <li ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} >
+    //                                         <div className="tools-thumb">
+    //                                             <img src={thumb} alt={`${name} Thumb`}/>
+    //                                         </div>
+    //                                         {/* <div class="label">{name}</div> */}
+    //                                     </li>
+    //                                 )}
+    //                             </Draggable>
+    //                         );
+    //                     })}
+    //                     </ul>
+    //                 )} 
+    //             </Droppable>
+    //         </DragDropContext>
+    //     </div>
+    // );
 };

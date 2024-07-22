@@ -1,20 +1,15 @@
 import { IconButton } from '@chakra-ui/react';
 import {FiX} from 'react-icons/fi';
 import React from 'react';
-import { Handle, Position, useReactFlow } from 'reactflow';
+import { Handle, useReactFlow } from 'reactflow';
 
-const Object = ({ id, data }) => {
+const Function = ({ id, data }) => {
   const {setNodes} = useReactFlow();
-  const imageUrl = `./icons/${data.label}.png`;
   return (
     <div>
       {/* <strong>{data.label}</strong> */}
-      <img src={imageUrl} alt={`${data.label}`}></img>
-      {/* <div class="label">{data.label}</div> */}
-       {/* Source Handle */}
-       <Handle type="source" position="right" />
-      {/* Target Handle */}
-      <Handle type="target" position="left" />
+      <img src="./icons/Function.png" alt={`${data.label}`}></img>
+      <Handle type="target"/>
       <IconButton
         aria-label="Delete element"
         pointerEvents="all"
@@ -29,4 +24,4 @@ const Object = ({ id, data }) => {
   );
 };
 
-export default Object;
+export default Function;

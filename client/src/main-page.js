@@ -112,7 +112,7 @@ export const Main = () =>{
                                             <div className="tools-thumb">
                                                 <img src={thumb} alt={`${name} Thumb`}/>
                                             </div>
-                                            <div class="label">{name}</div>
+                                            {/* <div class="label">{name}</div> */}
                                         </li>
                                     )}
                                 </Draggable>

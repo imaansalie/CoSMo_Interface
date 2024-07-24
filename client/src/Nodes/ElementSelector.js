@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useReactFlow } from 'reactflow';
 
 const elements =[
@@ -10,42 +10,58 @@ const elements =[
     {code:"TC1", name:"TypeConstructor", type: "Object"},
 ];
 
-const ElementSelector= () =>{
+const adornments =[
+  {code:"RN", name:"Role_name", type: "InputNode"},
+  {code:"VC", name:"ValueConstraint", type: "InputNode"},
+  {code: "JO", name: "Join", type: "Object"}
+]
+
+const ElementSelector= ({setCurrentType, setNewNodeId}) =>{
 
     const {setNodes} =useReactFlow();
     const generateUniqueId = () => `node_${Math.random().toString(36).substr(2, 9)}`;
 
-    const addTextNode = (element) => {
+    const addTextNode = (adornment) => {
+
+      const newNodeId=generateUniqueId();      
       setNodes((prevNodes) => [
         ...prevNodes,
         {
           id: generateUniqueId(),
-          type: `${element.name}`, // Use the custom node type
+          type: `${adornment.name}`, // Use the custom node type
           data: {
-            label: '',
-            inputType:`${element.name}`,
+            label: adornment.name,
+            inputType:`${adornment.name}`,
             onChange: (newText) => console.log('Text changed:', newText) // Handle text changes
           },
           position: { x: Math.random() * 200, y: Math.random() * 200 },
         },
       ]);
+
+      setCurrentType(adornment.type);
+      setNewNodeId(newNodeId);
     };
     
     const handleObjectClick = (element) =>{
 
       const x= Math.random() * 100;
       const y= Math.random() * 100;
+      const newNodeId= generateUniqueId();
 
       setNodes( (prevNodes) => [
         ...prevNodes, 
         {
             id: generateUniqueId(), 
-            data: {label:element.name }, 
+            data: {
+              label:element.name,
+              argument: '', 
+            }, 
             type: `${element.name}`,
             position: {x:x, y:y},
         },
       ]);   
-      console.log(`Added node: ${element.name} with ID ${generateUniqueId}`);
+      setCurrentType(element.name);
+      setNewNodeId(newNodeId);
     }
 
     const onElementClick = (element) => {
@@ -61,6 +77,7 @@ const ElementSelector= () =>{
     };
 
     return(
+      <div>
         <ul>
           {elements.map((element,index)=>(
             <li key={index}>
@@ -71,6 +88,18 @@ const ElementSelector= () =>{
             </li>
           ))}
         </ul>
+
+        <ul>
+        {adornments.map((adornment,index)=>(
+          <li key={index}>
+            <button onClick={() => onElementClick(adornment)}>
+              <img src={"/icons/"+adornment.name+".png"} className='selector-img'/>
+                <span className='name'>{adornment.name}</span>
+            </button>  
+          </li>
+        ))}
+        </ul>
+      </div>
     );
 };
 

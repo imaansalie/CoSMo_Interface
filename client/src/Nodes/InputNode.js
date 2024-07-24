@@ -4,7 +4,7 @@ import { IconButton } from '@chakra-ui/react';
 import {FiX} from 'react-icons/fi';
 
 const InputNode = ({id, data, selected}) =>{
-    const [text, setText] = useState(data.label || '');
+    const [text, setText] = useState('');
     const [isEditing, setIsEditing] = useState(true);
     const {setNodes} = useReactFlow();
     const nodeRef = useRef(null);
@@ -52,7 +52,7 @@ const InputNode = ({id, data, selected}) =>{
 
     return(
         <div ref= {nodeRef} style={{ padding: '10px',  background: selected ? 'white' : 'white' }}>
-            <Handle type="target" position={Position.Top}/>
+            <Handle type="source" position={Position.Top}/>
             
             {isEditing? (<div style={{ textAlign: 'center', marginBottom: '10px' }}>
                 <input 

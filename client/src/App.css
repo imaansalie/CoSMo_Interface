@@ -133,7 +133,8 @@ body{
 }
 
 .ConstructorBuilder .Builder{
-  /* margin-left: 270px; */
+  height : 400px; 
+  width: 1000px;
 }
 
 .ConstructorBuilder .Textbox{
@@ -171,6 +172,7 @@ body{
   grid-template-columns: repeat(2, 1fr); /* Two columns with equal width */
   gap: 5px; /* Adjust the gap between items as needed */
   padding: 5px; /* Add some padding around the container */
+  margin-right: 10px;
 }
 
 .toolbox ul {
@@ -244,7 +246,7 @@ body{
 }
 
 .toolbox .elements{
-  max-height: 190px;
+  max-height: 360px;
   overflow-y: auto;
 }
 
@@ -257,4 +259,34 @@ body{
   max-height: 190px;
   overflow-y: auto;
   width: 166px;
+}
+
+@media screen and (max-width: 1500px) {
+
+  .ConstructorBuilder{
+    margin-left: 30px;
+    margin-right: 30px;
+  }
+  .ConstructorBuilder .Builder{
+    width: 800px;
+    height: 300px;
+  }
+
+  .toolbox{
+    margin-right: 5px;
+    padding: 0;
+  }
+
+  .toolbox .elements{
+    height: 140px;
+  }
+
+  .toolbox .connectors{
+    height: 140px;
+  }
+
+  .toolbox .adornments{
+    height: 140px;
+  }
+
 }

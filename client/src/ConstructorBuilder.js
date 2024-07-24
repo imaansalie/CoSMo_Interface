@@ -11,8 +11,10 @@ import PartOfEdge from './Edges/PartOfEdge';
 import InstanceConstructorEdge from './Edges/InstanceConstructorEdge';
 import InputNode from './Nodes/InputNode';
 import AdornmentIconSelector from './Nodes/AdornmentIconSelector';
-import JoinEdge from './Edges/JoinEdge';
 import IsMandatory from './Edges/IsMandatory';
+import JoinEdge from './Edges/JoinEdge';
+import { SearchForm } from './Components/SearchForm';
+
 
 const nodeTypes = {
   'Object': Object,
@@ -34,14 +36,9 @@ const edgeTypes = {
   'Instance': InstanceEdge,
   'PartOf_Object': PartOfEdge,
   'InstanceConstructor_Connector':InstanceConstructorEdge,
-  'Join': JoinEdge,
-  'IsMandatory': IsMandatory
+  'IsMandatory': IsMandatory,
+  'Join': JoinEdge
 }
-
-const adornment_connectors =[
-  {code: "IM", name:"IsMandatory"},
-  {code: "JO", name:"Join"},
-]
 
 const connectors = [
   {code: "RE", name:"Role"},
@@ -49,6 +46,8 @@ const connectors = [
   {code: "IE", name: "Instance"},
   {code: "POE", name: "PartOf_Object"},
   {code: "ICE", name: "InstanceConstructor_Connector"},
+  {code: "IM", name:"IsMandatory"},
+  {code: "JO", name: "Join"}
 ]
 
 const initialNodes = [];
@@ -61,8 +60,10 @@ export const ConstructorBuilder = () => {
   const onConnect = (params) => setEdges((eds) => addEdge({...params, type:selectedEdgeType}, eds));
 
   const [nodeLabels, setNodeLabels] = useState([]);
-
   const [selectedEdgeType, setSelectedEdgeType] = useState('Role');
+  // const [isFormVisible, setIsFormVisible] = useState(false);
+  const [newNodeId, setNewNodeId] = useState(null);
+  const [currentType, setCurrentType] = useState(null);
 
   //setting edge type
   const handleEdgeChange = (connector) =>{
@@ -70,11 +71,63 @@ export const ConstructorBuilder = () => {
     // console.log(connector.name)
   }
 
+  // const handleElementClick = (element) =>{
+
+  //   const nodeId = `node_${Math.random().toString(36).substr(2, 9)}`;
+  //   setNewNodeId(nodeId);
+
+  //   const x= Math.random() * 100;
+  //   const y= Math.random() * 100;
+
+  //   setNodes( (prevNodes) => [
+  //     ...prevNodes, 
+  //     {
+  //         id: nodeId, 
+  //         data: {
+  //           label:element.name,
+  //           argument: '', 
+  //         }, 
+  //         type: `${element.name}`,
+  //         position: {x:x, y:y},
+  //     },
+  //   ]);   
+  //   // setCurrentType(element.name);
+  //   console.log(currentType);
+  //   setIsFormVisible(true);
+  // }
+
+  // const onElementClick = (element) => {
+
+  //     switch(element.type){
+  //       case 'Object':
+  //         handleObjectClick(element);
+  //         break;
+  //       case 'InputNode':
+  //         addTextNode(element);
+  //         break;
+  //     }  
+  // };
+
+  const handleAssign = (item) => {
+    setNodes((prevNodes) =>
+      prevNodes.map((node) =>
+        node.id === newNodeId ? { ...node, data: { ...node.data, label: item.name } } : node
+      )
+    );
+    setNewNodeId(null);
+    // setIsFormVisible(false);
+  };
+
   //Generating text
 
   const printNodeLabels = () => {
-    const labels = nodes.filter(node => node.data.label !== 'ElementSelector').map(node => `Node ID: ${node.id}, Label: ${node.data.label}`);
-    setNodeLabels(labels);
+    const labels = nodes
+      .filter(node => node.data.label !== 'ElementSelector')
+      .map(node => `${node.data.label}: ${node.id}`);
+
+    const formattedString = labels.join(', \n');
+
+    setNodeLabels([formattedString]);
   };
 
   return (
@@ -83,15 +136,7 @@ export const ConstructorBuilder = () => {
           <div className="ConstructorBuilder">
             <h1>Constructor Builder</h1>
 
-            {/* <select value={selectedEdgeType} onChange={handleEdgeChange}>
-              <option value='role-edge' > <div className='dropdown-icon'><img src="/icons/Role.png"></img></div> Role </option>
-              <option value='subco-edge'> Sub Constructor </option>
-              <option value='instance-edge'>Instance Of</option>
-              <option value='part-of-edge'>Part Of</option>
-              <option value='instance-co-edge'>Instance Constructor</option>
-            </select> */}
-
-            <Box height={"400px"} width="1000px" border="1px solid gray" className='Builder'>
+            <Box border="1px solid gray" className='Builder'>
                 <ReactFlow
                   nodes={nodes}
                   edges={edges}
@@ -109,16 +154,14 @@ export const ConstructorBuilder = () => {
             <Button onClick={printNodeLabels} mb={2} className='TextGenerator'>Generate Text</Button>
 
             <div className='Textbox'>
-              {nodeLabels.map((label, index) => (
-                <p key={index}>{label}</p>
-              ))}
+            {nodeLabels.length > 0 && <p>{nodeLabels[0]}</p>}
             </div>
           </div>
           
           <div className='toolbox'>
             <p>Add elements</p>
             <div className='elements'>
-              <ElementSelector/>  
+              <ElementSelector setCurrentType={setCurrentType} setNewNodeId={setNewNodeId}/>  
             </div>
            
           <p>Choose a connector</p>
@@ -134,23 +177,10 @@ export const ConstructorBuilder = () => {
               ))}
             </ul>
            </div>
-
-           <p>Add an adornment icon</p>
-           <div className='adornments'>
-              <AdornmentIconSelector/>
-              <ul>
-              {adornment_connectors.map((adco, index)=>(
-                <li key={index}>
-                  <button onClick={() => handleEdgeChange (adco)}>
-                    <img src={"/icons/"+adco.name+".png"} className='selector-img'/>
-                      <span className='name'>{adco.name}</span>
-                  </button>  
-                </li>
-              ))}
-            </ul>
-            </div>
           </div>
-
+          {newNodeId && currentType && (
+          <SearchForm onAssign={handleAssign} itemType={currentType} />
+          )}
       </div>
     </ReactFlowProvider>
   );

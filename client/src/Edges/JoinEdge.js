@@ -11,11 +11,6 @@ const JoinEdge = (props) => {
   const [edgePath, labelX, labelY] = getBezierPath({ sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition });
   const { setEdges } = useReactFlow();
 
-  const handleDelete=()=>{
-    console.log(`Deleting edge with id: ${id}`);
-    setEdges((prevEdges) => prevEdges.filter((edge)=>edge.id !== id));
-  }
-
   return (
     <>
     {/* Render path for the edge */}
@@ -25,7 +20,6 @@ const JoinEdge = (props) => {
             stroke: "purple",
             strokeWidth: 2,
             fill: "none",
-            markerEnd:"url(#arrowhead)",
         }}    
         d={edgePath} //set the path data
       />
@@ -51,21 +45,6 @@ const JoinEdge = (props) => {
           />
         </div>
       </EdgeLabelRenderer>
-
-    {/* Define marker at the end of path (arrowhead) */}
-      <defs>
-        <marker
-          id="arrowhead"
-          markerWidth="10"
-          markerHeight="7"
-          refX="8"
-          refY="3.5"
-          orient="auto"
-          markerUnits="strokeWidth"
-        >
-          <path d="M0,0 L0,7 L10,3.5 z" fill="purple" />
-        </marker>
-      </defs>
     </>
   );
 };

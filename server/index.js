@@ -30,6 +30,34 @@ const db= mysql.createConnection({
 //     );
 // })
 
+app.post('/getItems', (req, res) =>{
+    const itemType= req.body.itemType;
+
+    let query= "SELECT * FROM";
+
+    if (itemType == 'Object'){
+        query+=" items";
+    }
+
+    else if (itemType == 'Property'){
+        query+=" properties"
+    }
+
+    db.query(
+        query,
+        (err, result) =>{
+            if(err){
+                console.log(err);
+            }
+            else{
+                res.json(result);
+            }
+        }
+    )
+
+    console.log(itemType);
+})
+
 app.listen(3001, () => {
     console.log("server running on port 3001");
 });

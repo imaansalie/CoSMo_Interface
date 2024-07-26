@@ -4,7 +4,7 @@ import React from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
 import axios from 'axios';
 
-const Object = ({ id, data }) => {
+const Object = ({ id, data}) => {
   const {setNodes} = useReactFlow();
   const imageUrl = `./icons/${data.picture}.png`;
 
@@ -14,6 +14,16 @@ const Object = ({ id, data }) => {
     }
     else{
       return data.label;
+    }
+  }
+
+  const onDelete = () =>{
+    setNodes((prevNodes) => prevNodes.filter((node) => node.id !==id));
+    if(data.handleDelete){
+      data.handleDelete(data.inputType);
+    }
+    else{
+      console.error("handleDelete function not provided");
     }
   }
 
@@ -44,7 +54,7 @@ const Object = ({ id, data }) => {
         border="none"
         size="small"
         // style={{ position: 'absolute', top: '0', right: '0' }}
-        onClick={()=> setNodes(prevNodes => prevNodes.filter(node=>node.id !== id))}
+        onClick={onDelete}
       />
     </div>
   );

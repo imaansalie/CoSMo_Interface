@@ -1,5 +1,5 @@
 
-import React, {useState } from 'react';
+import React, {useCallback, useEffect, useState } from 'react';
 import {Box, Button} from "@chakra-ui/react";
 import ReactFlow, {ReactFlowProvider, addEdge,Controls,Background,useNodesState,useEdgesState} from 'reactflow';
 import 'reactflow/dist/style.css';
@@ -66,6 +66,8 @@ export const ConstructorBuilder = () => {
   const [selectedEdgeType, setSelectedEdgeType] = useState('Role');
   const [newNodeId, setNewNodeId] = useState(null);
   const [currentType, setCurrentType] = useState(null);
+  const [checkDeleted, setCheckDeleted] = useState(false);
+
 
   //setting edge type
   const handleEdgeChange = (connector) =>{
@@ -106,6 +108,27 @@ export const ConstructorBuilder = () => {
     setNodeLabels([formattedString]);
   };
 
+  const handleNodeDelete = (inputType) =>{
+    if (inputType === 'InstanceConstructor' || inputType === 'TypeConstructor') {
+      console.log("deleted");
+      setCheckDeleted(true);
+    }
+  }
+
+  useEffect(() =>{
+    if(checkDeleted){
+      setTimeout(() =>setCheckDeleted(false), 1000);
+    }
+  }, [checkDeleted]);
+
+  const mappedNodes = nodes.map(node =>({
+    ...node,
+    data:{
+      ...node.data,
+      handleDelete: handleNodeDelete,
+    }
+  }));
+
   return (
     <ReactFlowProvider>
         <div className="FlowTest">
@@ -114,7 +137,7 @@ export const ConstructorBuilder = () => {
 
             <Box border="1px solid gray" className='Builder'>
                 <ReactFlow
-                  nodes={nodes}
+                  nodes={mappedNodes}
                   edges={edges}
                   onNodesChange={onNodesChange}
                   onEdgesChange={onEdgesChange}
@@ -139,7 +162,11 @@ export const ConstructorBuilder = () => {
           <div className='toolbox'>
             <p>Add elements</p>
             <div className='elements'>
-              <ElementSelector setCurrentType={setCurrentType} setNewNodeId={setNewNodeId}/>  
+              <ElementSelector 
+                setCurrentType={setCurrentType} 
+                setNewNodeId={setNewNodeId}
+                elementDeleted={checkDeleted}
+                />  
             </div>
            
           <p>Choose a connector</p>

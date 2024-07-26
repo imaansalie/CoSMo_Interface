@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useReactFlow } from 'reactflow';
 
 const elements =[
@@ -16,7 +16,7 @@ const adornments =[
   {code: "JO", name: "Join", type: "Object"}
 ]
 
-const ElementSelector= ({setCurrentType, setNewNodeId}) =>{
+const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
 
     const {setNodes} =useReactFlow(); // hook to access and manipulate nodes
     const generateUniqueId = () => `node_${Math.random().toString(36).substr(2, 9)}`;
@@ -86,7 +86,11 @@ const ElementSelector= ({setCurrentType, setNewNodeId}) =>{
         }  
     };
 
-    
+    useEffect(() => {
+      if(elementDeleted){
+        setConID(conID-1);
+      }
+    }, [elementDeleted])
 
     return(
       <div>

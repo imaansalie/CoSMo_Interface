@@ -7,12 +7,22 @@ import axios from 'axios';
 const Object = ({ id, data }) => {
   const {setNodes} = useReactFlow();
   const imageUrl = `./icons/${data.picture}.png`;
+
+  const displayText= () =>{
+    if(data.inputType === 'InstanceConstructor' || data.inputType === 'TypeConstructor'){
+      return data.conID;
+    }
+    else{
+      return data.label;
+    }
+  }
+
   return (
     <div>
        <div style={{ position: 'relative', display: 'inline-block' }}>
         <img src={imageUrl} alt={`${data.label}`} style={{ display: 'block', width: '100%' }} />
         <p style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', margin: 0 }}>
-          {data.label}
+          {displayText()}
         </p>
       </div>
 

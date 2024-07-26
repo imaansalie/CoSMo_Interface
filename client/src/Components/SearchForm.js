@@ -7,11 +7,9 @@ import { useEffect} from 'react';
 export const SearchForm = ({onAssign, itemType}) =>{
     const [searchTerm, setSearchTerm] = useState('');
     const [results, setResults] = useState([]);
-    // const [selectedItem, setSelectedItem] = useState(null);
-    // const type= "items";
 
     useEffect(() =>{
-        // setResults([{ id: 'item1', name: 'Item 1' }, { id: 'item2', name: 'Item 2' }]);
+        //fetch items based on item type
         axios.post('http://localhost:3001/getItems', {itemType}).then((response) =>{
             setResults(response.data);
             console.log(response.data);
@@ -20,11 +18,14 @@ export const SearchForm = ({onAssign, itemType}) =>{
         })
     },[itemType]);
 
+    //handle search input change
     const handleSearch = (e) =>{
         setSearchTerm(e.target.value);
     }
 
-    const filteredItems = results.filter(item => item.label.toLowerCase().includes(searchTerm.toLowerCase()));
+    //filter items based on search term
+    const filteredItems = results.filter(item => 
+        item.label.toLowerCase().includes(searchTerm.toLowerCase()));
 
     return(
         <Box

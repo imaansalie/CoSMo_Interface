@@ -18,9 +18,11 @@ const adornments =[
 
 const ElementSelector= ({setCurrentType, setNewNodeId}) =>{
 
-    const {setNodes} =useReactFlow();
+    const {setNodes} =useReactFlow(); // hook to access and manipulate nodes
     const generateUniqueId = () => `node_${Math.random().toString(36).substr(2, 9)}`;
+    const [conID, setConID] =useState(1);
 
+    //function to add text node (value constraint and role type -- must adapt to use search form as well)
     const addTextNode = (adornment) => {
 
       const newNodeId=generateUniqueId();      
@@ -48,6 +50,10 @@ const ElementSelector= ({setCurrentType, setNewNodeId}) =>{
       const y= Math.random() * 100;
       const newNodeId= generateUniqueId();
 
+      if (element.name === 'InstanceConstructor'|| element.name ==='TypeConstructor'){
+        setConID(conID+1);
+      }
+
       setNodes( (prevNodes) => [
         ...prevNodes, 
         {
@@ -56,6 +62,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId}) =>{
               label:element.name,
               inputType: element.name,
               picture:element.name,
+              conID: `C${conID}`,
               argument: '', 
             }, 
             type: `${element.name}`,
@@ -78,6 +85,8 @@ const ElementSelector= ({setCurrentType, setNewNodeId}) =>{
             break;
         }  
     };
+
+    
 
     return(
       <div>

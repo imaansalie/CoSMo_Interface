@@ -1,3 +1,4 @@
+
 import React, {useState } from 'react';
 import {Box, Button} from "@chakra-ui/react";
 import ReactFlow, {ReactFlowProvider, addEdge,Controls,Background,useNodesState,useEdgesState} from 'reactflow';
@@ -15,11 +16,9 @@ import IsMandatory from './Edges/IsMandatory';
 import JoinEdge from './Edges/JoinEdge';
 import { SearchForm } from './Components/SearchForm';
 
-
 const nodeTypes = {
   'Object': Object,
   'Function': Object,
-  'ElementSelector': ElementSelector,
   'Arguments': Object,
   'IsMandatory': Object,
   'InstanceConstructor': Object,
@@ -29,6 +28,7 @@ const nodeTypes = {
   'TypeConstructor': Object,
   'ValueConstraint': InputNode,
 };
+
 
 const edgeTypes = {
   'Role': Role,
@@ -55,68 +55,54 @@ const initialEdges = [];
 
 export const ConstructorBuilder = () => {
  
+  //state hooks for nodes and edges
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  //handles adding edges (connectors) to between nodes using the selected edge type
   const onConnect = (params) => setEdges((eds) => addEdge({...params, type:selectedEdgeType}, eds));
 
   const [nodeLabels, setNodeLabels] = useState([]);
   const [selectedEdgeType, setSelectedEdgeType] = useState('Role');
-  // const [isFormVisible, setIsFormVisible] = useState(false);
   const [newNodeId, setNewNodeId] = useState(null);
   const [currentType, setCurrentType] = useState(null);
 
   //setting edge type
   const handleEdgeChange = (connector) =>{
     setSelectedEdgeType(connector.name);
-    // console.log(connector.name)
   }
 
   // assign selected data item to node
   const handleAssign = (item) => {
-    //update state of nodes
-    setNodes((prevNodes) =>
-      //check each node
-      prevNodes.map((node) =>
-        //check if node ID matches newNodeID
-        node.id === newNodeId ? { 
-          //create a new node object with updated data
-          ...node, 
+    setNodes((prevNodes) => //update state of nodes
+      prevNodes.map((node) =>//check each node
+        node.id === newNodeId ? { //check if node ID matches newNodeID
+          ...node, //create a new node object with updated data
           data: { 
-            //copy the existing data
-            ...node.data, 
-            //update the label
-            label: item.itemID }
+            ...node.data, //copy the existing data
+            label: item.itemID }//update the label
           } 
           : node //if it doesn't match, return the node as is
       ),
     );
     setNewNodeId(null);
-    console.log(item.item);
-    console.log(newNodeId);
-    // setIsFormVisible(false);
   };
 
   //Generating text
 
-  const printNodeLabels = () => {
-    const labels = nodes
-      .filter(node => node.data.label !== 'ElementSelector')
-      .map(node => `${node.data.inputType}: ${node.id} -- ${node.data.label}`);
-
-    const formattedString = labels.join(', \n');
-
-    setNodeLabels([formattedString]);
-  };
-
   const printNodesAndConnectors = () => {
-    const edgeDetails = edges.map((edge) => {
-      const sourceNode = nodes.find((node) => node.id === edge.source);
-      const targetNode = nodes.find((node) => node.id === edge.target);
+    const edgeDetails = edges.map((edge) => { //iterate over each edge in edges array
+      const sourceNode = nodes.find((node) => node.id === edge.source); //find source node by id
+      const targetNode = nodes.find((node) => node.id === edge.target); //find target node by id
 
+      //for each edge, create a string describing the source node, edge type and target node
       return `Source Node: ${sourceNode ? sourceNode.data.label : 'Unknown'}, Edge Type: ${edge.type}, Target Node: ${targetNode ? targetNode.data.label : 'Unknown'}`;
     });
 
+    //combine all edge detail strings into one with a break in between
     const formattedString = edgeDetails.join('<br />');
+
+    //update the state with the formatted string
     setNodeLabels([formattedString]);
   };
 
@@ -170,6 +156,11 @@ export const ConstructorBuilder = () => {
             </ul>
            </div>
           </div>
+
+          {/* Conditionally render 'SearchForm' based on the new nodeID and current type */}
+          {/* If both newNodeId and current type are defined, render the SearchForm component */}
+          {/* handleAssign prop called when user selects an item */}
+          {/* currentType prop passed to searchForm, determines type of items fetched */}
           {newNodeId && currentType && (
           <SearchForm onAssign={handleAssign} itemType={currentType} />
           )}

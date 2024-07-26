@@ -6,10 +6,16 @@ import axios from 'axios';
 
 const Object = ({ id, data }) => {
   const {setNodes} = useReactFlow();
-  const imageUrl = `./icons/${data.label}.png`;
+  const imageUrl = `./icons/${data.picture}.png`;
   return (
     <div>
-      <img src={imageUrl} alt={`${data.label}`}></img>
+       <div style={{ position: 'relative', display: 'inline-block' }}>
+        <img src={imageUrl} alt={`${data.label}`} style={{ display: 'block', width: '100%' }} />
+        <p style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', margin: 0 }}>
+          {data.label}
+        </p>
+      </div>
+
        
       {/* Handles */}
       <Handle type="source" position={Position.Right} id="source-right"/>

@@ -38,7 +38,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId}) =>{
         },
       ]);
 
-      setCurrentType(adornment.type);
+      setCurrentType(adornment.name);
       setNewNodeId(newNodeId);
     };
     
@@ -51,9 +51,11 @@ const ElementSelector= ({setCurrentType, setNewNodeId}) =>{
       setNodes( (prevNodes) => [
         ...prevNodes, 
         {
-            id: generateUniqueId(), 
+            id: newNodeId, 
             data: {
               label:element.name,
+              inputType: element.name,
+              picture:element.name,
               argument: '', 
             }, 
             type: `${element.name}`,
@@ -62,6 +64,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId}) =>{
       ]);   
       setCurrentType(element.name);
       setNewNodeId(newNodeId);
+      console.log("element selector : "+ element.type);
     }
 
     const onElementClick = (element) => {

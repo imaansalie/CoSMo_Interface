@@ -71,50 +71,28 @@ export const ConstructorBuilder = () => {
     // console.log(connector.name)
   }
 
-  // const handleElementClick = (element) =>{
-
-  //   const nodeId = `node_${Math.random().toString(36).substr(2, 9)}`;
-  //   setNewNodeId(nodeId);
-
-  //   const x= Math.random() * 100;
-  //   const y= Math.random() * 100;
-
-  //   setNodes( (prevNodes) => [
-  //     ...prevNodes, 
-  //     {
-  //         id: nodeId, 
-  //         data: {
-  //           label:element.name,
-  //           argument: '', 
-  //         }, 
-  //         type: `${element.name}`,
-  //         position: {x:x, y:y},
-  //     },
-  //   ]);   
-  //   // setCurrentType(element.name);
-  //   console.log(currentType);
-  //   setIsFormVisible(true);
-  // }
-
-  // const onElementClick = (element) => {
-
-  //     switch(element.type){
-  //       case 'Object':
-  //         handleObjectClick(element);
-  //         break;
-  //       case 'InputNode':
-  //         addTextNode(element);
-  //         break;
-  //     }  
-  // };
-
+  // assign selected data item to node
   const handleAssign = (item) => {
+    //update state of nodes
     setNodes((prevNodes) =>
+      //check each node
       prevNodes.map((node) =>
-        node.id === newNodeId ? { ...node, data: { ...node.data, label: item.name } } : node
-      )
+        //check if node ID matches newNodeID
+        node.id === newNodeId ? { 
+          //create a new node object with updated data
+          ...node, 
+          data: { 
+            //copy the existing data
+            ...node.data, 
+            //update the label
+            label: item.itemID }
+          } 
+          : node //if it doesn't match, return the node as is
+      ),
     );
     setNewNodeId(null);
+    console.log(item.item);
+    console.log(newNodeId);
     // setIsFormVisible(false);
   };
 
@@ -123,10 +101,22 @@ export const ConstructorBuilder = () => {
   const printNodeLabels = () => {
     const labels = nodes
       .filter(node => node.data.label !== 'ElementSelector')
-      .map(node => `${node.data.label}: ${node.id}`);
+      .map(node => `${node.data.inputType}: ${node.id} -- ${node.data.label}`);
 
     const formattedString = labels.join(', \n');
 
+    setNodeLabels([formattedString]);
+  };
+
+  const printNodesAndConnectors = () => {
+    const edgeDetails = edges.map((edge) => {
+      const sourceNode = nodes.find((node) => node.id === edge.source);
+      const targetNode = nodes.find((node) => node.id === edge.target);
+
+      return `Source Node: ${sourceNode ? sourceNode.data.label : 'Unknown'}, Edge Type: ${edge.type}, Target Node: ${targetNode ? targetNode.data.label : 'Unknown'}`;
+    });
+
+    const formattedString = edgeDetails.join('<br />');
     setNodeLabels([formattedString]);
   };
 
@@ -151,10 +141,12 @@ export const ConstructorBuilder = () => {
                 </ReactFlow>
             </Box>
               
-            <Button onClick={printNodeLabels} mb={2} className='TextGenerator'>Generate Text</Button>
+            <Button onClick={printNodesAndConnectors} mb={2} className='TextGenerator'>Generate Text</Button>
 
             <div className='Textbox'>
-            {nodeLabels.length > 0 && <p>{nodeLabels[0]}</p>}
+                {nodeLabels.length > 0 && (
+                <p dangerouslySetInnerHTML={{ __html: nodeLabels[0] }} />
+                )}
             </div>
           </div>
           

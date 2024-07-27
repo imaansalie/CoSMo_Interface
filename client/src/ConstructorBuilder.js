@@ -29,7 +29,6 @@ const nodeTypes = {
   'ValueConstraint': InputNode,
 };
 
-
 const edgeTypes = {
   'Role': Role,
   'Sub-constructor': SubConstructorEdge,
@@ -62,7 +61,9 @@ export const ConstructorBuilder = () => {
   //handles adding edges (connectors) to between nodes using the selected edge type
   const onConnect = (params) => setEdges((eds) => addEdge({...params, type:selectedEdgeType}, eds));
 
+  //state hook for text generator string
   const [nodeLabels, setNodeLabels] = useState([]);
+
   const [selectedEdgeType, setSelectedEdgeType] = useState('Role');
   const [newNodeId, setNewNodeId] = useState(null);
   const [currentType, setCurrentType] = useState(null);
@@ -97,9 +98,13 @@ export const ConstructorBuilder = () => {
       const sourceNode = nodes.find((node) => node.id === edge.source); //find source node by id
       const targetNode = nodes.find((node) => node.id === edge.target); //find target node by id
 
-      //for each edge, create a string describing the source node, edge type and target node
-      return `Source Node: ${sourceNode ? sourceNode.data.label : 'Unknown'}, Edge Type: ${edge.type}, Target Node: ${targetNode ? targetNode.data.label : 'Unknown'}`;
-    });
+      if(sourceNode && targetNode){
+        //for each edge, create a string describing the source node, edge type and target node
+        return `Source Node: ${sourceNode ? sourceNode.data.label : 'Unknown'}, Edge Type: ${edge.type}, Target Node: ${targetNode ? targetNode.data.label : 'Unknown'}`;
+      }
+      return null;
+      
+    }).filter(detail => detail !==null);
 
     //combine all edge detail strings into one with a break in between
     const formattedString = edgeDetails.join('<br />');
@@ -108,19 +113,24 @@ export const ConstructorBuilder = () => {
     setNodeLabels([formattedString]);
   };
 
-  const handleNodeDelete = (inputType) =>{
+  //check if constructor has been deleted
+  const handleNodeDelete = (inputType, nodeId) =>{
     if (inputType === 'InstanceConstructor' || inputType === 'TypeConstructor') {
       console.log("deleted");
       setCheckDeleted(true);
     }
+
+    setEdges((prevEdges) => prevEdges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId))
   }
 
+  //after informing element selector, reset checkDeleted boolean to true after 1 second
   useEffect(() =>{
     if(checkDeleted){
       setTimeout(() =>setCheckDeleted(false), 1000);
     }
   }, [checkDeleted]);
 
+  //pass handleDelete prop to Object
   const mappedNodes = nodes.map(node =>({
     ...node,
     data:{

@@ -44,6 +44,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
       setNewNodeId(newNodeId);
     };
     
+    //add object node
     const handleObjectClick = (element) =>{
 
       const x= Math.random() * 100;
@@ -74,6 +75,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
       console.log("element selector : "+ element.type);
     }
 
+    //switch between node type handlers
     const onElementClick = (element) => {
 
         switch(element.type){
@@ -86,6 +88,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
         }  
     };
 
+    //decrement constructor counter on node delete
     useEffect(() => {
       if(elementDeleted){
         setConID(conID-1);
@@ -98,7 +101,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
           {elements.map((element,index)=>(
             <li key={index}>
               <button onClick={() => onElementClick(element)}>
-                <img src={"/icons/"+element.name+".png"} className='selector-img'/>
+                <img src={"/icons/"+element.name+".png"} className='selector-img' alt='icon'/>
                   <span className='name'>{element.name}</span>
               </button>  
             </li>
@@ -109,7 +112,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
         {adornments.map((adornment,index)=>(
           <li key={index}>
             <button onClick={() => onElementClick(adornment)}>
-              <img src={"/icons/"+adornment.name+".png"} className='selector-img'/>
+              <img src={"/icons/"+adornment.name+".png"} className='selector-img' alt='img'/>
                 <span className='name'>{adornment.name}</span>
             </button>  
           </li>

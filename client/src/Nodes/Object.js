@@ -20,7 +20,7 @@ const Object = ({ id, data}) => {
   const onDelete = () =>{
     setNodes((prevNodes) => prevNodes.filter((node) => node.id !==id));
     if(data.handleDelete){
-      data.handleDelete(data.inputType);
+      data.handleDelete(data.inputType, id);
     }
     else{
       console.error("handleDelete function not provided");

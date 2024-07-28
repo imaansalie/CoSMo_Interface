@@ -4,38 +4,38 @@ import { IconButton } from '@chakra-ui/react';
 import {FiX} from 'react-icons/fi';
 
 const InputNode = ({id, data, selected}) =>{
-    const [text, setText] = useState('');
-    const [isEditing, setIsEditing] = useState(true);
+    // const [text, setText] = useState('');
+    // const [isEditing, setIsEditing] = useState(true);
     const {setNodes} = useReactFlow();
-    const nodeRef = useRef(null);
+    // const nodeRef = useRef(null);
 
-    const handleTextChange = (event) =>{
-        setText(event.target.value);
-        data.onChange(event.target.value);
-    }
+    // const handleTextChange = (event) =>{
+    //     setText(event.target.value);
+    //     data.onChange(event.target.value);
+    // }
 
-    const handleClickOutside = (event) =>{
-        if(nodeRef.current && !nodeRef.current.contains(event.target)){
-            setIsEditing(false);
-        }
-    }
+    // const handleClickOutside = (event) =>{
+    //     if(nodeRef.current && !nodeRef.current.contains(event.target)){
+    //         setIsEditing(false);
+    //     }
+    // }
 
-    useEffect(() =>{
-        document.addEventListener('mousedown', handleClickOutside);
+    // useEffect(() =>{
+    //     document.addEventListener('mousedown', handleClickOutside);
 
-        return () =>{
-            document.removeEventListener('mousedown', handleClickOutside)
-        }
-    }, []);
+    //     return () =>{
+    //         document.removeEventListener('mousedown', handleClickOutside)
+    //     }
+    // }, []);
 
     const getDisplayText = () => {
         switch (data.inputType) {
             case 'Role_name':
-                return `[${text}]`;
+                return `[${data.itemLabel} (${data.itemID})]`;
             case 'ValueConstraint':
-                return `{${text}}`;
+                return `{${data.itemID}}`;
             default:
-                return text;
+                return 'not in ';
         }
     };
 
@@ -51,10 +51,10 @@ const InputNode = ({id, data, selected}) =>{
     };
 
     return(
-        <div ref= {nodeRef} style={{ padding: '10px',  background: selected ? 'white' : 'white' }}>
+        <div>
             <Handle type="source" position={Position.Top}/>
             
-            {isEditing? (<div style={{ textAlign: 'center', marginBottom: '10px' }}>
+            {/* {isEditing? (<div style={{ textAlign: 'center', marginBottom: '10px' }}>
                 <input 
                 type="text" 
                 value={text} 
@@ -63,10 +63,10 @@ const InputNode = ({id, data, selected}) =>{
                 style={{ width: '100%' }}
                 />
             </div>
-            ):(
-            <div style={{ textAlign: 'center', color: getTextColor(), fontWeight: 'bold', fontFamily:'sans-serif' }} onClick={()=>setIsEditing(true)}>
+            ):( */}
+            <div style={{ textAlign: 'center', color: getTextColor(), fontWeight: 'bold', fontFamily:'sans-serif'}}>
                 {getDisplayText()}
-            </div>)}
+            </div>
 
             <IconButton
                 aria-label="Delete element"

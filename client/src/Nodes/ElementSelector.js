@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useReactFlow } from 'reactflow';
 
 const elements =[
-    {code:"Ob", name:"Object", type: "Object"},
-    {code:"Func", name:"Function", type: "Object"},
-    {code:"Arg", name:"Arguments", type: "Object"},
-    {code:"InstCo", name:"InstanceConstructor", type: "Object"},
-    {code:"Prop", name:"Property", type: "Object"},
-    {code:"TC1", name:"TypeConstructor", type: "Object"},
+    {code:"Ob", name:"Object", type: "Object", label: "Object"},
+    {code:"Func", name:"Function", type: "Object", label: "Function"},
+    {code:"Arg", name:"Arguments", type: "Object", label: "Arguments"},
+    {code:"InstCo", name:"InstanceConstructor", type: "Object", label: "Instance Constructor"},
+    {code:"Prop", name:"Property", type: "Object", label: "Property"},
+    {code:"TC1", name:"TypeConstructor", type: "Object", label: "Type Constructor"},
 ];
 
 const adornments =[
-  {code:"RN", name:"Role_name", type: "InputNode"},
-  {code:"VC", name:"ValueConstraint", type: "InputNode"},
-  {code: "JO", name: "Join", type: "Object"}
+  {code:"RN", name:"Role_name", type: "InputNode", label: "Role Name"},
+  {code:"VC", name:"ValueConstraint", type: "InputNode", label: "Value Constraint"},
+  {code: "JO", name: "Join", type: "Object", label: "Join"}
 ]
 
 const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
@@ -29,12 +29,14 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
       setNodes((prevNodes) => [
         ...prevNodes,
         {
-          id: generateUniqueId(),
+          id: newNodeId,
           type: `${adornment.name}`, // Use the custom node type
           data: {
-            label: adornment.name,
+            label: adornment.label,
             inputType:`${adornment.name}`,
-            onChange: (newText) => console.log('Text changed:', newText) // Handle text changes
+            picture: adornment.name,
+            itemLabel: '',
+            itemID:''
           },
           position: { x: Math.random() * 200, y: Math.random() * 200 },
         },
@@ -60,11 +62,12 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
         {
             id: newNodeId, 
             data: {
-              label:element.name,
+              label:element.label,
               inputType: element.name,
               picture:element.name,
+              itemLabel: '',
               conID: `C${conID}`,
-              argument: '', 
+              itemID: '', 
             }, 
             type: `${element.name}`,
             position: {x:x, y:y},
@@ -102,7 +105,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
             <li key={index}>
               <button onClick={() => onElementClick(element)}>
                 <img src={"/icons/"+element.name+".png"} className='selector-img' alt='icon'/>
-                  <span className='name'>{element.name}</span>
+                  <span className='name'>{element.label}</span>
               </button>  
             </li>
           ))}
@@ -113,7 +116,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
           <li key={index}>
             <button onClick={() => onElementClick(adornment)}>
               <img src={"/icons/"+adornment.name+".png"} className='selector-img' alt='img'/>
-                <span className='name'>{adornment.name}</span>
+                <span className='name'>{adornment.label}</span>
             </button>  
           </li>
         ))}

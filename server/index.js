@@ -35,7 +35,7 @@ app.post('/getItems', (req, res) =>{
 
     let query= "SELECT * FROM";
 
-    if (itemType == 'Object'){
+    if (itemType == 'Object' || itemType == 'ValueConstraint' || itemType == 'Role_name'){
         query+=" items";
     }
 

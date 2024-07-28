@@ -40,14 +40,23 @@ const edgeTypes = {
 }
 
 const connectors = [
-  {code: "RE", name:"Role"},
-  {code: "SCE", name:"Sub-constructor"},
-  {code: "IE", name: "Instance"},
-  {code: "POE", name: "PartOf_Object"},
-  {code: "ICE", name: "InstanceConstructor_Connector"},
-  {code: "IM", name:"IsMandatory"},
-  {code: "JO", name: "Join"}
+  {code: "RE", name:"Role", label: "Role"},
+  {code: "SCE", name:"Sub-constructor", label: "Sub Constructor Of"},
+  {code: "IE", name: "Instance", label: "Instance Of"},
+  {code: "POE", name: "PartOf_Object", label: "Part Of"},
+  {code: "ICE", name: "InstanceConstructor_Connector", label: "Instance Constructor"},
+  {code: "IM", name:"IsMandatory", label: "Is Mandatory"},
+  {code: "JO", name: "Join", label: "Join"}
 ]
+
+//CoSMo syntax dictionary
+const definitions = {
+  'TypeConstructor_InstanceConstructor_Connector_Object': (sourceNode, targetNode) => `<br/>TypeConstructor:${sourceNode.data.conID}(`,
+  'InstanceConstructor_InstanceConstructor_Connector_Object':(sourceNode, targetNode) => `InstanceConstructor:${sourceNode.data.conID}(`,
+  'InstanceConstructor_Instance_TypeConstructor': (sourceNode, targetNode) => `<br/>InstanceOf(${sourceNode.data.conID}, ${targetNode.data.conID})<br/>`,
+  'TypeConstructor_Sub-constructor_TypeConstructor': (sourceNode, targetNode) => `<br/>SubConstructorOf(${sourceNode.data.conID}, ${targetNode.data.conID})`,
+  'ValueConstraint_Instance_Object':(sourceNode, targetNode) => `${'&nbsp;&nbsp;&nbsp;&nbsp;'}ObjectType(${targetNode.data.itemID})={${sourceNode.data.itemID}})`
+}
 
 const initialNodes = [];
 const initialEdges = [];
@@ -69,6 +78,7 @@ export const ConstructorBuilder = () => {
   const [currentType, setCurrentType] = useState(null);
   const [checkDeleted, setCheckDeleted] = useState(false);
 
+  const showSearchForm = currentType==='Property' || currentType === 'Object' || currentType === 'Role_name'|| currentType === 'ValueConstraint';
 
   //setting edge type
   const handleEdgeChange = (connector) =>{
@@ -83,31 +93,63 @@ export const ConstructorBuilder = () => {
           ...node, //create a new node object with updated data
           data: { 
             ...node.data, //copy the existing data
-            label: item.itemID }//update the label
+            itemLabel: item.label,
+            itemID: item.itemID }
           } 
           : node //if it doesn't match, return the node as is
       ),
     );
+    console.log(item.itemID);
     setNewNodeId(null);
   };
 
   //Generating text
 
   const printNodesAndConnectors = () => {
-    const edgeDetails = edges.map((edge) => { //iterate over each edge in edges array
+
+    const edgeDetails =[];
+
+    edges.forEach((edge, index) => {
       const sourceNode = nodes.find((node) => node.id === edge.source); //find source node by id
       const targetNode = nodes.find((node) => node.id === edge.target); //find target node by id
 
       if(sourceNode && targetNode){
         //for each edge, create a string describing the source node, edge type and target node
-        return `Source Node: ${sourceNode ? sourceNode.data.label : 'Unknown'}, Edge Type: ${edge.type}, Target Node: ${targetNode ? targetNode.data.label : 'Unknown'}`;
-      }
-      return null;
-      
-    }).filter(detail => detail !==null);
 
+        const key= `${sourceNode.data.inputType}_${edge.type}_${targetNode.data.inputType}`;
+        console.log(key);
+        const edge_string = definitions[key];
+        
+        if(edge_string){
+          edgeDetails.push(edge_string(sourceNode, targetNode));
+        }
+
+        if(key === 'Object_Role_Property' && index < edges.length -1){
+          const nextEdge = edges[index +1];
+          const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
+          const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
+
+          if(nextSourceNode && nextTargetNode){
+            const nextKey = `${nextSourceNode.data.label}_${nextEdge.type}_${nextTargetNode.data.label}`
+
+            if(nextKey === 'Property_Role_Object'){
+              edgeDetails.push(
+                `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Property(${targetNode.data.itemID}(r1,r2)),<br/>
+                ${'&nbsp;&nbsp;&nbsp;&nbsp;'}r1:ObjectType(${sourceNode.data.itemID}),<br/>
+                ${'&nbsp;&nbsp;&nbsp;&nbsp;'}r2:ObjectType(${nextTargetNode.data.itemID})
+                `
+              )
+            }
+          }
+        }
+        // else{
+        //   edgeDetails.push(`Source Node: ${sourceNode ? sourceNode.data.label : 'Unknown'}, Edge Type: ${edge.type}, Target Node: ${targetNode ? targetNode.data.label : 'Unknown'}`);
+        // }
+      }
+    });
+      
     //combine all edge detail strings into one with a break in between
-    const formattedString = edgeDetails.join('<br />');
+    const formattedString = edgeDetails.join('<br/>');
 
     //update the state with the formatted string
     setNodeLabels([formattedString]);
@@ -186,7 +228,7 @@ export const ConstructorBuilder = () => {
                 <li key={index}>
                   <button onClick={() => handleEdgeChange (connector)}>
                     <img src={"/icons/"+connector.name+".png"} className='selector-img'/>
-                      <span className='name'>{connector.name}</span>
+                      <span className='name'>{connector.label}</span>
                   </button>  
                 </li>
               ))}
@@ -198,7 +240,7 @@ export const ConstructorBuilder = () => {
           {/* If both newNodeId and current type are defined, render the SearchForm component */}
           {/* handleAssign prop called when user selects an item */}
           {/* currentType prop passed to searchForm, determines type of items fetched */}
-          {newNodeId && currentType && (
+          {newNodeId && showSearchForm &&(
           <SearchForm onAssign={handleAssign} itemType={currentType} />
           )}
       </div>

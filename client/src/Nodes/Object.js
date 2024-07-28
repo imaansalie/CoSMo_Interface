@@ -1,4 +1,4 @@
-import { IconButton } from '@chakra-ui/react';
+import { BreadcrumbLink, IconButton } from '@chakra-ui/react';
 import {FiX} from 'react-icons/fi';
 import React from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
@@ -9,13 +9,43 @@ const Object = ({ id, data}) => {
   const imageUrl = `./icons/${data.picture}.png`;
 
   const displayText= () =>{
-    if(data.inputType === 'InstanceConstructor' || data.inputType === 'TypeConstructor'){
-      return data.conID;
+    // if(data.inputType === 'InstanceConstructor' || data.inputType === 'TypeConstructor'){
+    //   return data.conID;
+    // }
+    // if(data.inputType === 'Property'){
+    //   return `${data.itemLabel} (${data.itemID}) <br/> <br/> <br/>`;
+    // }
+    // else{
+    //   return `${data.itemLabel} (${data.itemID})`;
+    // }
+
+    let textContent = `${data.itemLabel} (${data.itemID})`
+    let style ={};
+
+    switch (data.inputType){
+      case 'InstanceConstructor':
+        style={ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', margin: 0 };
+        textContent= `${data.conID}`;
+        break;
+
+        case 'TypeConstructor':
+          style={ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', margin: 0 };
+          textContent= `${data.conID}`;
+          break;
+
+      case 'Property':
+        style ={position: 'absolute', top: '-50%', left: '50%', transform: 'translate(-50%, -50%)', margin: 0};
+        break;
+
+      default:
+        style ={position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', margin: 0};
+        break;
     }
-    else{
-      return data.label;
-    }
+
+    return {textContent, style};
   }
+
+  const {textContent, style} = displayText();
 
   const onDelete = () =>{
     setNodes((prevNodes) => prevNodes.filter((node) => node.id !==id));
@@ -31,8 +61,8 @@ const Object = ({ id, data}) => {
     <div>
        <div style={{ position: 'relative', display: 'inline-block' }}>
         <img src={imageUrl} alt={`${data.label}`} style={{ display: 'block', width: '100%' }} />
-        <p style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', margin: 0 }}>
-          {displayText()}
+        <p style={{ fontFamily:'sans-serif', ...style }}>
+          {textContent}
         </p>
       </div>
 

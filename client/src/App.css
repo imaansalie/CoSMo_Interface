@@ -73,56 +73,12 @@ body{
 .SidebarList #active{
   background-color:#14192d;
 }
-/* drag-and-drop tool box */
-.editor{
-  width: 900px;
-  height: 600px;
-  border: solid 2px grey;
-  float: left;
-  margin: 20px;
-  text-align: center;
-}
-
-.editor p{
-  margin: 0;
-  position: relative;
-  top: 50%;
-}
-
-.tools{
-  list-style: none;
-  column-count: 2;
-  width: 200px;
-}
-
-.tools li {
-  display: flex;
-  align-items: center;
-  border: solid 2px gray;
-  margin-bottom: 1em;
-  height: 60px;
-  text-align: center;
-}
-
-.tools-thumb{
-  overflow: hidden;
-  flex-shrink: 0;
-  background-color: white;
-  text-align: center;
-}
-
-.tools-thumb img{
-  display: block;
-  max-width: 80px;
-  max-height: 60px;
-  text-align: center;
-}
 
 /* REACT FLOW */
 
 .FlowTest h1{
   font-family: sans-serif;
-  margin-top: 50px;
+  margin-top: 30px;
 }
 
 .ConstructorBuilder{
@@ -140,7 +96,7 @@ body{
 .ConstructorBuilder .Textbox{
   border: solid 1px grey;
   max-width: 1000px;
-  max-height: 200px;
+  max-height: 130px;
   margin-top: 10px;
   padding-top: 20px;
   padding-bottom: 20px;
@@ -148,6 +104,7 @@ body{
   text-align: left;
   padding-left: 10px;
   font-family: sans-serif;
+  overflow-y: auto;
 }
 
 .label{
@@ -167,15 +124,17 @@ body{
 }
 
 /* TOOLBOX */
-.toolbox {
+.toolbox .elements{
   /* display: grid; */
   grid-template-columns: repeat(2, 1fr); /* Two columns with equal width */
   gap: 5px; /* Adjust the gap between items as needed */
   padding: 5px; /* Add some padding around the container */
   margin-right: 10px;
+  max-height: 360px;
+  overflow-y: auto;
 }
 
-.toolbox ul {
+.toolbox .elements ul {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -184,11 +143,11 @@ body{
   gap: 2px; /* Adjust the gap between items as needed */
 }
 
-.toolbox li {
+.toolbox .elements li {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 80px; /* Fixed width for each item */
+  width: 95px; /* Fixed width for each item */
   height: 80px; /* Fixed height for each item */
   background-color: #f0f0f0; /* Background color for each item */
   border: 1px solid #ccc; /* Border for each item */
@@ -196,7 +155,7 @@ body{
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: shadow effect */
 }
 
-.toolbox button {
+.toolbox .elements button {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -210,25 +169,76 @@ body{
   box-sizing: border-box;
 }
 
-.toolbox li :hover{
+.toolbox .elements li :hover{
   background-color: #e0e0e0;
 }
 
-.toolbox .selector-img {
+.toolbox .elements .selector-img {
   max-width: 60%;
-  max-height: 60%; /* Adjust as needed to fit within the button */
-  margin-bottom: 2px; /* Space between image and text */
+  max-height: 60%;
+  /* margin-bottom: 2px;  */
   display: block;
+}
+
+.toolbox .connectors{
+  gap: 5px; /* Adjust the gap between items as needed */
+  padding: 5px; /* Add some padding around the container */
+  margin-right: 10px;
+  max-height: 230px;
+  overflow-y: auto;
+}
+
+.toolbox .connectors ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 2px; /* Adjust the gap between items as needed */
+}
+
+.toolbox .connectors li {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px; /* Fixed width for each item */
+  height: 30px; /* Fixed height for each item */
+  background-color: #f0f0f0; /* Background color for each item */
+  border: 1px solid #ccc; /* Border for each item */
+  border-radius: 4px; /* Optional: rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: shadow effect */
+}
+
+.toolbox .connectors button {
+  display: flex;
+  /* flex-direction: column; */
+  /* align-items: center; */
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 6px;
+  box-sizing: border-box;
 }
 
 .toolbox .connectors .name {
   font-size: 12px; /* Adjust font size as needed */
-  line-height: 1.2; /* Adjust line height for better spacing */
-  white-space: normal; /* Allow text to wrap */
-  word-wrap: break-word; /* Break long words if necessary */
-  overflow-wrap: break-word; /* Ensures long words break properly */
-  text-align: center;
+  /* line-height: 1.2; Adjust line height for better spacing */
+  /* white-space: normal; /* Allow text to wrap */
+  /* word-wrap: break-word; Break long words if necessary */
+  /* overflow-wrap: break-word; Ensures long words break properly */
+  text-align: right; 
   width: 100%;
+  /* margin-bottom: 10px; */
+}
+
+.toolbox .connectors .selector-img {
+  max-width: 80%;
+  max-height: 80%;
+  /* margin-bottom: 2px;  */
+  padding-right: 2px;
+  margin: 2px;
+  display: block;
 }
 
 .name{
@@ -243,16 +253,6 @@ body{
 
 .toolbox p{
   font-family: sans-serif;
-}
-
-.toolbox .elements{
-  max-height: 360px;
-  overflow-y: auto;
-}
-
-.toolbox .connectors{
-  max-height: 190px;
-  overflow-y: auto;
 }
 
 .toolbox .adornments{

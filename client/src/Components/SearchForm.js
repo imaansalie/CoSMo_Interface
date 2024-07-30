@@ -28,22 +28,19 @@ export const SearchForm = ({onAssign, itemType}) =>{
         item.label.toLowerCase().includes(searchTerm.toLowerCase()));
 
     return(
-        <Box
-            position="fixed"
-            top="50%"
-            left="50%"
-            transform="translate(-50%, -50%)"
-            border="1px solid gray"
-            p={4}
-            mt={4}
-            zIndex={1000}
-            bg="white"
-        >
-            <Input placeholder='Search...' value={searchTerm} onChange={handleSearch} mb={2}/>
+        <Box className='search-form'>
+            <Input placeholder='Search...' value={searchTerm} onChange={handleSearch} mb={2} className='search-input'/>
             <ul>
                 {filteredItems.map(item=>(
                     <li key={item.id}>
-                        <Button onClick={()=> onAssign(item)}>{item.label}</Button>
+                        <Button className='button' onClick={()=> onAssign(item)}>
+                            <div className='itemLabel'>
+                                {item.label}
+                            </div>
+                            <div className='description'>
+                                {item.description}
+                            </div>
+                        </Button>
                     </li>
                 ))}
             </ul>

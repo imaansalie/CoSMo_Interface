@@ -19,7 +19,12 @@ const Object = ({ id, data}) => {
     //   return `${data.itemLabel} (${data.itemID})`;
     // }
 
-    let textContent = `${data.itemLabel} (${data.itemID})`
+    let textContent='';
+
+    if(data.itemID !== ''){
+      textContent = `${data.itemLabel} (${data.itemID})`;
+    }
+    
     let style ={};
 
     switch (data.inputType){

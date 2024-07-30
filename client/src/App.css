@@ -261,7 +261,81 @@ body{
   width: 166px;
 }
 
+
+/* SEARCH FORM */
+
+.search-form{
+  position:fixed;
+  top: 30%;
+  margin-left: 280px;
+  /* transform: translate(-10%, -50%); */
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 4px;
+  margin-top: 4px;
+  z-index: 1000px;
+  background-color: white;
+  overflow-y: auto;
+  max-height: 300px;
+  width: 680px;
+}
+
+.search-form .search-input{
+  width: 610px;
+  margin-left: 43px;
+  margin-bottom: 4px;
+  margin-top: 10px;
+}
+
+.search-form ul{
+  list-style: none;
+  gap: 1px;
+  margin: 4px;
+}
+
+.search-form li{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2px;
+  background-color: whitesmoke;
+  border: solid 2px #606164;
+  border-radius: 5px;
+}
+
+.search-form .button{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 6px;
+  box-sizing: border-box;
+  line-height: 1.2; 
+  white-space: normal; 
+  word-wrap: break-word; 
+  overflow-wrap: break-word; 
+}
+
+.search-form .button .itemLabel{
+  flex: 30%;
+  text-align: left;
+  font-weight: bold;
+}
+
+.search-form .button .description{
+  flex: 70%;
+  text-align: right;
+  color: #555;
+}
+
 @media screen and (max-width: 1500px) {
+
+  .App{
+    height: 100vh;
+  }
 
   .ConstructorBuilder{
     margin-left: 30px;
@@ -278,11 +352,11 @@ body{
   }
 
   .toolbox .elements{
-    height: 140px;
+    height: 250px;
   }
 
   .toolbox .connectors{
-    height: 140px;
+    height: 180px;
   }
 
   .toolbox .adornments{

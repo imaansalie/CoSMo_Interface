@@ -46,7 +46,8 @@ const connectors = [
   {code: "POE", name: "PartOf_Object", label: "Part Of"},
   {code: "ICE", name: "InstanceConstructor_Connector", label: "Instance Constructor"},
   {code: "IM", name:"IsMandatory", label: "Is Mandatory"},
-  {code: "JO", name: "Join", label: "Join"}
+  {code: "JO", name: "Join", label: "Join"},
+  {code: "ARG", name: "Role", label: "Argument"}
 ]
 
 //CoSMo syntax dictionary
@@ -78,7 +79,7 @@ export const ConstructorBuilder = () => {
   const [currentType, setCurrentType] = useState(null);
   const [checkDeleted, setCheckDeleted] = useState(false);
 
-  const showSearchForm = currentType==='Property' || currentType === 'Object' || currentType === 'Role_name'|| currentType === 'ValueConstraint';
+  const showSearchForm = currentType==='Property' || currentType === 'Object' || currentType === 'Role_name'|| currentType === 'ValueConstraint' || currentType === 'Function';
 
   //setting edge type
   const handleEdgeChange = (connector) =>{
@@ -137,6 +138,22 @@ export const ConstructorBuilder = () => {
                 `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Property(${targetNode.data.itemID}(r1,r2)),<br/>
                 ${'&nbsp;&nbsp;&nbsp;&nbsp;'}r1:ObjectType(${sourceNode.data.itemID}),<br/>
                 ${'&nbsp;&nbsp;&nbsp;&nbsp;'}r2:ObjectType(${nextTargetNode.data.itemID})
+                `
+              )
+            }
+          }
+        }
+        if(key === 'Object_Role_Arguments' && index < edges.length -1){
+          const nextEdge = edges[index +1];
+          const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
+          const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
+
+          if(nextSourceNode && nextTargetNode){
+            const nextKey = `${nextSourceNode.data.label}_${nextEdge.type}_${nextTargetNode.data.label}`
+
+            if(nextKey === 'Arguments_Role_Function'){
+              edgeDetails.push(
+                `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Function(${nextTargetNode.data.itemID} (${sourceNode.data.itemID}))<br/>
                 `
               )
             }

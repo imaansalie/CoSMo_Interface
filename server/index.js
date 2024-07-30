@@ -40,7 +40,11 @@ app.post('/getItems', (req, res) =>{
     }
 
     else if (itemType == 'Property'){
-        query+=" properties"
+        query+=" properties";
+    }
+
+    else if(itemType == 'Function'){
+        query+=" functions";
     }
 
     db.query(

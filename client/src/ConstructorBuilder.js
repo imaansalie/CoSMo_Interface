@@ -1,4 +1,3 @@
-
 import React, {useCallback, useEffect, useState } from 'react';
 import {Box, Button} from "@chakra-ui/react";
 import ReactFlow, {ReactFlowProvider, addEdge,Controls,Background,useNodesState,useEdgesState} from 'reactflow';
@@ -47,7 +46,6 @@ const connectors = [
   {code: "ICE", name: "InstanceConstructor_Connector", label: "Instance Constructor"},
   {code: "IM", name:"IsMandatory", label: "Is Mandatory"},
   {code: "JO", name: "Join", label: "Join"},
-  {code: "ARG", name: "Role", label: "Argument"}
 ]
 
 //CoSMo syntax dictionary
@@ -69,8 +67,33 @@ export const ConstructorBuilder = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   //handles adding edges (connectors) to between nodes using the selected edge type
-  const onConnect = (params) => setEdges((eds) => addEdge({...params, type:selectedEdgeType}, eds));
+  const onConnect = (params) => {
+    const sourceNode = nodes.find((node) => node.id === params.source);
+    const targetNode = nodes.find((node) => node.id === params.target); 
 
+    if(sourceNode && targetNode){ //check if both source node and target node exist
+      setEdges((eds) => addEdge({...params, type:selectedEdgeType}, eds)); //add edge
+
+      //update conID of node -- ensures that all elements connected to some constructor can be tracked
+      if(targetNode.data.inputType !== 'TypeConstructor' && targetNode.data.inputType !== 'InstanceConstructor'){ 
+        setNodes((nds) =>
+          nds.map((node) =>{
+            if(node.id === params.target){
+              return{
+                ...node,
+                data:{
+                  ...node.data,
+                  conID: sourceNode.data.conID,
+                }
+              }
+            }
+            return node;
+          }))
+      }
+    }else{
+      console.error("Source or target node not found");
+    }
+  }
   //state hook for text generator string
   const [nodeLabels, setNodeLabels] = useState([]);
 

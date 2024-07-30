@@ -9,20 +9,10 @@ const Object = ({ id, data}) => {
   const imageUrl = `./icons/${data.picture}.png`;
 
   const displayText= () =>{
-    // if(data.inputType === 'InstanceConstructor' || data.inputType === 'TypeConstructor'){
-    //   return data.conID;
-    // }
-    // if(data.inputType === 'Property'){
-    //   return `${data.itemLabel} (${data.itemID}) <br/> <br/> <br/>`;
-    // }
-    // else{
-    //   return `${data.itemLabel} (${data.itemID})`;
-    // }
-
     let textContent='';
 
     if(data.itemID !== ''){
-      textContent = `${data.itemLabel} (${data.itemID})`;
+      textContent = `${data.conID} ${data.itemLabel} (${data.itemID})`;
     }
     
     let style ={};

@@ -341,6 +341,11 @@ body{
     margin-left: 30px;
     margin-right: 30px;
   }
+
+  .ConstructorBuilder .Textbox{
+    max-height: 150px;
+  }
+
   .ConstructorBuilder .Builder{
     width: 800px;
     height: 300px;

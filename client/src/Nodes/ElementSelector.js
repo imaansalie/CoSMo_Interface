@@ -36,7 +36,8 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
             inputType:`${adornment.name}`,
             picture: adornment.name,
             itemLabel: '',
-            itemID:''
+            itemID:'',
+            conID: conID
           },
           position: { x: Math.random() * 200, y: Math.random() * 200 },
         },

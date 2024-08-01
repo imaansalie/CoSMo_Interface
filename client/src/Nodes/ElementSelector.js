@@ -16,11 +16,12 @@ const adornments =[
   {code: "JO", name: "Join", type: "Object", label: "Join"}
 ]
 
-const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
+const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyDeleted, nextGroup}) =>{
 
     const {setNodes} =useReactFlow(); // hook to access and manipulate nodes
     const generateUniqueId = () => `node_${Math.random().toString(36).substr(2, 9)}`;
     const [conID, setConID] =useState(1);
+    const [roleID, setRoleID] = useState(2);
 
     //function to add text node (value constraint and role type -- must adapt to use search form as well)
     const addTextNode = (adornment) => {
@@ -58,6 +59,10 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
         setConID(conID+1);
       }
 
+      if(element.name === 'Property'){
+        setRoleID((prevRoleID) => prevRoleID +2 );
+      }
+
       setNodes( (prevNodes) => [
         ...prevNodes, 
         {
@@ -69,6 +74,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
               itemLabel: '',
               conID: `C${conID}`,
               itemID: '', 
+              roleID: element.name === 'Property' ? roleID: null,
             }, 
             type: `${element.name}`,
             position: {x:x, y:y},
@@ -98,6 +104,18 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
         setConID(conID-1);
       }
     }, [elementDeleted])
+
+    useEffect(() => {
+      if(propertyDeleted){
+        setRoleID(Math.max((prevRoleID)=> prevRoleID -2, 2));
+      }
+    }, [propertyDeleted])
+
+    useEffect(() => {
+      if(nextGroup){
+        setRoleID(2);
+      }
+    }, [nextGroup])
 
     return(
       <div>

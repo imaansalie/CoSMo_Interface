@@ -52,7 +52,9 @@ const InputNode = ({id, data, selected}) =>{
 
     return(
         <div>
-            <Handle type="source" position={Position.Top}/>
+            {/* <Handle type="source" position={Position.Top} id="IN-top"/> */}
+            <Handle type="target" position={Position.Left} id="IN-left"/>
+            <Handle type="source" position={Position.Right} id="IN-right"/>
             
             {/* {isEditing? (<div style={{ textAlign: 'center', marginBottom: '10px' }}>
                 <input 

@@ -13,6 +13,8 @@ import InputNode from './Nodes/InputNode';
 import AdornmentIconSelector from './Nodes/AdornmentIconSelector';
 import IsMandatory from './Edges/IsMandatory';
 import JoinEdge from './Edges/JoinEdge';
+import Role_name from './Edges/Role_name';
+import ValueConstraint from './Edges/ValueConstraint';
 import { SearchForm } from './Components/SearchForm';
 
 const nodeTypes = {
@@ -35,7 +37,9 @@ const edgeTypes = {
   'PartOf_Object': PartOfEdge,
   'InstanceConstructor_Connector':InstanceConstructorEdge,
   'IsMandatory': IsMandatory,
-  'Join': JoinEdge
+  'Join': JoinEdge,
+  'Role_name': Role_name,
+  'ValueConstraint': ValueConstraint
 }
 
 const connectors = [
@@ -46,23 +50,25 @@ const connectors = [
   {code: "ICE", name: "InstanceConstructor_Connector", label: "Instance Constructor"},
   {code: "IM", name:"IsMandatory", label: "Is Mandatory"},
   {code: "JO", name: "Join", label: "Join"},
+  {code: "RN", name: "Role_name", label: "Role Name Connector"},
+  {code: "VC", name: "ValueConstraint", label: "Value Constraint Connector"},
 ]
 
 //CoSMo syntax dictionary
 const definitions = {
-  'TypeConstructor_InstanceConstructor_Connector_Object': (sourceNode, targetNode) => `<br/>TypeConstructor:${sourceNode.data.conID}(<br/>`,
+  'TypeConstructor_InstanceConstructor_Connector_Object': (sourceNode, targetNode) => `TypeConstructor:${sourceNode.data.conID}(<br/>`,
 
   'InstanceConstructor_InstanceConstructor_Connector_Object':(sourceNode, targetNode) => `InstanceConstructor:${sourceNode.data.conID}(<br/>`,
 
-  'InstanceConstructor_Instance_TypeConstructor': (sourceNode, targetNode) => `<br/>InstanceOf(${sourceNode.data.conID}, ${targetNode.data.conID})<br/><br/>`,
+  'InstanceConstructor_Instance_TypeConstructor': (sourceNode, targetNode) => `InstanceOf(${sourceNode.data.conID}, ${targetNode.data.conID})<br/><br/>`,
 
-  'TypeConstructor_Sub-constructor_TypeConstructor': (sourceNode, targetNode) => `<br/>SubConstructorOf(${sourceNode.data.conID}, ${targetNode.data.conID})`,
+  'TypeConstructor_Sub-constructor_TypeConstructor': (sourceNode, targetNode) => `SubConstructorOf(${sourceNode.data.conID}, ${targetNode.data.conID})<br/><br/>`,
 
   'ValueConstraint_Instance_Object':(sourceNode, targetNode) => `${'&nbsp;&nbsp;&nbsp;&nbsp;'}ObjectType(${targetNode.data.itemID})={${sourceNode.data.itemID}}`,
 
-  'InstanceConstructor_PartOf_Object_InstanceConstructor': (sourceNode, targetNode) => `<br/>PartOf(${sourceNode.data.conID}, ${targetNode.data.conID})`,
+  'InstanceConstructor_PartOf_Object_InstanceConstructor': (sourceNode, targetNode) => `PartOf(${sourceNode.data.conID}, ${targetNode.data.conID})<br/><br/>`,
 
-  'TypeConstructor_PartOf_Object_TypeConstructor': (sourceNode, targetNode) => `<br/>PartOf(${sourceNode.data.conID}, ${targetNode.data.conID})`
+  'TypeConstructor_PartOf_Object_TypeConstructor': (sourceNode, targetNode) => `PartOf(${sourceNode.data.conID}, ${targetNode.data.conID})<br/><br/>`
 }
 
 const initialNodes = [];
@@ -84,6 +90,9 @@ export const ConstructorBuilder = () => {
   //track type of added nodes, and deleted nodes
   const [currentType, setCurrentType] = useState(null);
   const [checkDeleted, setCheckDeleted] = useState(false);
+
+  const [propertyDeleted, setPropertyDeleted] = useState(false);
+  const [nextGroup, setNextGroup] = useState(false);
 
   const showSearchForm = currentType==='Property' || currentType === 'Object' || currentType === 'Role_name'|| currentType === 'ValueConstraint' || currentType === 'Function';
 
@@ -197,6 +206,7 @@ export const ConstructorBuilder = () => {
 
     conIDGroups.forEach((group, conID) =>{
       currentRoleID=2;
+      setNextGroup(true);
 
       if(group.edges.length >0){
         
@@ -206,7 +216,7 @@ export const ConstructorBuilder = () => {
 
           if(sourceNode && targetNode){
             const key = `${sourceNode.data.inputType}_${edge.type}_${targetNode.data.inputType}`;
-            // console.log(key);
+            console.log(key);
             const edge_string = definitions[key];
 
             if(key == 'Object_Role_Property' || key == 'Object_IsMandatory_Property' && index< group.edges.length-1){
@@ -274,50 +284,44 @@ export const ConstructorBuilder = () => {
                 }
               }
             }
+            else if (key === 'Role_name_Role_name_Property'){
+              const oldSequence = `r${targetNode.data.roleID-1}:`;
+              const newSequence = `r${targetNode.data.roleID-1}[${sourceNode.data.itemID}]:`;
+
+              output=output.replaceAll(oldSequence, newSequence);
+            }
+            else if(key === 'Property_Role_name_Role_name'){
+              const oldSequence = `r${sourceNode.data.roleID}:`;
+              const newSequence = `r${sourceNode.data.roleID}[${targetNode.data.itemID}]:`;
+
+              console.log("in");
+              console.log(oldSequence);
+              console.log(newSequence);
+
+              output=output.replaceAll(oldSequence, newSequence);
+            }
             else if (edge_string){
                 output += `${edge_string(sourceNode, targetNode)}`;
                 printedEdges.add(edge.id);
             }
+            if (index === group.edges.length-1){
+              output+=')<br/><br/>';
+            }
           }
         })
-        output+=')<br/>';
       }
     })
     setNodeLabels([output])
   };
 
-  //helper to check if node has next edge
-
-  const hasNextEdge = (currentNode, printedEdges) =>{
-
-    // console.log(printedEdges);
-    const unprintedEdge = edges.find(edge =>
-      (edge.source === currentNode.id || edge.target === currentNode.id) && !printedEdges.has(edge.id)
-    );
-
-    if(unprintedEdge){
-      // console.log(currentNode.data.conID+": "+currentNode.data.itemID);
-      // console.log("unprinted: "+unprintedEdge.id);
-      return true;
-    }
-    return false;
-  }
-
-  const hasAnotherEdge = (currentNodeID, currentEdgeIndex, edgeList) => {
-    for(let i = currentEdgeIndex+1; i<edgeList.length; i++){
-      const edge = edgeList[i];
-      // console.log(currentNodeID);
-      if(edge.source === currentNodeID || edge.target === currentNodeID){
-        return true;
-      }
-    }
-    return false;
-  }
-
   //check if constructor has been deleted
   const handleNodeDelete = (inputType, nodeId) =>{
     if (inputType === 'InstanceConstructor' || inputType === 'TypeConstructor') {
       setCheckDeleted(true);
+    }
+
+    if(inputType === 'Property'){
+      setPropertyDeleted(true);
     }
 
     setEdges((prevEdges) => prevEdges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId))
@@ -329,6 +333,18 @@ export const ConstructorBuilder = () => {
       setTimeout(() =>setCheckDeleted(false), 1000);
     }
   }, [checkDeleted]);
+
+  useEffect(() => {
+    if(propertyDeleted){
+      setTimeout(() => setPropertyDeleted(false), 1000);
+    }
+  }, [propertyDeleted]);
+
+  useEffect(() => {
+    if(nextGroup){
+      setTimeout(() => setNextGroup(false), 1000);
+    }
+  }, [nextGroup]);
 
   //pass handleDelete prop to Object
   const mappedNodes = nodes.map(node =>({
@@ -376,6 +392,8 @@ export const ConstructorBuilder = () => {
                 setCurrentType={setCurrentType} 
                 setNewNodeId={setNewNodeId}
                 elementDeleted={checkDeleted}
+                propertyDeleted={propertyDeleted}
+                nextGroup={nextGroup}
                 />  
             </div>
            

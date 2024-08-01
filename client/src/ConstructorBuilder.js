@@ -58,7 +58,11 @@ const definitions = {
 
   'TypeConstructor_Sub-constructor_TypeConstructor': (sourceNode, targetNode) => `<br/>SubConstructorOf(${sourceNode.data.conID}, ${targetNode.data.conID})`,
 
-  'ValueConstraint_Instance_Object':(sourceNode, targetNode) => `${'&nbsp;&nbsp;&nbsp;&nbsp;'}ObjectType(${targetNode.data.itemID})={${sourceNode.data.itemID}})`
+  'ValueConstraint_Instance_Object':(sourceNode, targetNode) => `${'&nbsp;&nbsp;&nbsp;&nbsp;'}ObjectType(${targetNode.data.itemID})={${sourceNode.data.itemID}}`,
+
+  'InstanceConstructor_PartOf_Object_InstanceConstructor': (sourceNode, targetNode) => `<br/>PartOf(${sourceNode.data.conID}, ${targetNode.data.conID})`,
+
+  'TypeConstructor_PartOf_Object_TypeConstructor': (sourceNode, targetNode) => `<br/>PartOf(${sourceNode.data.conID}, ${targetNode.data.conID})`
 }
 
 const initialNodes = [];
@@ -83,8 +87,6 @@ export const ConstructorBuilder = () => {
 
   const showSearchForm = currentType==='Property' || currentType === 'Object' || currentType === 'Role_name'|| currentType === 'ValueConstraint' || currentType === 'Function';
 
-  const [conMap, setConMap] = useState(new Map());
-
   //handles adding edges (connectors) to between nodes using the selected edge type
   const onConnect = (params) => {
     const sourceNode = nodes.find((node) => node.id === params.source);
@@ -92,15 +94,19 @@ export const ConstructorBuilder = () => {
 
     if(sourceNode && targetNode){ //check if both source node and target node exist
 
-      const updatedConID = sourceNode.data.conID;
+      const updatedConID_src = sourceNode.data.conID;
+      const updatedConID_tgt = targetNode.data.conID;
+
       setEdges((eds) => addEdge({...params, type:selectedEdgeType}, eds)); //add edge
 
       //update conID of node -- ensures that all elements connected to some constructor can be tracked
-      if(targetNode.data.inputType !== 'TypeConstructor' && targetNode.data.inputType !== 'InstanceConstructor'){ 
-        updateNodeConID(params.target, updatedConID);
+      if(targetNode.data.inputType !== 'TypeConstructor' && targetNode.data.inputType !== 'InstanceConstructor'&& sourceNode.data.inputType !== 'ValueConstraint' && sourceNode.data.inputType !== 'Role_name' && sourceNode.data.inputType !== 'Join'){ 
+        updateNodeConID(params.target, updatedConID_src);
       }
 
-      updateConMap(updatedConID, sourceNode, targetNode);
+      if(sourceNode.data.inputType === 'ValueConstraint' || sourceNode.data.inputType === 'Role_name' || sourceNode.data.inputType === 'Join'){
+        updateNodeConID(params.source, updatedConID_tgt);
+      }
     
     }else{
       console.error("Source or target node not found");
@@ -123,39 +129,6 @@ export const ConstructorBuilder = () => {
         return node;
       })
     );
-  }
-
-  //track all nodes according to their inherited conID
-  const updateConMap = (conID, sourceNode, targetNode) =>{
-    setConMap((prevMap) =>{
-      const newMap = new Map (prevMap);
-
-      if(newMap.has(conID)){
-        const nodesArray = new Set(newMap.get(conID));
-        nodesArray.add(sourceNode);
-        nodesArray.add(targetNode);
-        newMap.set(conID, Array.from(nodesArray));
-      }
-      else{
-        newMap.set(conID, [sourceNode, targetNode]);
-      }
-      return newMap;
-    })
-  }
-
-  const printAllItems = () =>{
-    conMap.forEach((nodes, conID) =>{
-     console.log(`ConID: ${conID}`);
-
-     if(Array.isArray(nodes)){
-       nodes.forEach(node =>{
-      console.log(`Node ID ${node.id}, Input Type: ${node.data.inputType}`);
-      })
-     } else {
-      console.error(`Expect an array but got:`, nodes);
-     }
-    
-    })
   }
   
   //setting edge type
@@ -185,6 +158,11 @@ export const ConstructorBuilder = () => {
 
   const printNodesAndConnectors = () => {
     const conIDGroups = new Map();
+    let currentRoleID = 2;
+    const printedEdges = new Set();
+
+    // console.log("Initial nodes: ", nodes);
+    // console.log("Initial edges: ", edges);
 
     nodes.forEach(node => {
       const conID = node.data.conID;
@@ -213,16 +191,12 @@ export const ConstructorBuilder = () => {
       }
     });
 
-    // conIDGroups.forEach((group, conID) => {
-    //   console.log(`ConID: ${conID}`);
-    //   console.log('Nodes:', group.nodes);
-    //   console.log('Edges:', group.edges);
-    // })
+    // console.log("ConID Groups: ", conIDGroups);
 
     let output = '';
 
     conIDGroups.forEach((group, conID) =>{
-      // let previousKey = null;
+      currentRoleID=2;
 
       if(group.edges.length >0){
         
@@ -232,26 +206,42 @@ export const ConstructorBuilder = () => {
 
           if(sourceNode && targetNode){
             const key = `${sourceNode.data.inputType}_${edge.type}_${targetNode.data.inputType}`;
-            console.log(`${conID}: `+key);
+            // console.log(key);
             const edge_string = definitions[key];
 
-            if(key == 'Object_Role_Property' && index< group.edges.length-1){
+            if(key == 'Object_Role_Property' || key == 'Object_IsMandatory_Property' && index< group.edges.length-1){
               const nextEdge = group.edges[index+1];
               const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
               const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
 
+              printedEdges.add(edge.id);
+
               if(nextSourceNode && nextTargetNode){
                 const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`
 
-                // console.log(nextKey);
+                // console.log(nextSourceNode.data.itemID+': '+nextSourceNode.data.roleID);
 
                 if(nextKey === 'Property_Role_Object'){
-                  output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Property(${targetNode.data.itemID}(r1,r2)),<br/>
-                  ${'&nbsp;&nbsp;&nbsp;&nbsp;'}r1:ObjectType(${sourceNode.data.itemID}),<br/>
-                  ${'&nbsp;&nbsp;&nbsp;&nbsp;'}r2:ObjectType(${nextTargetNode.data.itemID})`;
 
-                  // previousKey = key;
+                  output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Property(${targetNode.data.itemID}(r${currentRoleID-1},r${currentRoleID})),<br/>
+                  ${'&nbsp;&nbsp;&nbsp;&nbsp;'}r${currentRoleID-1}:ObjectType(${sourceNode.data.itemID}),<br/>
+                  ${'&nbsp;&nbsp;&nbsp;&nbsp;'}r${currentRoleID}:ObjectType(${nextTargetNode.data.itemID})`;
 
+                  if( group.edges.length >= index+2){
+                    output+=',<br/>'
+                  }
+
+                  if(key === 'Object_IsMandatory_Property'){
+                    output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}isMandatory(r${currentRoleID-1})`;
+                  }
+
+                  currentRoleID +=2;
+                }
+
+                printedEdges.add(nextEdge.id);
+                // console.log("added: "+nextEdge.id);
+                if( group.edges.length >= index+2){
+                  output+=',<br/>'
                 }
               }
             } else if (key === 'Object_Role_Arguments' && index<group.edges.length-1){
@@ -259,19 +249,34 @@ export const ConstructorBuilder = () => {
                 const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
                 const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
 
+                printedEdges.add(nextEdge.id);
+
                 if(nextSourceNode && nextTargetNode){
                   const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`
   
                   if(nextKey === 'Arguments_Role_Function'){
                     output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Function(${nextTargetNode.data.itemID} (${sourceNode.data.itemID}))`;
-
-                    // previousKey=key;
                   }
                 }
-            } else if (edge_string){
-                output += `${edge_string(sourceNode, targetNode)}`;
+            }
+            else if (key === 'Join_Join_Property' && index<group.edges.length-1){
+              const nextEdge = group.edges[index+1];
+              const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
+              const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
 
-                // previousKey=null;
+              printedEdges.add(nextEdge.id);
+
+              if(nextSourceNode && nextTargetNode){
+                const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`
+
+                if(nextKey === 'Property_Join_Join'){
+                  output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Join(${targetNode.data.itemID}, ${nextSourceNode.data.itemID})`
+                }
+              }
+            }
+            else if (edge_string){
+                output += `${edge_string(sourceNode, targetNode)}`;
+                printedEdges.add(edge.id);
             }
           }
         })
@@ -281,10 +286,37 @@ export const ConstructorBuilder = () => {
     setNodeLabels([output])
   };
 
+  //helper to check if node has next edge
+
+  const hasNextEdge = (currentNode, printedEdges) =>{
+
+    // console.log(printedEdges);
+    const unprintedEdge = edges.find(edge =>
+      (edge.source === currentNode.id || edge.target === currentNode.id) && !printedEdges.has(edge.id)
+    );
+
+    if(unprintedEdge){
+      // console.log(currentNode.data.conID+": "+currentNode.data.itemID);
+      // console.log("unprinted: "+unprintedEdge.id);
+      return true;
+    }
+    return false;
+  }
+
+  const hasAnotherEdge = (currentNodeID, currentEdgeIndex, edgeList) => {
+    for(let i = currentEdgeIndex+1; i<edgeList.length; i++){
+      const edge = edgeList[i];
+      // console.log(currentNodeID);
+      if(edge.source === currentNodeID || edge.target === currentNodeID){
+        return true;
+      }
+    }
+    return false;
+  }
+
   //check if constructor has been deleted
   const handleNodeDelete = (inputType, nodeId) =>{
     if (inputType === 'InstanceConstructor' || inputType === 'TypeConstructor') {
-      // console.log("deleted");
       setCheckDeleted(true);
     }
 

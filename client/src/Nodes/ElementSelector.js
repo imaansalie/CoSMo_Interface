@@ -74,9 +74,9 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted}) =>{
             position: {x:x, y:y},
         },
       ]);   
+
       setCurrentType(element.name);
       setNewNodeId(newNodeId);
-      console.log("element selector : "+ element.type);
     }
 
     //switch between node type handlers

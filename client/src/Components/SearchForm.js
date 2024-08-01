@@ -12,7 +12,7 @@ export const SearchForm = ({onAssign, itemType}) =>{
         //fetch items based on item type
         axios.post('http://localhost:3001/getItems', {itemType}).then((response) =>{
             setResults(response.data);
-            console.log(response.data);
+            // console.log(response.data);
         }).catch(error=>{
             console.error("Error getting items."+error);
         })

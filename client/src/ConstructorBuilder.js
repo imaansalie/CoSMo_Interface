@@ -91,10 +91,64 @@ export const ConstructorBuilder = () => {
   const [currentType, setCurrentType] = useState(null);
   const [checkDeleted, setCheckDeleted] = useState(false);
 
+  //track property and node groups by conID to ensure role counters increment properly
   const [propertyDeleted, setPropertyDeleted] = useState(false);
   const [nextGroup, setNextGroup] = useState(false);
 
   const showSearchForm = currentType==='Property' || currentType === 'Object' || currentType === 'Role_name'|| currentType === 'ValueConstraint' || currentType === 'Function';
+
+  //constructor label input form states
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState('');
+  const [currentNodeID, setCurrentNodeID]= useState(null);
+
+  //input form functions
+  const handleInputChange = (e) =>{
+    setFormData(e.target.value);
+  }
+
+  const handleFormSubmit = (e) =>{
+    e.preventDefault();
+
+    if(currentNodeID){
+      setNodes((prevNodes) => 
+        prevNodes.map((node) =>
+          node.id === currentNodeID ? {
+            ...node,
+            data: {
+              ...node.data,
+              itemLabel: formData
+            }
+          } : node
+        )
+      )
+    }
+
+    setFormData('');
+    setShowForm(false);
+    setCurrentNodeID(null);
+  }
+
+  //load constructor diagram from test folder
+  // useEffect(() => {
+  //   const loadConstructorData = async () => {
+  //     try{
+  //       const response = await fetch('./TestFiles/Capybara.txt');
+
+  //       const text= await response.text();
+  //       // console.log('raw response: ', text);
+
+  //       const conData = JSON.parse(text);
+
+  //       setNodes(conData.nodes);
+  //       setEdges(conData.edges);
+  //     } catch (error){
+  //       console.error('Error loading data:', error);
+  //     }
+  //   };
+
+  //   loadConstructorData();
+  // }, []);
 
   //handles adding edges (connectors) to between nodes using the selected edge type
   const onConnect = (params) => {
@@ -170,6 +224,9 @@ export const ConstructorBuilder = () => {
     let currentRoleID = 2;
     const printedEdges = new Set();
 
+    console.log(nodes);
+    console.log(edges);
+
     // console.log("Initial nodes: ", nodes);
     // console.log("Initial edges: ", edges);
 
@@ -200,7 +257,7 @@ export const ConstructorBuilder = () => {
       }
     });
 
-    // console.log("ConID Groups: ", conIDGroups);
+    console.log("ConID Groups: ", conIDGroups);
 
     let output = '';
 
@@ -216,7 +273,7 @@ export const ConstructorBuilder = () => {
 
           if(sourceNode && targetNode){
             const key = `${sourceNode.data.inputType}_${edge.type}_${targetNode.data.inputType}`;
-            console.log(key);
+            // console.log(key);
             const edge_string = definitions[key];
 
             if(key == 'Object_Role_Property' || key == 'Object_IsMandatory_Property' && index< group.edges.length-1){
@@ -237,12 +294,19 @@ export const ConstructorBuilder = () => {
                   ${'&nbsp;&nbsp;&nbsp;&nbsp;'}r${currentRoleID-1}:ObjectType(${sourceNode.data.itemID}),<br/>
                   ${'&nbsp;&nbsp;&nbsp;&nbsp;'}r${currentRoleID}:ObjectType(${nextTargetNode.data.itemID})`;
 
-                  if( group.edges.length >= index+2){
-                    output+=',<br/>'
+                  if( group.edges.length > index+2){
+                    if(group.edges[index+2].type !== 'Role_name'){
+                    output+=',<br/>';
                   }
+                  } 
 
                   if(key === 'Object_IsMandatory_Property'){
                     output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}isMandatory(r${currentRoleID-1})`;
+                    if( group.edges.length > index+2){
+                      if(group.edges[index+2].type !== 'Role_name'){
+                      output+=',<br/>';
+                      }
+                    } 
                   }
 
                   currentRoleID +=2;
@@ -250,9 +314,6 @@ export const ConstructorBuilder = () => {
 
                 printedEdges.add(nextEdge.id);
                 // console.log("added: "+nextEdge.id);
-                if( group.edges.length >= index+2){
-                  output+=',<br/>'
-                }
               }
             } else if (key === 'Object_Role_Arguments' && index<group.edges.length-1){
                 const nextEdge = group.edges[index+1];
@@ -266,6 +327,11 @@ export const ConstructorBuilder = () => {
   
                   if(nextKey === 'Arguments_Role_Function'){
                     output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Function(${nextTargetNode.data.itemID} (${sourceNode.data.itemID}))`;
+                  }
+
+                  if( group.edges.length > index+2){
+                    if(group.edges[index+2].type !== 'Role_name')
+                    output+=',<br/>'
                   }
                 }
             }
@@ -282,6 +348,16 @@ export const ConstructorBuilder = () => {
                 if(nextKey === 'Property_Join_Join'){
                   output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Join(${targetNode.data.itemID}, ${nextSourceNode.data.itemID})`
                 }
+
+                if( group.edges.length > index+2){
+                  if(group.edges[index+2].type !== 'Role_name'){
+                  // console.log("length: "+group.edges.length);
+                  // console.log("index: "+ index);
+
+                  // console.log(group.edges[index+1].type);
+                  output+=',<br/>'
+                }
+                }
               }
             }
             else if (key === 'Role_name_Role_name_Property'){
@@ -294,17 +370,20 @@ export const ConstructorBuilder = () => {
               const oldSequence = `r${sourceNode.data.roleID}:`;
               const newSequence = `r${sourceNode.data.roleID}[${targetNode.data.itemID}]:`;
 
-              console.log("in");
-              console.log(oldSequence);
-              console.log(newSequence);
+              // console.log("in");
+              // console.log(oldSequence);
+              // console.log(newSequence);
 
               output=output.replaceAll(oldSequence, newSequence);
             }
             else if (edge_string){
                 output += `${edge_string(sourceNode, targetNode)}`;
                 printedEdges.add(edge.id);
+                // if( group.edges.length >= index+2){
+                //   output+=',<br/>'
+                // }
             }
-            if (index === group.edges.length-1){
+            if (index === group.edges.length-1 && key!=='InstanceConstructor_Instance_TypeConstructor' && key!=='TypeConstructor_Sub-constructor_TypeConstructor' && key!=='InstanceConstructor_PartOf_Object_InstanceConstructor' && key!=='TypeConstructor_PartOf_Object_TypeConstructor'){
               output+=')<br/><br/>';
             }
           }
@@ -326,6 +405,20 @@ export const ConstructorBuilder = () => {
 
     setEdges((prevEdges) => prevEdges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId))
   }
+
+  const updateNode = useCallback((nodeId, newData) => {
+    setNodes((nodes) => 
+      nodes.map((node) => 
+        node.id === nodeId ? {
+          ...node,
+          data: {
+            ...node.data,
+            ...newData
+          }
+        }: node
+      )
+    )
+  })
 
   //after informing element selector, reset checkDeleted boolean to true after 1 second
   useEffect(() =>{
@@ -394,6 +487,11 @@ export const ConstructorBuilder = () => {
                 elementDeleted={checkDeleted}
                 propertyDeleted={propertyDeleted}
                 nextGroup={nextGroup}
+                showForm={showForm}
+                setShowForm={setShowForm}
+                handleInputChange={handleInputChange}
+                handleFormSubmit={handleFormSubmit}
+                setCurrentNodeID={setCurrentNodeID}
                 />  
             </div>
            
@@ -418,6 +516,20 @@ export const ConstructorBuilder = () => {
           {/* currentType prop passed to searchForm, determines type of items fetched */}
           {newNodeId && showSearchForm &&(
           <SearchForm onAssign={handleAssign} itemType={currentType} />
+          )}
+
+          {showForm && (
+          <Box className='constructor-input-box'>
+            <div className='contents'> 
+              <p>Provide a label for the constructor:</p>
+              <form onSubmit={handleFormSubmit}>
+              <input className="input" type="text" value={formData} onChange={handleInputChange} placeholder="Enter label" required />
+              <button type="submit">Submit</button>
+              </form>
+            </div>
+            
+          </Box>
+          
           )}
       </div>
     </ReactFlowProvider>

@@ -1,0 +1,228 @@
+{
+    "nodes": [
+    {
+        "id": "node_tbqw5uaky",
+        "data": {
+            "label": "Instance Constructor",
+            "inputType": "InstanceConstructor",
+            "picture": "InstanceConstructor",
+            "itemLabel": "",
+            "conID": "C1",
+            "itemID": "",
+            "roleID": null
+        },
+        "type": "InstanceConstructor",
+        "position": {
+            "x": 90.05461541665174,
+            "y": 55.45142277898607
+        },
+        "width": 108,
+        "height": 98,
+        "positionAbsolute": {
+            "x": 90.05461541665174,
+            "y": 55.45142277898607
+        }
+    },
+    {
+        "id": "node_d2xayhbum",
+        "data": {
+            "label": "Object",
+            "inputType": "Object",
+            "picture": "Object",
+            "itemLabel": "human",
+            "conID": "C1",
+            "itemID": "Q5",
+            "roleID": null
+        },
+        "type": "Object",
+        "position": {
+            "x": 253.8468467152697,
+            "y": 68.56156394935542
+        },
+        "width": 163,
+        "height": 71,
+        "selected": false,
+        "positionAbsolute": {
+            "x": 253.8468467152697,
+            "y": 68.56156394935542
+        },
+        "dragging": false
+    },
+    {
+        "id": "node_8fstk20at",
+        "data": {
+            "label": "Property",
+            "inputType": "Property",
+            "picture": "Property",
+            "itemLabel": "occupation",
+            "conID": "C1",
+            "itemID": "P106",
+            "roleID": 2
+        },
+        "type": "Property",
+        "position": {
+            "x": 472.9110957801498,
+            "y": 80.53675663862506
+        },
+        "width": 133,
+        "height": 48,
+        "selected": false,
+        "positionAbsolute": {
+            "x": 472.9110957801498,
+            "y": 80.53675663862506
+        },
+        "dragging": false
+    },
+    {
+        "id": "node_0oaxhnt6r",
+        "data": {
+            "label": "Object",
+            "inputType": "Object",
+            "picture": "Object",
+            "itemLabel": "science fiction writer",
+            "conID": "C1",
+            "itemID": "Q18844224",
+            "roleID": null
+        },
+        "type": "Object",
+        "position": {
+            "x": 691.7721896304402,
+            "y": 69.46781954416667
+        },
+        "width": 163,
+        "height": 71,
+        "selected": false,
+        "positionAbsolute": {
+            "x": 691.7721896304402,
+            "y": 69.46781954416667
+        },
+        "dragging": false
+    },
+    {
+        "id": "node_x5ivlhw2m",
+        "data": {
+            "label": "Property",
+            "inputType": "Property",
+            "picture": "Property",
+            "itemLabel": "genre",
+            "conID": "C1",
+            "itemID": "P136",
+            "roleID": 4
+        },
+        "type": "Property",
+        "position": {
+            "x": 926.0523860242777,
+            "y": 82.58953354726316
+        },
+        "width": 133,
+        "height": 48,
+        "selected": false,
+        "positionAbsolute": {
+            "x": 926.0523860242777,
+            "y": 82.58953354726316
+        },
+        "dragging": false
+    },
+    {
+        "id": "node_vvbhwakdj",
+        "data": {
+            "label": "Object",
+            "inputType": "Object",
+            "picture": "Object",
+            "itemLabel": "science fiction",
+            "conID": "C1",
+            "itemID": "Q24925",
+            "roleID": null
+        },
+        "type": "Object",
+        "position": {
+            "x": 1127.2478971194992,
+            "y": 71.35420045378433
+        },
+        "width": 163,
+        "height": 71,
+        "selected": false,
+        "positionAbsolute": {
+            "x": 1127.2478971194992,
+            "y": 71.35420045378433
+        },
+        "dragging": false
+    },
+    {
+        "id": "node_o59a7vhd2",
+        "type": "ValueConstraint",
+        "data": {
+            "label": "Value Constraint",
+            "inputType": "ValueConstraint",
+            "picture": "ValueConstraint",
+            "itemLabel": "Douglas Adams",
+            "itemID": "Q42 ",
+            "conID": "C1"
+        },
+        "position": {
+            "x": 234.0775198440864,
+            "y": 186.49664280391474
+        },
+        "width": 47,
+        "height": 36,
+        "selected": false,
+        "positionAbsolute": {
+            "x": 234.0775198440864,
+            "y": 186.49664280391474
+        },
+        "dragging": false
+    }
+],
+
+"edges": [
+    {
+        "source": "node_tbqw5uaky",
+        "sourceHandle": "source-right",
+        "target": "node_d2xayhbum",
+        "targetHandle": "target-left",
+        "type": "InstanceConstructor_Connector",
+        "id": "reactflow__edge-node_tbqw5uakysource-right-node_d2xayhbumtarget-left"
+    },
+    {
+        "source": "node_d2xayhbum",
+        "sourceHandle": "source-right",
+        "target": "node_8fstk20at",
+        "targetHandle": "target-left",
+        "type": "Role",
+        "id": "reactflow__edge-node_d2xayhbumsource-right-node_8fstk20attarget-left"
+    },
+    {
+        "source": "node_8fstk20at",
+        "sourceHandle": "source-right",
+        "target": "node_0oaxhnt6r",
+        "targetHandle": "target-left",
+        "type": "Role",
+        "id": "reactflow__edge-node_8fstk20atsource-right-node_0oaxhnt6rtarget-left"
+    },
+    {
+        "source": "node_0oaxhnt6r",
+        "sourceHandle": "source-right",
+        "target": "node_x5ivlhw2m",
+        "targetHandle": "target-left",
+        "type": "Role",
+        "id": "reactflow__edge-node_0oaxhnt6rsource-right-node_x5ivlhw2mtarget-left"
+    },
+    {
+        "source": "node_x5ivlhw2m",
+        "sourceHandle": "source-right",
+        "target": "node_vvbhwakdj",
+        "targetHandle": "target-left",
+        "type": "Role",
+        "id": "reactflow__edge-node_x5ivlhw2msource-right-node_vvbhwakdjtarget-left"
+    },
+    {
+        "source": "node_o59a7vhd2",
+        "sourceHandle": "IN-right",
+        "target": "node_d2xayhbum",
+        "targetHandle": "target-bottom",
+        "type": "Instance",
+        "id": "reactflow__edge-node_o59a7vhd2IN-right-node_d2xayhbumtarget-bottom"
+    }
+]}
+
+

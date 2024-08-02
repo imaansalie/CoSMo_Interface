@@ -16,12 +16,14 @@ const adornments =[
   {code: "JO", name: "Join", type: "Object", label: "Join"}
 ]
 
-const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyDeleted, nextGroup}) =>{
+const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyDeleted, nextGroup, showForm, setShowForm, handleInputChange, handleFormSubmit, setCurrentNodeID}) =>{
 
     const {setNodes} =useReactFlow(); // hook to access and manipulate nodes
     const generateUniqueId = () => `node_${Math.random().toString(36).substr(2, 9)}`;
     const [conID, setConID] =useState(1);
     const [roleID, setRoleID] = useState(2);
+
+    
 
     //function to add text node (value constraint and role type -- must adapt to use search form as well)
     const addTextNode = (adornment) => {
@@ -56,7 +58,10 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
       const newNodeId= generateUniqueId();
 
       if (element.name === 'InstanceConstructor'|| element.name ==='TypeConstructor'){
+        console.log("in");
         setConID(conID+1);
+        setShowForm(true);
+        setCurrentNodeID(newNodeId);
       }
 
       if(element.name === 'Property'){

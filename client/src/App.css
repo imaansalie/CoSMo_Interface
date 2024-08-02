@@ -331,6 +331,37 @@ body{
   color: #555;
 }
 
+/* Constructor input label */
+
+.constructor-input-box{
+  background-color: white;
+  padding: 4px;
+  border: 1px solid grey;
+  border-radius: 5px;
+  box-shadow: gray;
+  z-index: 1000px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40%;
+  height: 20%;
+  text-align: center;
+  margin: auto;
+}
+
+.constructor-input-box .contents{
+  margin-top: 40px;
+}
+
+.constructor-input-box .input{
+  width: 70%;
+}
+
+.constructor-input-box p{
+  font-family: sans-serif;
+}
+
 @media screen and (max-width: 1500px) {
 
   .App{

@@ -20,12 +20,12 @@ const Object = ({ id, data}) => {
     switch (data.inputType){
       case 'InstanceConstructor':
         style={ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', margin: 0 };
-        textContent= `${data.conID}`;
+        textContent= `${data.conID}: ${data.itemLabel}`;
         break;
 
         case 'TypeConstructor':
           style={ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', margin: 0 };
-          textContent= `${data.conID}`;
+          textContent= `${data.conID}: ${data.itemLabel}`;
           break;
 
       case 'Property':

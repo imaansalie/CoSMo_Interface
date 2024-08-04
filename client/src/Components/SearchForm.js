@@ -32,7 +32,7 @@ export const SearchForm = ({onAssign, itemType}) =>{
             <Input placeholder='Search...' value={searchTerm} onChange={handleSearch} mb={2} className='search-input'/>
             <ul>
                 {filteredItems.map(item=>(
-                    <li key={item.id}>
+                    <li key={item.itemID}>
                         <Button className='button' onClick={()=> onAssign(item)}>
                             <div className='itemLabel'>
                                 {item.label}

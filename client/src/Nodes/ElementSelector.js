@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useReactFlow } from 'reactflow';
+import { Box, Button } from '@chakra-ui/react';
 
 const elements =[
     {code:"Ob", name:"Object", type: "Object", label: "Object"},
@@ -13,8 +14,15 @@ const elements =[
 const adornments =[
   {code:"RN", name:"Role_name", type: "InputNode", label: "Role Name"},
   {code:"VC", name:"ValueConstraint", type: "InputNode", label: "Value Constraint"},
-  {code: "JO", name: "Join", type: "Object", label: "Join"}
-]
+  {code: "JO", name: "Join", type: "Object", label: "Join"},
+];
+
+const args = [
+  {code: "A1", picture:"Arguments", type: "Object", label:"One Argument", name:'Arguments'},
+  {code: "A2", picture:"Arguments_2", type: "Object", label:"Two Arguments", name: 'Arguments'},
+  {code: "A3", picture:"Arguments_3", type: "Object", label:"Three Arguments", name:'Arguments'},
+  {code: "A4", picture:"Arguments_4", type: "Object", label:"Four Arguments", name: 'Arguments'},
+];
 
 const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyDeleted, nextGroup, showForm, setShowForm, handleInputChange, handleFormSubmit, setCurrentNodeID}) =>{
 
@@ -22,8 +30,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
     const generateUniqueId = () => `node_${Math.random().toString(36).substr(2, 9)}`;
     const [conID, setConID] =useState(1);
     const [roleID, setRoleID] = useState(2);
-
-    
+    const [showArgs, setShowArgs] = useState(false);
 
     //function to add text node (value constraint and role type -- must adapt to use search form as well)
     const addTextNode = (adornment) => {
@@ -68,6 +75,11 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
         setRoleID((prevRoleID) => prevRoleID +2 );
       }
 
+      if(element.name === 'Arguments'){
+        setShowArgs(true);
+        return;
+      }
+
       setNodes( (prevNodes) => [
         ...prevNodes, 
         {
@@ -103,6 +115,32 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
         }  
     };
 
+    const handleArgumentsClick = (arg) =>{
+      setShowArgs(!showArgs);
+      
+      const x= Math.random() * 100;
+      const y= Math.random() * 100;
+      const newNodeId= generateUniqueId();
+
+      setNodes( (prevNodes) => [
+        ...prevNodes, 
+        {
+            id: newNodeId, 
+            data: {
+              label:arg.label,
+              inputType: arg.name,
+              picture:arg.picture,
+              itemLabel: '',
+              conID: `C${conID}`,
+              itemID: '', 
+              roleID: arg.name === 'Property' ? roleID: null,
+            }, 
+            type: `${arg.name}`,
+            position: {x:x, y:y},
+        },
+      ]);   
+    }
+
     //decrement constructor counter on node delete
     useEffect(() => {
       if(elementDeleted){
@@ -124,28 +162,46 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
 
     return(
       <div>
-        <ul>
-          {elements.map((element,index)=>(
+        <div className='elements'>
+          <ul>
+            {elements.map((element,index)=>(
+              <li key={index}>
+                <button onClick={() => onElementClick(element)}>
+                  <img src={"/icons/"+element.name+".png"} className='selector-img' alt='icon'/>
+                    <span className='name'>{element.label}</span>
+                </button>  
+              </li>
+            ))}
+          </ul>
+
+          <ul>
+          {adornments.map((adornment,index)=>(
             <li key={index}>
-              <button onClick={() => onElementClick(element)}>
-                <img src={"/icons/"+element.name+".png"} className='selector-img' alt='icon'/>
-                  <span className='name'>{element.label}</span>
+              <button onClick={() => onElementClick(adornment)}>
+                <img src={"/icons/"+adornment.name+".png"} className='selector-img' alt='img'/>
+                  <span className='name'>{adornment.label}</span>
               </button>  
             </li>
           ))}
-        </ul>
-
-        <ul>
-        {adornments.map((adornment,index)=>(
-          <li key={index}>
-            <button onClick={() => onElementClick(adornment)}>
-              <img src={"/icons/"+adornment.name+".png"} className='selector-img' alt='img'/>
-                <span className='name'>{adornment.label}</span>
-            </button>  
-          </li>
-        ))}
-        </ul>
-      </div>
+          </ul>
+        </div>
+        
+        {showArgs && (
+          <Box className='args'>
+            <p>Choose the number of arguments:</p>
+            <ul>
+            {args.map((arg, index) => (
+              <li key = {index} className='args-list-item'>
+                <button className='arg-button' onClick={() => handleArgumentsClick(arg)}>
+                  <img src={"/icons/"+arg.picture+".png"} className='arguments-img' alt='img'/>
+                  <span className='arg-name'>{arg.label}</span>
+                </button>
+              </li>
+            ))}
+            </ul>
+          </Box>
+        )}
+      </div>     
     );
 };
 

@@ -1,4 +1,4 @@
-import { BreadcrumbLink, IconButton } from '@chakra-ui/react';
+import { BreadcrumbLink, IconButton, position } from '@chakra-ui/react';
 import {FiX} from 'react-icons/fi';
 import React from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
@@ -42,6 +42,33 @@ const Object = ({ id, data}) => {
 
   const {textContent, style} = displayText();
 
+  const getHandleStyle = (position) =>{
+    let style={};
+
+    switch(data.picture){
+      case 'Arguments_3':
+        if(position === 'top'){
+          style={left:'35%'};
+        }
+        if(position === 'bottom'){
+          style={left:'55%'};
+        }
+        break;
+      case 'Arguments_4':
+        if(position === 'top'){
+          style={left:'30%'};
+        }
+        if(position === 'bottom'){
+          style={left:'45%'};
+        }
+        if(position === 'top2'){
+          style={left:'65%'};
+        }
+        break;
+    }
+    return style;
+  }
+
   const onDelete = () =>{
     setNodes((prevNodes) => prevNodes.filter((node) => node.id !==id));
     if(data.handleDelete){
@@ -63,11 +90,49 @@ const Object = ({ id, data}) => {
 
        
       {/* Handles */}
-      <Handle type="source" position={Position.Right} id="source-right"/>
-      <Handle type="source" position={Position.Top} id="source-top"/>
+      {data.inputType !=='Arguments' &&(
+        <>
+          <Handle type="source" position={Position.Right} id="source-right"/>
+          <Handle type="target" position={Position.Top} id="target-top" />
+    
+          <Handle type="target" position={Position.Left} id="target-left"/>
+          <Handle type="target" position={Position.Bottom} id="target-bottom"/>
+        </>
+      )}
+      
+      {data.picture==='Arguments'&&(
+        <>
+          <Handle type="source" position={Position.Right} id="source-right"/>
+          <Handle type="target" position={Position.Left} id="target-left"/>
+        </>
+      )}
 
-      <Handle type="target" position={Position.Left} id="target-left"/>
-      <Handle type="target" position={Position.Bottom} id="target-bottom"/>
+      {data.picture==='Arguments_2'&&(
+        <>
+          <Handle type="source" position={Position.Right} id="source-right"/>
+          <Handle type="source" position={Position.Top} id="source-top"/>
+          <Handle type="target" position={Position.Left} id="target-left"/>
+        </>
+      )}
+
+      {data.picture==='Arguments_3'&&(
+        <>
+          <Handle type="source" position={Position.Right} id="source-right"/>
+          <Handle type="source" position={Position.Top} id="source-top" style ={getHandleStyle('top')}/>
+          <Handle type="source" position={Position.Bottom} id="source-bottom" style ={getHandleStyle('bottom')}/>
+          <Handle type="target" position={Position.Left} id="target-left"/>
+        </>
+      )}
+
+      {data.picture==='Arguments_4'&&(
+        <>
+          <Handle type="source" position={Position.Right} id="source-right"/>
+          <Handle type="source" position={Position.Topleft} id="source-top" style ={{left:'30%'}}/>
+          <Handle type="source" position={Position.TopRight} id="source-top2" style ={{left:'65%'}}/>
+          <Handle type="source" position={Position.Bottom} id="source-bottom" style ={{left:'45%'}}/>
+          <Handle type="target" position={Position.Left} id="target-left"/>
+        </>
+      )}
 
        {/* Delete button */}
       <IconButton

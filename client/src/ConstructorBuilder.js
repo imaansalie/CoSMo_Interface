@@ -10,7 +10,6 @@ import InstanceEdge from './Edges/InstanceEdge';
 import PartOfEdge from './Edges/PartOfEdge';
 import InstanceConstructorEdge from './Edges/InstanceConstructorEdge';
 import InputNode from './Nodes/InputNode';
-import AdornmentIconSelector from './Nodes/AdornmentIconSelector';
 import IsMandatory from './Edges/IsMandatory';
 import JoinEdge from './Edges/JoinEdge';
 import Role_name from './Edges/Role_name';
@@ -102,6 +101,9 @@ export const ConstructorBuilder = () => {
   const [formData, setFormData] = useState('');
   const [currentNodeID, setCurrentNodeID]= useState(null);
 
+  //array to track function arguments
+  const [args, setArgs] = useState([]);
+
   //input form functions
   const handleInputChange = (e) =>{
     setFormData(e.target.value);
@@ -170,6 +172,15 @@ export const ConstructorBuilder = () => {
       if(sourceNode.data.inputType === 'ValueConstraint' || sourceNode.data.inputType === 'Role_name' || sourceNode.data.inputType === 'Join'){
         updateNodeConID(params.source, updatedConID_tgt);
       }
+
+      if(sourceNode.data.inputType === 'Object' && targetNode.data.inputType==='Arguments'){
+        updateNodeConID(params.target, updatedConID_src);
+      }
+
+      if(sourceNode.data.inputType === 'Arguments' && targetNode.data.inputType==='Object'){
+        console.log("in");
+        updateNodeConID(params.target, updatedConID_src);
+      }
     
     }else{
       console.error("Source or target node not found");
@@ -224,8 +235,8 @@ export const ConstructorBuilder = () => {
     let currentRoleID = 2;
     const printedEdges = new Set();
 
-    console.log(nodes);
-    console.log(edges);
+    // console.log(nodes);
+    // console.log(edges);
 
     // console.log("Initial nodes: ", nodes);
     // console.log("Initial edges: ", edges);
@@ -257,7 +268,7 @@ export const ConstructorBuilder = () => {
       }
     });
 
-    console.log("ConID Groups: ", conIDGroups);
+    // console.log("ConID Groups: ", conIDGroups);
 
     let output = '';
 
@@ -273,7 +284,7 @@ export const ConstructorBuilder = () => {
 
           if(sourceNode && targetNode){
             const key = `${sourceNode.data.inputType}_${edge.type}_${targetNode.data.inputType}`;
-            // console.log(key);
+            console.log("key: ",key);
             const edge_string = definitions[key];
 
             if(key == 'Object_Role_Property' || key == 'Object_IsMandatory_Property' && index< group.edges.length-1){
@@ -284,7 +295,7 @@ export const ConstructorBuilder = () => {
               printedEdges.add(edge.id);
 
               if(nextSourceNode && nextTargetNode){
-                const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`
+                const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`;
 
                 // console.log(nextSourceNode.data.itemID+': '+nextSourceNode.data.roleID);
 
@@ -315,25 +326,44 @@ export const ConstructorBuilder = () => {
                 printedEdges.add(nextEdge.id);
                 // console.log("added: "+nextEdge.id);
               }
-            } else if (key === 'Object_Role_Arguments' && index<group.edges.length-1){
-                const nextEdge = group.edges[index+1];
+            } 
+            else if (key === 'Object_Role_Arguments' && index<group.edges.length-1){
+
+              if(!args.includes(sourceNode.data.itemID)){
+                args.push(sourceNode.data.itemID);
+              }
+
+              let nextIndex= index +1;
+              while(nextIndex< group.edges.length){
+                const nextEdge = group.edges[nextIndex];
                 const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
                 const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
 
-                printedEdges.add(nextEdge.id);
-
                 if(nextSourceNode && nextTargetNode){
-                  const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`
-  
-                  if(nextKey === 'Arguments_Role_Function'){
-                    output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Function(${nextTargetNode.data.itemID} (${sourceNode.data.itemID}))`;
+                  const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`;
+
+                  if(nextKey === 'Arguments_Role_Object'){
+                    if(!args.includes(nextTargetNode.data.itemID)){
+                      args.push(nextTargetNode.data.itemID);
+                    }
+                    printedEdges.add(nextEdge.id);
                   }
 
-                  if( group.edges.length > index+2){
-                    if(group.edges[index+2].type !== 'Role_name')
-                    output+=',<br/>'
+                  else if(nextKey === 'Arguments_Role_Function'){
+                    console.log("Arguments found here: ", args);
+                    output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}Function(${nextTargetNode.data.itemID}(${args.join(', ')}))`;
+
+                    if(group.edges.length> nextIndex +1 && group.edges[nextIndex+1].type !== 'Role_name'){
+                      output+=',<br/>'
+                    }
+                    break;
+                  }
+                  else{
+                    break;
                   }
                 }
+                nextIndex++;
+              }
             }
             else if (key === 'Join_Join_Property' && index<group.edges.length-1){
               const nextEdge = group.edges[index+1];
@@ -379,9 +409,11 @@ export const ConstructorBuilder = () => {
             else if (edge_string){
                 output += `${edge_string(sourceNode, targetNode)}`;
                 printedEdges.add(edge.id);
-                // if( group.edges.length >= index+2){
-                //   output+=',<br/>'
-                // }
+                if(key === 'ValueConstraint_Instance_Object'){
+                  if( group.edges.length >= index+2){
+                    output+=',<br/>'
+                  }
+                }
             }
             if (index === group.edges.length-1 && key!=='InstanceConstructor_Instance_TypeConstructor' && key!=='TypeConstructor_Sub-constructor_TypeConstructor' && key!=='InstanceConstructor_PartOf_Object_InstanceConstructor' && key!=='TypeConstructor_PartOf_Object_TypeConstructor'){
               output+=')<br/><br/>';
@@ -392,6 +424,10 @@ export const ConstructorBuilder = () => {
     })
     setNodeLabels([output])
   };
+
+  const addArg = (newArg) =>{
+    setArgs([...args, newArg]);
+  }
 
   //check if constructor has been deleted
   const handleNodeDelete = (inputType, nodeId) =>{
@@ -405,20 +441,6 @@ export const ConstructorBuilder = () => {
 
     setEdges((prevEdges) => prevEdges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId))
   }
-
-  const updateNode = useCallback((nodeId, newData) => {
-    setNodes((nodes) => 
-      nodes.map((node) => 
-        node.id === nodeId ? {
-          ...node,
-          data: {
-            ...node.data,
-            ...newData
-          }
-        }: node
-      )
-    )
-  })
 
   //after informing element selector, reset checkDeleted boolean to true after 1 second
   useEffect(() =>{
@@ -480,7 +502,7 @@ export const ConstructorBuilder = () => {
           
           <div className='toolbox'>
             <p>Add elements</p>
-            <div className='elements'>
+            <div>
               <ElementSelector 
                 setCurrentType={setCurrentType} 
                 setNewNodeId={setNewNodeId}

@@ -15,6 +15,7 @@ import JoinEdge from './Edges/JoinEdge';
 import Role_name from './Edges/Role_name';
 import ValueConstraint from './Edges/ValueConstraint';
 import { SearchForm } from './Components/SearchForm';
+import { TextGenerator } from './TextGenerator';
 
 const nodeTypes = {
   'Object': Object,
@@ -53,23 +54,6 @@ const connectors = [
   {code: "VC", name: "ValueConstraint", label: "Value Constraint Connector"},
 ]
 
-//CoSMo syntax dictionary
-const definitions = {
-  'TypeConstructor_InstanceConstructor_Connector_Object': (sourceNode, targetNode) => `TypeConstructor:${sourceNode.data.conID}(<br/>`,
-
-  'InstanceConstructor_InstanceConstructor_Connector_Object':(sourceNode, targetNode) => `InstanceConstructor:${sourceNode.data.conID}(<br/>`,
-
-  'InstanceConstructor_Instance_TypeConstructor': (sourceNode, targetNode) => `InstanceOf(${sourceNode.data.conID}, ${targetNode.data.conID})<br/><br/>`,
-
-  'TypeConstructor_Sub-constructor_TypeConstructor': (sourceNode, targetNode) => `SubConstructorOf(${sourceNode.data.conID}, ${targetNode.data.conID})<br/><br/>`,
-
-  'ValueConstraint_Instance_Object':(sourceNode, targetNode) => `${'&nbsp;&nbsp;&nbsp;&nbsp;'}ObjectType(${targetNode.data.itemID})={${sourceNode.data.itemID}}`,
-
-  'InstanceConstructor_PartOf_Object_InstanceConstructor': (sourceNode, targetNode) => `PartOf(${sourceNode.data.conID}, ${targetNode.data.conID})<br/><br/>`,
-
-  'TypeConstructor_PartOf_Object_TypeConstructor': (sourceNode, targetNode) => `PartOf(${sourceNode.data.conID}, ${targetNode.data.conID})<br/><br/>`
-}
-
 const initialNodes = [];
 const initialEdges = [];
 
@@ -101,10 +85,7 @@ export const ConstructorBuilder = () => {
   const [formData, setFormData] = useState('');
   const [currentNodeID, setCurrentNodeID]= useState(null);
 
-  //array to track function arguments
-  const [args, setArgs] = useState([]);
-  const [roles, setRoles] = useState([]);
-  const [roleIDs, setRoleIDs] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
 
   //input form functions
   const handleInputChange = (e) =>{
@@ -231,237 +212,6 @@ export const ConstructorBuilder = () => {
     setNewNodeId(null);
   };
 
-  //Generating text
-
-  const printNodesAndConnectors = () => {
-    const conIDGroups = new Map();
-    let currentRoleID = 0;
-    const printedEdges = new Set();
-
-    // console.log(nodes);
-    // console.log(edges);
-
-    // console.log("Initial nodes: ", nodes);
-    // console.log("Initial edges: ", edges);
-
-    nodes.forEach(node => {
-      const conID = node.data.conID;
-
-      if(conID){
-        if(!conIDGroups.has(conID)){
-          conIDGroups.set(conID, {nodes:[], edges: []});
-        }
-        conIDGroups.get(conID).nodes.push(node);
-      }
-    })
-
-    edges.forEach(edge => {
-      const sourceNode = nodes.find((node) => node.id === edge.source); //find source node by id
-      const targetNode = nodes.find((node) => node.id === edge.target); //find target node by id
-
-      if(sourceNode && targetNode){
-        const sourceConID = sourceNode.data.conID;
-
-        if(sourceConID) {
-          if(!conIDGroups.has(sourceConID)){
-            conIDGroups.set(sourceConID, {nodes: [], edges: []});
-          }
-          conIDGroups.get(sourceConID).edges.push(edge);
-        }
-      }
-    });
-
-    // console.log("ConID Groups: ", conIDGroups);
-
-    let output = '';
-
-    conIDGroups.forEach((group, conID) =>{
-      currentRoleID=0;
-      setNextGroup(true);
-      console.log("group: ",conID);
-      if(group.edges.length >0){
-        
-        let localRoles = [];
-        let localRoleIDs = [];
-        let localArgs = [];
-
-        group.edges.forEach((edge, index) => {
-          const sourceNode = nodes.find((node) => node.id === edge.source); //find source node by id
-          const targetNode = nodes.find((node) => node.id === edge.target); //find target node by id
-
-          if(sourceNode && targetNode){
-            const key = `${sourceNode.data.inputType}_${edge.type}_${targetNode.data.inputType}`;
-            console.log("key: ",key);
-            const edge_string = definitions[key];
-
-            if(key == 'Object_Role_Property' || key == 'Object_IsMandatory_Property' && index< group.edges.length-1){
-
-              localRoles= [];
-              localRoleIDs = [];
-              localArgs= [];
-
-              // console.log(args);
-
-              if(!localRoles.includes(sourceNode.data.itemID)){
-                localRoles.push(sourceNode.data.itemID);
-              }
-
-              currentRoleID++;
-              localRoleIDs.push('r'+currentRoleID);
-
-              let nextIndex = index+1;
-              
-              while(nextIndex< group.edges.length){
-                const nextEdge = group.edges[nextIndex];
-                const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
-                const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
-
-                if(nextSourceNode && nextTargetNode){
-                  const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`;
-                  // console.log(nextKey);
-
-                  if(nextKey === 'Property_Role_Object'){
-                    if(!localRoles.includes(nextTargetNode.data.itemID)){
-                      localRoles.push(nextTargetNode.data.itemID);
-                    }
-
-                    currentRoleID++;
-                    localRoleIDs.push('r'+currentRoleID);
-                  }
-                  else{
-                    break;
-                  }
-                }                
-                nextIndex++;
-              }
-
-              // console.log(localRoleIDs);
-              output+= `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Property(${targetNode.data.itemID}(${localRoleIDs.join(',')})),<br/>`
-
-              localRoles.forEach((role, i) => {
-                if(i!==localRoles.length-1){
-                  output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}${localRoleIDs[i]}:ObjectType(${role}),<br/>`;
-                }else{
-                  // console.log('in');
-                  output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}${localRoleIDs[i]}:ObjectType(${role})`;
-                }
-              })
-              
-              // console.log(key);
-              console.log("array length: ",group.edges.length);
-              console.log("next: ",nextIndex);
-              if( group.edges.length > nextIndex){
-                if(group.edges[nextIndex].type !== 'Role_name'){
-                output+=',<br/>';
-              }}
-
-              if(key === 'Object_IsMandatory_Property'){
-                output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}isMandatory(r${currentRoleID-1})`;
-                if( group.edges.length > index+2){
-                  if(group.edges[index+2].type !== 'Role_name'){
-                  output+=',<br/>';
-                  }
-                } 
-              }
-            } 
-            else if (key === 'Object_Role_Arguments' && index<group.edges.length-1){
-
-              if(!localArgs.includes(sourceNode.data.itemID)){
-                localArgs.push(sourceNode.data.itemID);
-              }
-
-              let nextIndex= index +1;
-              while(nextIndex< group.edges.length){
-                const nextEdge = group.edges[nextIndex];
-                const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
-                const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
-
-                if(nextSourceNode && nextTargetNode){
-                  const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`;
-
-                  if(nextKey === 'Arguments_Role_Object'){
-                    if(!localArgs.includes(nextTargetNode.data.itemID)){
-                      localArgs.push(nextTargetNode.data.itemID);
-                    }
-                    printedEdges.add(nextEdge.id);
-                  }
-
-                  else if(nextKey === 'Arguments_Role_Function'){
-                    // console.log("Arguments found here: ", args);
-                    output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}Function(${nextTargetNode.data.itemID}(${localArgs.join(', ')}))`;
-
-                    if(group.edges.length> nextIndex +1 && group.edges[nextIndex+1].type !== 'Role_name'){
-                      output+=',<br/>'
-                    }
-                    break;
-                  }
-                  else{
-                    break;
-                  }
-                }
-                nextIndex++;
-              }
-            }
-            else if (key === 'Join_Join_Property' && index<group.edges.length-1){
-              const nextEdge = group.edges[index+1];
-              const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
-              const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
-
-              printedEdges.add(nextEdge.id);
-
-              if(nextSourceNode && nextTargetNode){
-                const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`
-
-                if(nextKey === 'Join_Join_Property'){
-                  output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Join(${targetNode.data.itemID}, ${nextTargetNode.data.itemID})`
-                }
-
-                if( group.edges.length > index+2){
-                  if(group.edges[index+2].type !== 'Role_name'){
-                  // console.log("length: "+group.edges.length);
-                  // console.log("index: "+ index);
-
-                  // console.log(group.edges[index+1].type);
-                  output+=',<br/>'
-                }
-                }
-              }
-            }
-            else if (key === 'Role_name_Role_name_Property'){
-              const oldSequence = `r${targetNode.data.roleID-1}:`;
-              const newSequence = `r${targetNode.data.roleID-1}[${sourceNode.data.itemID}]:`;
-
-              output=output.replaceAll(oldSequence, newSequence);
-            }
-            else if(key === 'Property_Role_name_Role_name'){
-              const oldSequence = `r${sourceNode.data.roleID}:`;
-              const newSequence = `r${sourceNode.data.roleID}[${targetNode.data.itemID}]:`;
-
-              // console.log("in");
-              // console.log(oldSequence);
-              // console.log(newSequence);
-
-              output=output.replaceAll(oldSequence, newSequence);
-            }
-            else if (edge_string){
-                output += `${edge_string(sourceNode, targetNode)}`;
-                printedEdges.add(edge.id);
-                if(key === 'ValueConstraint_Instance_Object'){
-                  if( group.edges.length >= index+2){
-                    output+=',<br/>'
-                  }
-                }
-            }
-            if (index === group.edges.length-1 && key!=='InstanceConstructor_Instance_TypeConstructor' && key!=='TypeConstructor_Sub-constructor_TypeConstructor' && key!=='InstanceConstructor_PartOf_Object_InstanceConstructor' && key!=='TypeConstructor_PartOf_Object_TypeConstructor'){
-              output+=')<br/><br/>';
-            }
-          }
-        })
-      }
-    })
-    setNodeLabels([output])
-  };
-
   //check if constructor has been deleted
   const handleNodeDelete = (inputType, nodeId) =>{
     if (inputType === 'InstanceConstructor' || inputType === 'TypeConstructor') {
@@ -524,7 +274,7 @@ export const ConstructorBuilder = () => {
                 </ReactFlow>
             </Box>
               
-            <Button onClick={printNodesAndConnectors} mb={2} className='TextGenerator'>Generate Text</Button>
+            <Button onClick={() =>TextGenerator(nodes, edges, setNodeLabels, setErrorMessage, setNextGroup)} mb={2} className='TextGenerator'>Generate Text</Button>
 
             <div className='Textbox'>
                 {nodeLabels.length > 0 && (
@@ -548,41 +298,45 @@ export const ConstructorBuilder = () => {
                 />  
             </div>
            
-          <p>Choose a connector</p>
-           <div className='connectors'>
-            <ul>
-              {connectors.map((connector, index)=>(
-                <li key={index}>
-                  <button onClick={() => handleEdgeChange (connector)}>
-                    <img src={"/icons/"+connector.name+".png"} className='selector-img'/>
-                      <span className='name'>{connector.label}</span>
-                  </button>  
-                </li>
-              ))}
-            </ul>
-           </div>
+            <p>Choose a connector</p>
+            <div className='connectors'>
+              <ul>
+                {connectors.map((connector, index)=>(
+                  <li key={index}>
+                    <button onClick={() => handleEdgeChange (connector)}>
+                      <img src={"/icons/"+connector.name+".png"} className='selector-img'/>
+                        <span className='name'>{connector.label}</span>
+                    </button>  
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
-          {/* Conditionally render 'SearchForm' based on the new nodeID and current type */}
-          {/* If both newNodeId and current type are defined, render the SearchForm component */}
-          {/* handleAssign prop called when user selects an item */}
-          {/* currentType prop passed to searchForm, determines type of items fetched */}
           {newNodeId && showSearchForm &&(
           <SearchForm onAssign={handleAssign} itemType={currentType} />
           )}
 
           {showForm && (
-          <Box className='constructor-input-box'>
-            <div className='contents'> 
-              <p>Provide a label for the constructor:</p>
-              <form onSubmit={handleFormSubmit}>
-              <input className="input" type="text" value={formData} onChange={handleInputChange} placeholder="Enter label" required />
-              <button type="submit">Submit</button>
-              </form>
+            <Box className='constructor-input-box'>
+              <div className='contents'> 
+                <p>Provide a label for the constructor:</p>
+                <form onSubmit={handleFormSubmit}>
+                <input className="input" type="text" value={formData} onChange={handleInputChange} placeholder="Enter label" required />
+                <button type="submit">Submit</button>
+                </form>
+              </div>
+              
+            </Box>
+          )}
+
+          {errorMessage && (
+            <div>
+              <Box className='error-message'>
+                <p className='error-text'>{errorMessage}</p>
+                <button onClick={()=>setErrorMessage(null)}>Okay</button>
+              </Box>
             </div>
-            
-          </Box>
-          
           )}
       </div>
     </ReactFlowProvider>

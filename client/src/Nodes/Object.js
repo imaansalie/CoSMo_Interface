@@ -42,33 +42,6 @@ const Object = ({ id, data}) => {
 
   const {textContent, style} = displayText();
 
-  const getHandleStyle = (position) =>{
-    let style={};
-
-    switch(data.picture){
-      case 'Arguments_3':
-        if(position === 'top'){
-          style={left:'35%'};
-        }
-        if(position === 'bottom'){
-          style={left:'55%'};
-        }
-        break;
-      case 'Arguments_4':
-        if(position === 'top'){
-          style={left:'30%'};
-        }
-        if(position === 'bottom'){
-          style={left:'45%'};
-        }
-        if(position === 'top2'){
-          style={left:'65%'};
-        }
-        break;
-    }
-    return style;
-  }
-
   const onDelete = () =>{
     setNodes((prevNodes) => prevNodes.filter((node) => node.id !==id));
     if(data.handleDelete){
@@ -90,7 +63,7 @@ const Object = ({ id, data}) => {
 
        
       {/* Handles */}
-      {data.inputType !=='Arguments' &&(
+      {(data.inputType ==='Object' || data.inputType === 'Function') && (
         <>
           <Handle type="source" position={Position.Right} id="source-right"/>
           <Handle type="target" position={Position.Top} id="target-top" />
@@ -99,8 +72,38 @@ const Object = ({ id, data}) => {
           <Handle type="target" position={Position.Bottom} id="target-bottom"/>
         </>
       )}
+
+      {(data.inputType==='Join') && (
+        <>
+          <Handle type="source" position={Position.Right} id="source-right"/>
+          <Handle type="source" position={Position.Top} id="source-top" />
+    
+          <Handle type="target" position={Position.Left} id="target-left"/>
+          <Handle type="source" position={Position.Bottom} id="source-bottom"/>
+        </>
+      )}
+
+      {(data.picture==='Property') && (
+        <>
+          <Handle type="source" position={Position.Right} id="source-right"/>
+          <Handle type="target" position={Position.Top} id="target-top" />
+    
+          <Handle type="target" position={Position.Left} id="target-left"/>
+          <Handle type="target" position={Position.Bottom} id="target-bottom"/>
+        </>
+      )}
+
+      {(data.inputType === 'InstanceConstructor' || data.inputType === 'TypeConstructor') && (
+        <>
+          <Handle type="source" position={Position.Right} id="source-right"/>
+          <Handle type="source" position={Position.Top} id="source-top" />
+    
+          <Handle type="target" position={Position.Left} id="target-left"/>
+          <Handle type="target" position={Position.Bottom} id="target-bottom"/>
+        </>
+      )}
       
-      {data.picture==='Arguments'&&(
+      {(data.picture==='Arguments') &&(
         <>
           <Handle type="source" position={Position.Right} id="source-right"/>
           <Handle type="target" position={Position.Left} id="target-left"/>
@@ -118,8 +121,8 @@ const Object = ({ id, data}) => {
       {data.picture==='Arguments_3'&&(
         <>
           <Handle type="source" position={Position.Right} id="source-right"/>
-          <Handle type="source" position={Position.Top} id="source-top" style ={getHandleStyle('top')}/>
-          <Handle type="source" position={Position.Bottom} id="source-bottom" style ={getHandleStyle('bottom')}/>
+          <Handle type="source" position={Position.Top} id="source-top" style ={{left:'35%'}}/>
+          <Handle type="source" position={Position.Bottom} id="source-bottom" style ={{left:'55%'}}/>
           <Handle type="target" position={Position.Left} id="target-left"/>
         </>
       )}
@@ -132,6 +135,33 @@ const Object = ({ id, data}) => {
           <Handle type="source" position={Position.Bottom} id="source-bottom" style ={{left:'45%'}}/>
           <Handle type="target" position={Position.Left} id="target-left"/>
         </>
+      )}
+
+      {data.picture === 'Property_3' && (
+        <>
+        <Handle type="source" position={Position.Right} id="source-right"/>
+        <Handle type="target" position={Position.Left} id="target-left"/>
+        <Handle type="source" position={Position.Top} id="source-top"/>
+      </>
+      )}
+
+      {data.picture === 'Property_4' && (
+        <>
+        <Handle type="source" position={Position.Right} id="source-right"/>
+        <Handle type="target" position={Position.Left} id="target-left"/>
+        <Handle type="source" position={Position.Top} id="source-top" style ={{left:'35%'}}/>
+        <Handle type="source" position={Position.Bottom} id="source-bottom"style ={{left:'60%'}}/>
+      </>
+      )}
+
+      {data.picture === 'Property_5' && (
+        <>
+        <Handle type="source" position={Position.Right} id="source-right"/>
+        <Handle type="target" position={Position.Left} id="target-left"/>
+        <Handle type="source" position={Position.TopLeft} id="source-topLeft" style ={{left:'30%'}}/>
+        <Handle type="source" position={Position.TopRight} id="source-topRight" style ={{left:'65%'}}/>
+        <Handle type="source" position={Position.Bottom} id="source-bottom"style ={{left:'47%'}}/>
+      </>
       )}
 
        {/* Delete button */}

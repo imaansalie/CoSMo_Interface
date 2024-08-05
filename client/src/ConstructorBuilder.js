@@ -103,6 +103,8 @@ export const ConstructorBuilder = () => {
 
   //array to track function arguments
   const [args, setArgs] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [roleIDs, setRoleIDs] = useState([]);
 
   //input form functions
   const handleInputChange = (e) =>{
@@ -131,7 +133,7 @@ export const ConstructorBuilder = () => {
     setCurrentNodeID(null);
   }
 
-  //load constructor diagram from test folder
+  // load constructor diagram from test folder
   // useEffect(() => {
   //   const loadConstructorData = async () => {
   //     try{
@@ -155,15 +157,16 @@ export const ConstructorBuilder = () => {
   //handles adding edges (connectors) to between nodes using the selected edge type
   const onConnect = (params) => {
     const sourceNode = nodes.find((node) => node.id === params.source);
-    const targetNode = nodes.find((node) => node.id === params.target); 
+    const targetNode = nodes.find((node) => node.id === params.target);
 
     if(sourceNode && targetNode){ //check if both source node and target node exist
 
       const updatedConID_src = sourceNode.data.conID;
       const updatedConID_tgt = targetNode.data.conID;
 
+  
       setEdges((eds) => addEdge({...params, type:selectedEdgeType}, eds)); //add edge
-
+      
       //update conID of node -- ensures that all elements connected to some constructor can be tracked
       if(targetNode.data.inputType !== 'TypeConstructor' && targetNode.data.inputType !== 'InstanceConstructor'&& sourceNode.data.inputType !== 'ValueConstraint' && sourceNode.data.inputType !== 'Role_name' && sourceNode.data.inputType !== 'Join'){ 
         updateNodeConID(params.target, updatedConID_src);
@@ -178,7 +181,7 @@ export const ConstructorBuilder = () => {
       }
 
       if(sourceNode.data.inputType === 'Arguments' && targetNode.data.inputType==='Object'){
-        console.log("in");
+        // console.log("in");
         updateNodeConID(params.target, updatedConID_src);
       }
     
@@ -232,7 +235,7 @@ export const ConstructorBuilder = () => {
 
   const printNodesAndConnectors = () => {
     const conIDGroups = new Map();
-    let currentRoleID = 2;
+    let currentRoleID = 0;
     const printedEdges = new Set();
 
     // console.log(nodes);
@@ -273,11 +276,15 @@ export const ConstructorBuilder = () => {
     let output = '';
 
     conIDGroups.forEach((group, conID) =>{
-      currentRoleID=2;
+      currentRoleID=0;
       setNextGroup(true);
-
+      console.log("group: ",conID);
       if(group.edges.length >0){
         
+        let localRoles = [];
+        let localRoleIDs = [];
+        let localArgs = [];
+
         group.edges.forEach((edge, index) => {
           const sourceNode = nodes.find((node) => node.id === edge.source); //find source node by id
           const targetNode = nodes.find((node) => node.id === edge.target); //find target node by id
@@ -288,49 +295,79 @@ export const ConstructorBuilder = () => {
             const edge_string = definitions[key];
 
             if(key == 'Object_Role_Property' || key == 'Object_IsMandatory_Property' && index< group.edges.length-1){
-              const nextEdge = group.edges[index+1];
-              const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
-              const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
 
-              printedEdges.add(edge.id);
+              localRoles= [];
+              localRoleIDs = [];
+              localArgs= [];
 
-              if(nextSourceNode && nextTargetNode){
-                const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`;
+              // console.log(args);
 
-                // console.log(nextSourceNode.data.itemID+': '+nextSourceNode.data.roleID);
+              if(!localRoles.includes(sourceNode.data.itemID)){
+                localRoles.push(sourceNode.data.itemID);
+              }
 
-                if(nextKey === 'Property_Role_Object'){
+              currentRoleID++;
+              localRoleIDs.push('r'+currentRoleID);
 
-                  output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Property(${targetNode.data.itemID}(r${currentRoleID-1},r${currentRoleID})),<br/>
-                  ${'&nbsp;&nbsp;&nbsp;&nbsp;'}r${currentRoleID-1}:ObjectType(${sourceNode.data.itemID}),<br/>
-                  ${'&nbsp;&nbsp;&nbsp;&nbsp;'}r${currentRoleID}:ObjectType(${nextTargetNode.data.itemID})`;
+              let nextIndex = index+1;
+              
+              while(nextIndex< group.edges.length){
+                const nextEdge = group.edges[nextIndex];
+                const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
+                const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
 
-                  if( group.edges.length > index+2){
-                    if(group.edges[index+2].type !== 'Role_name'){
-                    output+=',<br/>';
+                if(nextSourceNode && nextTargetNode){
+                  const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`;
+                  // console.log(nextKey);
+
+                  if(nextKey === 'Property_Role_Object'){
+                    if(!localRoles.includes(nextTargetNode.data.itemID)){
+                      localRoles.push(nextTargetNode.data.itemID);
+                    }
+
+                    currentRoleID++;
+                    localRoleIDs.push('r'+currentRoleID);
                   }
-                  } 
-
-                  if(key === 'Object_IsMandatory_Property'){
-                    output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}isMandatory(r${currentRoleID-1})`;
-                    if( group.edges.length > index+2){
-                      if(group.edges[index+2].type !== 'Role_name'){
-                      output+=',<br/>';
-                      }
-                    } 
+                  else{
+                    break;
                   }
+                }                
+                nextIndex++;
+              }
 
-                  currentRoleID +=2;
+              // console.log(localRoleIDs);
+              output+= `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Property(${targetNode.data.itemID}(${localRoleIDs.join(',')})),<br/>`
+
+              localRoles.forEach((role, i) => {
+                if(i!==localRoles.length-1){
+                  output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}${localRoleIDs[i]}:ObjectType(${role}),<br/>`;
+                }else{
+                  // console.log('in');
+                  output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}${localRoleIDs[i]}:ObjectType(${role})`;
                 }
+              })
+              
+              // console.log(key);
+              console.log("array length: ",group.edges.length);
+              console.log("next: ",nextIndex);
+              if( group.edges.length > nextIndex){
+                if(group.edges[nextIndex].type !== 'Role_name'){
+                output+=',<br/>';
+              }}
 
-                printedEdges.add(nextEdge.id);
-                // console.log("added: "+nextEdge.id);
+              if(key === 'Object_IsMandatory_Property'){
+                output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}isMandatory(r${currentRoleID-1})`;
+                if( group.edges.length > index+2){
+                  if(group.edges[index+2].type !== 'Role_name'){
+                  output+=',<br/>';
+                  }
+                } 
               }
             } 
             else if (key === 'Object_Role_Arguments' && index<group.edges.length-1){
 
-              if(!args.includes(sourceNode.data.itemID)){
-                args.push(sourceNode.data.itemID);
+              if(!localArgs.includes(sourceNode.data.itemID)){
+                localArgs.push(sourceNode.data.itemID);
               }
 
               let nextIndex= index +1;
@@ -343,15 +380,15 @@ export const ConstructorBuilder = () => {
                   const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`;
 
                   if(nextKey === 'Arguments_Role_Object'){
-                    if(!args.includes(nextTargetNode.data.itemID)){
-                      args.push(nextTargetNode.data.itemID);
+                    if(!localArgs.includes(nextTargetNode.data.itemID)){
+                      localArgs.push(nextTargetNode.data.itemID);
                     }
                     printedEdges.add(nextEdge.id);
                   }
 
                   else if(nextKey === 'Arguments_Role_Function'){
-                    console.log("Arguments found here: ", args);
-                    output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}Function(${nextTargetNode.data.itemID}(${args.join(', ')}))`;
+                    // console.log("Arguments found here: ", args);
+                    output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}Function(${nextTargetNode.data.itemID}(${localArgs.join(', ')}))`;
 
                     if(group.edges.length> nextIndex +1 && group.edges[nextIndex+1].type !== 'Role_name'){
                       output+=',<br/>'
@@ -375,8 +412,8 @@ export const ConstructorBuilder = () => {
               if(nextSourceNode && nextTargetNode){
                 const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`
 
-                if(nextKey === 'Property_Join_Join'){
-                  output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Join(${targetNode.data.itemID}, ${nextSourceNode.data.itemID})`
+                if(nextKey === 'Join_Join_Property'){
+                  output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Join(${targetNode.data.itemID}, ${nextTargetNode.data.itemID})`
                 }
 
                 if( group.edges.length > index+2){
@@ -424,10 +461,6 @@ export const ConstructorBuilder = () => {
     })
     setNodeLabels([output])
   };
-
-  const addArg = (newArg) =>{
-    setArgs([...args, newArg]);
-  }
 
   //check if constructor has been deleted
   const handleNodeDelete = (inputType, nodeId) =>{
@@ -509,11 +542,9 @@ export const ConstructorBuilder = () => {
                 elementDeleted={checkDeleted}
                 propertyDeleted={propertyDeleted}
                 nextGroup={nextGroup}
-                showForm={showForm}
                 setShowForm={setShowForm}
-                handleInputChange={handleInputChange}
-                handleFormSubmit={handleFormSubmit}
                 setCurrentNodeID={setCurrentNodeID}
+                handleAssign={handleAssign}
                 />  
             </div>
            

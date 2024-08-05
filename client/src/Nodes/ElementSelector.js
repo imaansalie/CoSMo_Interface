@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useReactFlow } from 'reactflow';
 import { Box, Button } from '@chakra-ui/react';
+import { SearchForm } from '../Components/SearchForm';
 
 const elements =[
     {code:"Ob", name:"Object", type: "Object", label: "Object"},
@@ -24,13 +25,22 @@ const args = [
   {code: "A4", picture:"Arguments_4", type: "Object", label:"Four Arguments", name: 'Arguments'},
 ];
 
-const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyDeleted, nextGroup, showForm, setShowForm, handleInputChange, handleFormSubmit, setCurrentNodeID}) =>{
+const properties = [
+  {code: "P2", picture:"Property", type: "Object", label:"Two Roles", name:'Property'},
+  {code: "P3", picture:"Property_3", type: "Object", label:"Three Roles", name: 'Property'},
+  {code: "P4", picture:"Property_4", type: "Object", label:"Four Roles", name:'Property'},
+  {code: "P5", picture:"Property_5", type: "Object", label:"Five Roles", name: 'Property'},
+];
+
+const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyDeleted, nextGroup, setShowForm, setCurrentNodeID, handleAssign}) =>{
 
     const {setNodes} =useReactFlow(); // hook to access and manipulate nodes
     const generateUniqueId = () => `node_${Math.random().toString(36).substr(2, 9)}`;
     const [conID, setConID] =useState(1);
-    const [roleID, setRoleID] = useState(2);
+    const [roleID, setRoleID] = useState(0);
     const [showArgs, setShowArgs] = useState(false);
+    const [showProps, setShowProps] = useState(false);
+    const [selectedProperty, setSelectedProperty] = useState(null);
 
     //function to add text node (value constraint and role type -- must adapt to use search form as well)
     const addTextNode = (adornment) => {
@@ -73,6 +83,9 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
 
       if(element.name === 'Property'){
         setRoleID((prevRoleID) => prevRoleID +2 );
+        setShowProps(true);
+        setSelectedProperty(null);
+        return;
       }
 
       if(element.name === 'Arguments'){
@@ -97,7 +110,6 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
             position: {x:x, y:y},
         },
       ]);   
-
       setCurrentType(element.name);
       setNewNodeId(newNodeId);
     }
@@ -141,6 +153,35 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
       ]);   
     }
 
+    const handlePropClick = (property) =>{
+      setShowProps(!showProps);
+      setSelectedProperty(property);
+      
+      const x= Math.random() * 100;
+      const y= Math.random() * 100;
+      const newNodeId= generateUniqueId();
+
+      setNodes( (prevNodes) => [
+        ...prevNodes, 
+        {
+            id: newNodeId, 
+            data: {
+              label:property.label,
+              inputType: property.name,
+              picture:property.picture,
+              itemLabel: '',
+              conID: `C${conID}`,
+              itemID: '', 
+              roleID: property.name === 'Property' ? roleID: null,
+            }, 
+            type: `${property.name}`,
+            position: {x:x, y:y},
+        },
+      ]);   
+      setCurrentType('Property');
+      setNewNodeId(newNodeId);
+    }
+
     //decrement constructor counter on node delete
     useEffect(() => {
       if(elementDeleted){
@@ -150,13 +191,13 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
 
     useEffect(() => {
       if(propertyDeleted){
-        setRoleID(Math.max((prevRoleID)=> prevRoleID -2, 2));
+        setRoleID(Math.max((prevRoleID)=> prevRoleID -2, 0));
       }
     }, [propertyDeleted])
 
     useEffect(() => {
       if(nextGroup){
-        setRoleID(2);
+        setRoleID(0);
       }
     }, [nextGroup])
 
@@ -201,6 +242,24 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
             </ul>
           </Box>
         )}
+
+        {showProps && (
+          <Box className='args'>
+            <p>Choose the number of arguments:</p>
+            <ul>
+            {properties.map((property, index) => (
+              <li key = {index} className='args-list-item'>
+                <button className='arg-button' onClick={() => handlePropClick(property)}>
+                  <img src={"/icons/"+property.picture+".png"} className='arguments-img' alt='img'/>
+                  <span className='arg-name'>{property.label}</span>
+                </button>
+              </li>
+            ))}
+            </ul>
+            {/* <button onClick={setShowProps(false)}>Confirm</button> */}
+          </Box>
+        )}
+        {selectedProperty && <SearchForm onAssign={handleAssign} itemType='Property'></SearchForm>}
       </div>     
     );
 };

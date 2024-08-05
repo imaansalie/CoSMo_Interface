@@ -18,7 +18,7 @@ const definitions = {
 const validKeys = [
     {
         edge: 'Role',
-        validPairs: ['Object_Property', 'Property_Object', 'Object_Arguments', 'Arguments_Function'],
+        validPairs: ['Object_Property', 'Property_Object', 'Object_Arguments', 'Arguments_Function', 'Arguments_Object'],
         error: 'Invalid connection for role connector.'
     },
     {
@@ -94,15 +94,125 @@ export const TextGenerator = (nodes, edges, setNodeLabels, setErrorMessage, setN
         return edges.some((edge) => edge.source === nodeID || edge.target === nodeID);
     }
 
-    const handleRoles = (group, nodes, index, sourceNode, targetNode, currentRoleID, output) =>{
+    const handleRoles = (group, nodes, index, sourceNode, targetNode, currentRoleID, output, key) =>{
+        
+        let localRoles= [];
+        let localRoleIDs = [];
 
+        localRoles.push(sourceNode.data.itemID);
+
+        currentRoleID++;
+        localRoleIDs.push('r'+currentRoleID);
+
+        let nextIndex = index + 1;
+
+        if(index === group.edges.length-1){
+            setErrorMessage("Properties must have at least two roles.");
+            return '';
+        }
+
+        while(nextIndex< group.edges.length){
+            const nextEdge = group.edges[nextIndex];
+            const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
+            const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
+
+            if(nextSourceNode && nextTargetNode){
+                const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`;
+                console.log("next: ",nextKey);
+
+                if(nextKey === 'Property_Role_Object'){
+                    localRoles.push(nextTargetNode.data.itemID);
+                    currentRoleID++;
+                    localRoleIDs.push('r'+currentRoleID);
+                }
+                else{
+                    break;
+                }
+            }                
+            nextIndex++;
+        }
+        // console.log(localRoleIDs);
+        output+= `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Property(${targetNode.data.itemID}(${localRoleIDs.join(',')})),<br/>`
+
+        localRoles.forEach((role, i) => {
+            if(i!==localRoles.length-1){
+                output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}${localRoleIDs[i]}:ObjectType(${role}),<br/>`;
+            }else{
+                // console.log('in');
+                output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}${localRoleIDs[i]}:ObjectType(${role})`;
+            }
+        })
+        
+        if( group.edges.length > nextIndex){
+            if(group.edges[nextIndex].type !== 'Role_name'){
+            output+=',<br/>';
+        }}
+
+        if(key === 'Object_IsMandatory_Property'){
+            output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}isMandatory(r${currentRoleID-1})`;
+            if( group.edges.length > index+2){
+                if(group.edges[index+2].type !== 'Role_name'){
+                output+=',<br/>';
+                }
+            } 
+        }
+
+        return output;
     }
 
-    // console.log(nodes);
-    // console.log(edges);
+    const handleArguments = (group, nodes, index, sourceNode, targetNode, currentRoleID, output) =>{
+        let localArgs= [];
+        let functionFound= false;
+        localArgs.push(sourceNode.data.itemID);
+        
+        let nextIndex= index +1;
 
-    // console.log("Initial nodes: ", nodes);
-    // console.log("Initial edges: ", edges);
+        if(index === group.edges.length-1){
+            setErrorMessage("Arguments must be connected to at least one object and one function.");
+            return '';
+        }
+
+        while(nextIndex< group.edges.length){
+            const nextEdge = group.edges[nextIndex];
+            const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
+            const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
+
+            if(nextSourceNode && nextTargetNode){
+                const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`;
+
+                if(nextKey === 'Arguments_Role_Object'){
+                    if(!localArgs.includes(nextTargetNode.data.itemID)){
+                        localArgs.push(nextTargetNode.data.itemID);
+                    }
+                    printedEdges.add(nextEdge.id);
+                }
+
+                else if(nextKey === 'Arguments_Role_Function'){
+                    // console.log("Arguments found here: ", args);
+                    output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}Function(${nextTargetNode.data.itemID}(${localArgs.join(', ')}))`;
+
+                    if(group.edges.length> nextIndex +1 && group.edges[nextIndex+1].type !== 'Role_name'){
+                        output+=',<br/>'
+                    }
+
+                    functionFound = true;
+                    break;
+                }
+                else{
+                    break;
+                }
+            }
+            nextIndex++;
+        }
+        
+        if(functionFound){
+            return output;
+        }
+        else{
+            setErrorMessage("Arguments must be connected to a function.");
+            return '';
+        }
+    }
 
     nodes.forEach(node => {
         const conID = node.data.conID;
@@ -131,214 +241,81 @@ export const TextGenerator = (nodes, edges, setNodeLabels, setErrorMessage, setN
         }
     });
 
-    // console.log("ConID Groups: ", conIDGroups);
-
     let output = '';
 
     conIDGroups.forEach((group, conID) =>{
         currentRoleID=0;
         setNextGroup(true);
+
         if(group.nodes.length>0){
             checkNodesForEdges(nodes);
         }
-        // console.log("group: ",conID);
-        if(group.edges.length >0){
         
-        let localRoles = [];
-        let localRoleIDs = [];
-        let localArgs = [];
+        if(group.edges.length >0){            
+            group.edges.forEach((edge, index) => {
+                const sourceNode = nodes.find((node) => node.id === edge.source); //find source node by id
+                const targetNode = nodes.find((node) => node.id === edge.target); //find target node by id
 
-        group.edges.forEach((edge, index) => {
-            const sourceNode = nodes.find((node) => node.id === edge.source); //find source node by id
-            const targetNode = nodes.find((node) => node.id === edge.target); //find target node by id
-
-            if(sourceNode && targetNode){
-            const key = `${sourceNode.data.inputType}_${edge.type}_${targetNode.data.inputType}`;
-            console.log("key: ",key);
-            
-            checkSyntax(sourceNode.data.inputType, edge.type, targetNode.data.inputType);
-
-            const edge_string = definitions[key];
-
-            if(key == 'Object_Role_Property' || key == 'Object_IsMandatory_Property'){
-
-                localRoles= [];
-                localRoleIDs = [];
-                localArgs= [];
-
-                // console.log(args);
-
-                if(!localRoles.includes(sourceNode.data.itemID)){
-                localRoles.push(sourceNode.data.itemID);
-                }
-
-                currentRoleID++;
-                localRoleIDs.push('r'+currentRoleID);
-
-                let nextIndex = index+1;
-
-                if(index === group.edges.length-1){
-                    setErrorMessage("Properties must have at least two roles.");
-                }
-
-                else{
-                    while(nextIndex< group.edges.length){
-                        const nextEdge = group.edges[nextIndex];
-                        const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
-                        const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
-        
-                        if(nextSourceNode && nextTargetNode){
-                            const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`;
-                            console.log("next: ",nextKey);
-        
-                            if(nextKey === 'Property_Role_Object'){
-                            if(!localRoles.includes(nextTargetNode.data.itemID)){
-                                localRoles.push(nextTargetNode.data.itemID);
-                            }
-        
-                            currentRoleID++;
-                            localRoleIDs.push('r'+currentRoleID);
-                            }
-                            else{
-                            break;
-                            }
-                        }                
-                        nextIndex++;
-                    }
-                }
-                // console.log(localRoleIDs);
-                output+= `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Property(${targetNode.data.itemID}(${localRoleIDs.join(',')})),<br/>`
-
-                localRoles.forEach((role, i) => {
-                if(i!==localRoles.length-1){
-                    output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}${localRoleIDs[i]}:ObjectType(${role}),<br/>`;
-                }else{
-                    // console.log('in');
-                    output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}${localRoleIDs[i]}:ObjectType(${role})`;
-                }
-                })
+                if(sourceNode && targetNode){
+                const key = `${sourceNode.data.inputType}_${edge.type}_${targetNode.data.inputType}`;
+                console.log("key: ",key);
                 
-                // console.log(key);
-                // console.log("array length: ",group.edges.length);
-                // console.log("next: ",nextIndex);
-                if( group.edges.length > nextIndex){
-                if(group.edges[nextIndex].type !== 'Role_name'){
-                output+=',<br/>';
-                }}
+                checkSyntax(sourceNode.data.inputType, edge.type, targetNode.data.inputType);
 
-                if(key === 'Object_IsMandatory_Property'){
-                output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}isMandatory(r${currentRoleID-1})`;
-                if( group.edges.length > index+2){
-                    if(group.edges[index+2].type !== 'Role_name'){
-                    output+=',<br/>';
-                    }
+                const edge_string = definitions[key];
+
+                if(key == 'Object_Role_Property' || key == 'Object_IsMandatory_Property'){
+                    output= handleRoles(group, nodes, index, sourceNode, targetNode, currentRoleID, output, key);
                 } 
+                else if (key === 'Object_Role_Arguments'){
+                    output= handleArguments(group, nodes, index, sourceNode, targetNode, currentRoleID, output);
                 }
-            } 
-            else if (key === 'Object_Role_Arguments'){
+                else if (key === 'Join_Join_Property' && index<group.edges.length-1){
+                    const nextEdge = group.edges[index+1];
+                    const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
+                    const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
 
-                if(!localArgs.includes(sourceNode.data.itemID)){
-                localArgs.push(sourceNode.data.itemID);
-                }
+                    printedEdges.add(nextEdge.id);
 
-                let nextIndex= index +1;
+                    if(nextSourceNode && nextTargetNode){
+                        const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`
 
-                console.log(nextIndex);
-                console.log(group.edges.length);
+                        if(nextKey === 'Join_Join_Property'){
+                            output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Join(${targetNode.data.itemID}, ${nextTargetNode.data.itemID})`
+                        }
 
-                if(index === group.edges.length-1){
-                    setErrorMessage("Arguments must be connected to at least one object and one function.");
-                }
-
-                else{
-                    while(nextIndex< group.edges.length){
-                        const nextEdge = group.edges[nextIndex];
-                        const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
-                        const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
-        
-                        if(nextSourceNode && nextTargetNode){
-                            const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`;
-        
-                            if(nextKey === 'Arguments_Role_Object'){
-                            if(!localArgs.includes(nextTargetNode.data.itemID)){
-                                localArgs.push(nextTargetNode.data.itemID);
-                            }
-                            printedEdges.add(nextEdge.id);
-                            }
-        
-                            else if(nextKey === 'Arguments_Role_Function'){
-                            // console.log("Arguments found here: ", args);
-                            output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}Function(${nextTargetNode.data.itemID}(${localArgs.join(', ')}))`;
-        
-                            if(group.edges.length> nextIndex +1 && group.edges[nextIndex+1].type !== 'Role_name'){
-                                output+=',<br/>'
-                            }
-                            break;
-                            }
-                            else{
-                            break;
+                        if( group.edges.length > index+2){
+                            if(group.edges[index+2].type !== 'Role_name'){
+                            output+=',<br/>'
                             }
                         }
-                        nextIndex++;
                     }
                 }
-                
-            }
-            else if (key === 'Join_Join_Property' && index<group.edges.length-1){
-                const nextEdge = group.edges[index+1];
-                const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
-                const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
-
-                printedEdges.add(nextEdge.id);
-
-                if(nextSourceNode && nextTargetNode){
-                const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`
-
-                if(nextKey === 'Join_Join_Property'){
-                    output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Join(${targetNode.data.itemID}, ${nextTargetNode.data.itemID})`
+                else if (key === 'Role_name_Role_name_Property'){
+                    const oldSequence = `r${targetNode.data.roleID-1}:`;
+                    const newSequence = `r${targetNode.data.roleID-1}[${sourceNode.data.itemID}]:`;
+                    output=output.replaceAll(oldSequence, newSequence);
                 }
-
-                if( group.edges.length > index+2){
-                    if(group.edges[index+2].type !== 'Role_name'){
-                    // console.log("length: "+group.edges.length);
-                    // console.log("index: "+ index);
-
-                    // console.log(group.edges[index+1].type);
-                    output+=',<br/>'
+                else if(key === 'Property_Role_name_Role_name'){
+                    const oldSequence = `r${sourceNode.data.roleID}:`;
+                    const newSequence = `r${sourceNode.data.roleID}[${targetNode.data.itemID}]:`;
+                    output=output.replaceAll(oldSequence, newSequence);
                 }
-                }
-                }
-            }
-            else if (key === 'Role_name_Role_name_Property'){
-                const oldSequence = `r${targetNode.data.roleID-1}:`;
-                const newSequence = `r${targetNode.data.roleID-1}[${sourceNode.data.itemID}]:`;
-
-                output=output.replaceAll(oldSequence, newSequence);
-            }
-            else if(key === 'Property_Role_name_Role_name'){
-                const oldSequence = `r${sourceNode.data.roleID}:`;
-                const newSequence = `r${sourceNode.data.roleID}[${targetNode.data.itemID}]:`;
-
-                // console.log("in");
-                // console.log(oldSequence);
-                // console.log(newSequence);
-
-                output=output.replaceAll(oldSequence, newSequence);
-            }
-            else if (edge_string){
-                output += `${edge_string(sourceNode, targetNode)}`;
-                printedEdges.add(edge.id);
-                if(key === 'ValueConstraint_Instance_Object'){
-                    if( group.edges.length >= index+2){
-                    output+=',<br/>'
+                else if (edge_string){
+                    output += `${edge_string(sourceNode, targetNode)}`;
+                    printedEdges.add(edge.id);
+                    if(key === 'ValueConstraint_Instance_Object'){
+                        if( group.edges.length >= index+2){
+                        output+=',<br/>'
+                        }
                     }
                 }
-            }
-            if (index === group.edges.length-1 && key!=='InstanceConstructor_Instance_TypeConstructor' && key!=='TypeConstructor_Sub-constructor_TypeConstructor' && key!=='InstanceConstructor_PartOf_Object_InstanceConstructor' && key!=='TypeConstructor_PartOf_Object_TypeConstructor' && output !== ''){
-                output+=')<br/><br/>';
-            }
-            }
-        })
+                if (index === group.edges.length-1 && 
+                    key!=='InstanceConstructor_Instance_TypeConstructor' && key!=='TypeConstructor_Sub-constructor_TypeConstructor' && key!=='InstanceConstructor_PartOf_Object_InstanceConstructor' && key!=='TypeConstructor_PartOf_Object_TypeConstructor' && output !== ''){
+                    output+=')<br/><br/>';
+                }
+                }
+            })
         }
     })
     setNodeLabels([output]);

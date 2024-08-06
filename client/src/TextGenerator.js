@@ -1,3 +1,6 @@
+import React, { useState } from 'react';
+import axios from 'axios';
+
 //CoSMo syntax dictionary
 const definitions = {
     'TypeConstructor_InstanceConstructor_Connector_Object': (sourceNode, targetNode) => `TypeConstructor:${sourceNode.data.conID}(<br/>`,
@@ -49,7 +52,7 @@ const validKeys = [
     {
         edge: 'Join',
         validPairs: ['Join_Object', 'Object_Join', 'Join_Property', 'Property_Join'],
-        error: 'Join connector can only be used between Objects or Properties.'
+        error: 'Join connector can only be used between the Join element and Objects or Properties.'
     },
     {
         edge: 'Role_name',
@@ -63,11 +66,14 @@ const validKeys = [
     },
 ]
 
-export const TextGenerator = (nodes, edges, setNodeLabels, setErrorMessage, setNextGroup) =>{
+const labels = [
+    'ObjectType', 'Object', 'Function', 'InstanceConstructor', 'TypeConstructor', 'Property',  'SubConstructorOf', 'InstanceOf', 'PartOf', 'Join', 'IsMandatory'
+]
+
+export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, setNextGroup, selectedLanguage}) =>{
 
     const conIDGroups = new Map();
-    let currentRoleID = 0;
-    const printedEdges = new Set();
+    let currentRoleID= 0;
 
     const checkSyntax = (src, edge, tgt) =>{
         const currentEdge = validKeys.find(key => key.edge === edge);
@@ -80,7 +86,7 @@ export const TextGenerator = (nodes, edges, setNodeLabels, setErrorMessage, setN
             setErrorMessage(currentEdge.error);
           }
         }
-      }
+    }
     
     const checkNodesForEdges = (nodes) =>{
         nodes.forEach((node) => {
@@ -94,10 +100,33 @@ export const TextGenerator = (nodes, edges, setNodeLabels, setErrorMessage, setN
         return edges.some((edge) => edge.source === nodeID || edge.target === nodeID);
     }
 
+    const hasTwoConnectors = (nodeID, connectorType, edges) => {
+
+        let isMandEdges =[];
+
+        const matchingEdges = edges.filter(edge => 
+            (edge.source === nodeID || edge.target === nodeID) && edge.type === connectorType
+        );
+
+        if(connectorType === 'Role'){
+            isMandEdges = edges.filter(edge => 
+                (edge.source === nodeID || edge.target === nodeID) && edge.type === 'IsMandatory'
+            );
+        }
+        
+        return matchingEdges.length + isMandEdges.length >=2;
+    }
+
     const handleRoles = (group, nodes, index, sourceNode, targetNode, currentRoleID, output, key) =>{
         
+        if(!hasTwoConnectors(targetNode.id, 'Role', edges)){
+            setErrorMessage("Properties must have at least two roles.")
+            return '';
+        }
+
         let localRoles= [];
         let localRoleIDs = [];
+        let isMandatory = false;
 
         localRoles.push(sourceNode.data.itemID);
 
@@ -106,9 +135,8 @@ export const TextGenerator = (nodes, edges, setNodeLabels, setErrorMessage, setN
 
         let nextIndex = index + 1;
 
-        if(index === group.edges.length-1){
-            setErrorMessage("Properties must have at least two roles.");
-            return '';
+        if(key === 'Object_IsMandatory_Property'){
+            isMandatory=true;
         }
 
         while(nextIndex< group.edges.length){
@@ -118,7 +146,7 @@ export const TextGenerator = (nodes, edges, setNodeLabels, setErrorMessage, setN
 
             if(nextSourceNode && nextTargetNode){
                 const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`;
-                console.log("next: ",nextKey);
+                // console.log("next: ",nextKey);
 
                 if(nextKey === 'Property_Role_Object'){
                     localRoles.push(nextTargetNode.data.itemID);
@@ -135,16 +163,19 @@ export const TextGenerator = (nodes, edges, setNodeLabels, setErrorMessage, setN
         output+= `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Property(${targetNode.data.itemID}(${localRoleIDs.join(',')})),<br/>`
 
         localRoles.forEach((role, i) => {
-            if(i!==localRoles.length-1){
+            if(i!==localRoles.length-1 || isMandatory){
                 output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}${localRoleIDs[i]}:ObjectType(${role}),<br/>`;
             }else{
                 // console.log('in');
                 output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}${localRoleIDs[i]}:ObjectType(${role})`;
             }
         })
+
+        // console.log("length: ", group.edges.length);
+        // console.log("nextIndex: ", nextIndex);
         
         if( group.edges.length > nextIndex){
-            if(group.edges[nextIndex].type !== 'Role_name'){
+            if(group.edges[nextIndex].type==='Instance' || group.edges[nextIndex].type==='Role'){
             output+=',<br/>';
         }}
 
@@ -157,10 +188,11 @@ export const TextGenerator = (nodes, edges, setNodeLabels, setErrorMessage, setN
             } 
         }
 
-        return output;
+        // console.log("current: ",currentRoleID);
+        return {output, currentRoleID};
     }
 
-    const handleArguments = (group, nodes, index, sourceNode, targetNode, currentRoleID, output) =>{
+    const handleArguments = (group, nodes, index, sourceNode, output) =>{
         let localArgs= [];
         let functionFound= false;
         localArgs.push(sourceNode.data.itemID);
@@ -184,7 +216,6 @@ export const TextGenerator = (nodes, edges, setNodeLabels, setErrorMessage, setN
                     if(!localArgs.includes(nextTargetNode.data.itemID)){
                         localArgs.push(nextTargetNode.data.itemID);
                     }
-                    printedEdges.add(nextEdge.id);
                 }
 
                 else if(nextKey === 'Arguments_Role_Function'){
@@ -214,115 +245,164 @@ export const TextGenerator = (nodes, edges, setNodeLabels, setErrorMessage, setN
         }
     }
 
-    nodes.forEach(node => {
-        const conID = node.data.conID;
-
-        if(conID){
-        if(!conIDGroups.has(conID)){
-            conIDGroups.set(conID, {nodes:[], edges: []});
-        }
-        conIDGroups.get(conID).nodes.push(node);
-        }
-    })
-
-    edges.forEach(edge => {
-        const sourceNode = nodes.find((node) => node.id === edge.source); //find source node by id
-        const targetNode = nodes.find((node) => node.id === edge.target); //find target node by id
-
-        if(sourceNode && targetNode){
-        const sourceConID = sourceNode.data.conID;
-
-        if(sourceConID) {
-            if(!conIDGroups.has(sourceConID)){
-            conIDGroups.set(sourceConID, {nodes: [], edges: []});
+    const generateText = () =>{
+        nodes.forEach(node => {
+            const conID = node.data.conID;
+    
+            if(conID){
+            if(!conIDGroups.has(conID)){
+                conIDGroups.set(conID, {nodes:[], edges: []});
             }
-            conIDGroups.get(sourceConID).edges.push(edge);
-        }
-        }
-    });
-
-    let output = '';
-
-    conIDGroups.forEach((group, conID) =>{
-        currentRoleID=0;
-        setNextGroup(true);
-
-        if(group.nodes.length>0){
-            checkNodesForEdges(nodes);
-        }
-        
-        if(group.edges.length >0){            
-            group.edges.forEach((edge, index) => {
-                const sourceNode = nodes.find((node) => node.id === edge.source); //find source node by id
-                const targetNode = nodes.find((node) => node.id === edge.target); //find target node by id
-
-                if(sourceNode && targetNode){
-                const key = `${sourceNode.data.inputType}_${edge.type}_${targetNode.data.inputType}`;
-                console.log("key: ",key);
-                
-                checkSyntax(sourceNode.data.inputType, edge.type, targetNode.data.inputType);
-
-                const edge_string = definitions[key];
-
-                if(key == 'Object_Role_Property' || key == 'Object_IsMandatory_Property'){
-                    output= handleRoles(group, nodes, index, sourceNode, targetNode, currentRoleID, output, key);
-                } 
-                else if (key === 'Object_Role_Arguments'){
-                    output= handleArguments(group, nodes, index, sourceNode, targetNode, currentRoleID, output);
+            conIDGroups.get(conID).nodes.push(node);
+            }
+        })
+    
+        edges.forEach(edge => {
+            const sourceNode = nodes.find((node) => node.id === edge.source); //find source node by id
+            const targetNode = nodes.find((node) => node.id === edge.target); //find target node by id
+    
+            if(sourceNode && targetNode){
+            const sourceConID = sourceNode.data.conID;
+    
+            if(sourceConID) {
+                if(!conIDGroups.has(sourceConID)){
+                conIDGroups.set(sourceConID, {nodes: [], edges: []});
                 }
-                else if (key === 'Join_Join_Property' && index<group.edges.length-1){
-                    const nextEdge = group.edges[index+1];
-                    const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
-                    const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
-
-                    printedEdges.add(nextEdge.id);
-
-                    if(nextSourceNode && nextTargetNode){
-                        const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`
-
-                        if(nextKey === 'Join_Join_Property'){
-                            output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Join(${targetNode.data.itemID}, ${nextTargetNode.data.itemID})`
+                conIDGroups.get(sourceConID).edges.push(edge);
+            }
+            }
+        });
+    
+        let output = '';
+    
+        conIDGroups.forEach((group, conID) =>{
+            let currentRoleID=0;
+            setNextGroup(true);
+    
+            if(group.nodes.length>0){
+                console.log("in tg: ", selectedLanguage);
+                checkNodesForEdges(nodes);
+            }
+            
+            if(group.edges.length >0){            
+                group.edges.forEach((edge, index) => {
+                    const sourceNode = nodes.find((node) => node.id === edge.source); //find source node by id
+                    const targetNode = nodes.find((node) => node.id === edge.target); //find target node by id
+    
+                    if(sourceNode && targetNode){
+                    const key = `${sourceNode.data.inputType}_${edge.type}_${targetNode.data.inputType}`;
+                    console.log("key: ",key);
+                    
+                    checkSyntax(sourceNode.data.inputType, edge.type, targetNode.data.inputType);
+    
+                    const edge_string = definitions[key];
+    
+                    if(key == 'Object_Role_Property' || key == 'Object_IsMandatory_Property'){
+                        const result = handleRoles(group, nodes, index, sourceNode, targetNode, currentRoleID, output, key);
+                        output= result.output;
+                        currentRoleID= result.currentRoleID;
+                    } 
+                    else if (key === 'Object_Role_Arguments'){
+                        output= handleArguments(group, nodes, index, sourceNode, output);
+                    }
+                    else if (key === 'Join_Join_Property'){
+    
+                        // console.log('in join');
+                        if(!hasTwoConnectors(sourceNode.id, 'Join', edges)){
+                            setErrorMessage("Join must be connected to at least two objects or properties.");
                         }
 
-                        if( group.edges.length > index+2){
-                            if(group.edges[index+2].type !== 'Role_name'){
+                        if(index< group.edges.length-1){
+                            const nextEdge = group.edges[index+1];
+                            const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
+                            const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
+        
+                            if(nextSourceNode && nextTargetNode){
+                                const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`
+
+                                if(nextKey === 'Join_Join_Property'){
+                                    if(!hasTwoConnectors(nextSourceNode.id, 'Join', edges)){
+                                        setErrorMessage("Join must be connected to at least two objects or properties.");
+                                    }
+                                    output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Join(${targetNode.data.itemID}, ${nextTargetNode.data.itemID})`
+                                }
+        
+                                if( group.edges.length > index+2){
+                                    if(group.edges[index+2].type !== 'Role_name'){
+                                    output+=',<br/>'
+                                    }
+                                }
+                            }
+                        }
+                        
+                    }
+                    else if (key === 'Role_name_Role_name_Property'){
+                        const oldSequence = `r${targetNode.data.roleID-1}:`;
+                        const newSequence = `r${targetNode.data.roleID-1}[${sourceNode.data.itemID}]:`;
+                        output=output.replaceAll(oldSequence, newSequence);
+                    }
+                    else if(key === 'Property_Role_name_Role_name'){
+                        const oldSequence = `r${sourceNode.data.roleID}:`;
+                        const newSequence = `r${sourceNode.data.roleID}[${targetNode.data.itemID}]:`;
+                        output=output.replaceAll(oldSequence, newSequence);
+
+                        if(group.edges.length >= index+2){
+                            output+=',<br/>'
+                        }
+                    }
+                    else if (edge_string){
+                        output += `${edge_string(sourceNode, targetNode)}`;
+                        if(key === 'ValueConstraint_Instance_Object'){
+                            if( group.edges.length >= index+2){
                             output+=',<br/>'
                             }
                         }
                     }
-                }
-                else if (key === 'Role_name_Role_name_Property'){
-                    const oldSequence = `r${targetNode.data.roleID-1}:`;
-                    const newSequence = `r${targetNode.data.roleID-1}[${sourceNode.data.itemID}]:`;
-                    output=output.replaceAll(oldSequence, newSequence);
-                }
-                else if(key === 'Property_Role_name_Role_name'){
-                    const oldSequence = `r${sourceNode.data.roleID}:`;
-                    const newSequence = `r${sourceNode.data.roleID}[${targetNode.data.itemID}]:`;
-                    output=output.replaceAll(oldSequence, newSequence);
-                }
-                else if (edge_string){
-                    output += `${edge_string(sourceNode, targetNode)}`;
-                    printedEdges.add(edge.id);
-                    if(key === 'ValueConstraint_Instance_Object'){
-                        if( group.edges.length >= index+2){
-                        output+=',<br/>'
-                        }
+                    if (index === group.edges.length-1 && 
+                        key!=='InstanceConstructor_Instance_TypeConstructor' && key!=='TypeConstructor_Sub-constructor_TypeConstructor' && key!=='InstanceConstructor_PartOf_Object_InstanceConstructor' && key!=='TypeConstructor_PartOf_Object_TypeConstructor' && output !== ''){
+                        output+=')<br/><br/>';
                     }
+                    }
+                })
+            }
+        })
+        translateOutput(output);
+    }
+
+    //handle first layer of multilingualism
+
+    const translateOutput = async(output) =>{
+        for(let label of labels){
+            if(output.includes(label)){
+                try{
+                    const newLabel = await findLabel(label);
+                    console.log(newLabel);
+                    output = output.replaceAll(label, newLabel);
+                }catch(error){
+                    console.error("Error fetching label: ", error);
                 }
-                if (index === group.edges.length-1 && 
-                    key!=='InstanceConstructor_Instance_TypeConstructor' && key!=='TypeConstructor_Sub-constructor_TypeConstructor' && key!=='InstanceConstructor_PartOf_Object_InstanceConstructor' && key!=='TypeConstructor_PartOf_Object_TypeConstructor' && output !== ''){
-                    output+=')<br/><br/>';
-                }
-                }
-            })
+            }
         }
-    })
-    setNodeLabels([output]);
+        setNodeLabels([output]);
+    }
+
+    const findLabel = async (label) =>{
+        try{
+            const response = await axios.post('http://localhost:3001/getLabel', {label, selectedLanguage});
+            const column = `${selectedLanguage}`
+            const responseData= response.data[0];
+            console.log(responseData);
+            return responseData[column];
+        } catch (error){
+             console.error("Error getting items: ", error);
+             throw error;
+        }
+    }
+
 
     return(
-        <div>
-            update
+        <div onClick={()=>generateText()} className='TextGenerator'>
+            Generate Text
         </div>
     )
 }

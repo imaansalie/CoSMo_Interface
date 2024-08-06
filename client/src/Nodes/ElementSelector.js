@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useReactFlow } from 'reactflow';
-import { Box, Button } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import { SearchForm } from '../Components/SearchForm';
 
 const elements =[
@@ -37,7 +37,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
     const {setNodes} =useReactFlow(); // hook to access and manipulate nodes
     const generateUniqueId = () => `node_${Math.random().toString(36).substr(2, 9)}`;
     const [conID, setConID] =useState(1);
-    const [roleID, setRoleID] = useState(0);
+    const [localRoleID, setLocalRoleID] = useState(0);
     const [showArgs, setShowArgs] = useState(false);
     const [showProps, setShowProps] = useState(false);
     const [selectedProperty, setSelectedProperty] = useState(null);
@@ -76,13 +76,13 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
 
       if (element.name === 'InstanceConstructor'|| element.name ==='TypeConstructor'){
         console.log("in");
-        setConID(conID+1);
+        setConID(conID + 1);
         setShowForm(true);
         setCurrentNodeID(newNodeId);
       }
 
       if(element.name === 'Property'){
-        setRoleID((prevRoleID) => prevRoleID +2 );
+        setLocalRoleID(localRoleID +2 );
         setShowProps(true);
         setSelectedProperty(null);
         return;
@@ -104,7 +104,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
               itemLabel: '',
               conID: `C${conID}`,
               itemID: '', 
-              roleID: element.name === 'Property' ? roleID: null,
+              roleID: element.name === 'Property' ? localRoleID: null,
             }, 
             type: `${element.name}`,
             position: {x:x, y:y},
@@ -145,7 +145,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
               itemLabel: '',
               conID: `C${conID}`,
               itemID: '', 
-              roleID: arg.name === 'Property' ? roleID: null,
+              roleID: arg.name === 'Property' ? localRoleID: null,
             }, 
             type: `${arg.name}`,
             position: {x:x, y:y},
@@ -156,6 +156,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
     const handlePropClick = (property) =>{
       setShowProps(!showProps);
       setSelectedProperty(property);
+      console.log(localRoleID);
       
       const x= Math.random() * 100;
       const y= Math.random() * 100;
@@ -172,7 +173,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
               itemLabel: '',
               conID: `C${conID}`,
               itemID: '', 
-              roleID: property.name === 'Property' ? roleID: null,
+              roleID: property.name === 'Property' ? localRoleID: null,
             }, 
             type: `${property.name}`,
             position: {x:x, y:y},
@@ -191,13 +192,14 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
 
     useEffect(() => {
       if(propertyDeleted){
-        setRoleID(Math.max((prevRoleID)=> prevRoleID -2, 0));
+        setLocalRoleID(Math.max(localRoleID -2, 0));
       }
+      console.log(localRoleID);
     }, [propertyDeleted])
 
     useEffect(() => {
       if(nextGroup){
-        setRoleID(0);
+        setLocalRoleID(0);
       }
     }, [nextGroup])
 

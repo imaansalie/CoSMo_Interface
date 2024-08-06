@@ -62,6 +62,28 @@ app.post('/getItems', (req, res) =>{
     console.log(itemType);
 })
 
+app.post('/getLabel', (req, res) => {
+    const label = req.body.label;
+    const language = req.body.selectedLanguage;
+
+    console.log(label);
+    console.log(language);
+
+    let query = `SELECT ${language} from languages WHERE English = '${label}'`;
+
+    db.query(
+        query, 
+        (err, result)=>{
+            if(err){
+                console.log(err);
+            }
+            else{
+                res.json(result);
+            }
+        }
+    )
+})
+
 app.listen(3001, () => {
     console.log("server running on port 3001");
 });

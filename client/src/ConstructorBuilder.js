@@ -16,6 +16,7 @@ import Role_name from './Edges/Role_name';
 import ValueConstraint from './Edges/ValueConstraint';
 import { SearchForm } from './Components/SearchForm';
 import { TextGenerator } from './TextGenerator';
+import { Settings } from './Components/Settings';
 
 const nodeTypes = {
   'Object': Object,
@@ -86,6 +87,8 @@ export const ConstructorBuilder = () => {
   const [currentNodeID, setCurrentNodeID]= useState(null);
 
   const [errorMessage, setErrorMessage] = useState('');
+
+  const [selectedLanguage, setSelectedLanguage] = useState('English');
 
   //input form functions
   const handleInputChange = (e) =>{
@@ -258,6 +261,10 @@ export const ConstructorBuilder = () => {
         <div className="FlowTest">
           <div className="ConstructorBuilder">
             <h1>Constructor Builder</h1>
+            <Settings
+              selectedLanguage={selectedLanguage}
+              setSelectedLanguage={setSelectedLanguage}
+            />
 
             <Box border="1px solid gray" className='Builder'>
                 <ReactFlow
@@ -273,8 +280,20 @@ export const ConstructorBuilder = () => {
                   <Background />
                 </ReactFlow>
             </Box>
-              
-            <Button onClick={() =>TextGenerator(nodes, edges, setNodeLabels, setErrorMessage, setNextGroup)} mb={2} className='TextGenerator'>Generate Text</Button>
+            
+            <div className='buttons'>
+              <TextGenerator
+                nodes={nodes}
+                edges={edges}
+                setNodeLabels={setNodeLabels}
+                setErrorMessage={setErrorMessage}
+                setNextGroup={setNextGroup}
+                selectedLanguage={selectedLanguage}
+              />
+
+              <Button className='save-button' mb={2}>Save Constructor</Button>
+            </div>
+            
 
             <div className='Textbox'>
                 {nodeLabels.length > 0 && (

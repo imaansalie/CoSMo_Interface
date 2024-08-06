@@ -1,4 +1,4 @@
-import { BsHouseDoorFill } from "react-icons/bs";
+import { BsHammer, BsHouseDoorFill } from "react-icons/bs";
 import { BsFolder } from "react-icons/bs";
 import { BsGear } from "react-icons/bs";
 
@@ -6,13 +6,13 @@ import React from "react";
 
 export const NavbarData = [
     {
-        title: "Home",
-        icon: <BsHouseDoorFill/>,
-        link: "/"
+        title: "My Constructors",
+        icon: <BsFolder/>,
+        link: "/ConstructorManager"
     },
     {
         title: "Constructor Builder",
-        icon: <BsFolder/>,
+        icon: <BsHammer/>,
         link: "/ConstructorBuilder"
     },
     // {

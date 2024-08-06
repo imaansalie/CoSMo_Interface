@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useContext, useEffect, useState } from 'react';
 import {Box, Button} from "@chakra-ui/react";
 import ReactFlow, {ReactFlowProvider, addEdge,Controls,Background,useNodesState,useEdgesState} from 'reactflow';
 import 'reactflow/dist/style.css';
@@ -17,6 +17,9 @@ import ValueConstraint from './Edges/ValueConstraint';
 import { SearchForm } from './Components/SearchForm';
 import { TextGenerator } from './TextGenerator';
 import { Settings } from './Components/Settings';
+import axios from 'axios';
+import { UserContext } from './Contexts/UserContext';
+import { ConstructorSaver } from './ConstructorSaver';
 
 const nodeTypes = {
   'Object': Object,
@@ -89,6 +92,7 @@ export const ConstructorBuilder = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const [selectedLanguage, setSelectedLanguage] = useState('English');
+  const [constructorAdded, setConstructorAdded] = useState(false);
 
   //input form functions
   const handleInputChange = (e) =>{
@@ -260,7 +264,7 @@ export const ConstructorBuilder = () => {
     <ReactFlowProvider>
         <div className="FlowTest">
           <div className="ConstructorBuilder">
-            <h1>Constructor Builder</h1>
+            <h1>Constructor Builder </h1>
             <Settings
               selectedLanguage={selectedLanguage}
               setSelectedLanguage={setSelectedLanguage}
@@ -291,11 +295,16 @@ export const ConstructorBuilder = () => {
                 selectedLanguage={selectedLanguage}
               />
 
-              <Button className='save-button' mb={2}>Save Constructor</Button>
+              <ConstructorSaver
+                nodeLabels={nodeLabels}
+                setConstructorAdded= {setConstructorAdded}
+                setErrorMessage= {setErrorMessage}
+
+              />
             </div>
             
 
-            <div className='Textbox'>
+            <div className='Textbox' contentEditable={false}>
                 {nodeLabels.length > 0 && (
                 <p dangerouslySetInnerHTML={{ __html: nodeLabels[0] }} />
                 )}
@@ -354,6 +363,15 @@ export const ConstructorBuilder = () => {
               <Box className='error-message'>
                 <p className='error-text'>{errorMessage}</p>
                 <button onClick={()=>setErrorMessage(null)}>Okay</button>
+              </Box>
+            </div>
+          )}
+
+          {constructorAdded && (
+            <div>
+              <Box className='error-message'>
+                <p className='error-text'>Constructor has been sucessfully saved.</p>
+                <button onClick={()=>setConstructorAdded(false)}>Okay</button>
               </Box>
             </div>
           )}

@@ -4,7 +4,7 @@ import React from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
 import axios from 'axios';
 
-const Object = ({ id, data}) => {
+const ObjectNode = ({ id, data}) => {
   const {setNodes} = useReactFlow();
   const imageUrl = `./icons/${data.picture}.png`;
 
@@ -180,4 +180,4 @@ const Object = ({ id, data}) => {
   );
 };
 
-export default Object;
+export default ObjectNode;

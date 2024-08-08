@@ -2,7 +2,6 @@ import React, {useEffect, useState } from 'react';
 import {Box, Button, Icon} from "@chakra-ui/react";
 import ReactFlow, {ReactFlowProvider, addEdge,Controls,Background,useNodesState,useEdgesState} from 'reactflow';
 import 'reactflow/dist/style.css';
-import Object from './Nodes/Object';
 import ElementSelector from './Nodes/ElementSelector';
 import Role from './Edges/Role';
 import SubConstructorEdge from './Edges/SubConstructorEdge'
@@ -20,17 +19,18 @@ import { Settings } from './Components/Settings';
 import { ConstructorSaver } from './ConstructorSaver';
 import { ConstructorForm } from './Components/ConstructorForm';
 import { BsPlusCircle } from 'react-icons/bs';
+import ObjectNode from './Nodes/ObjectNode';
 
 const nodeTypes = {
-  'Object': Object,
-  'Function': Object,
-  'Arguments': Object,
-  'IsMandatory': Object,
-  'InstanceConstructor': Object,
-  'Join': Object,
-  'Property': Object,
-  'Role_name': InputNode,
-  'TypeConstructor': Object,
+  'Object': ObjectNode,
+  'Function': ObjectNode,
+  'Arguments': ObjectNode,
+  'IsMandatory': ObjectNode,
+  'InstanceConstructor': ObjectNode,
+  'Join': ObjectNode,
+  'Property': ObjectNode,
+  'Role_name': ObjectNode,
+  'TypeConstructor': ObjectNode,
   'ValueConstraint': InputNode,
 };
 
@@ -268,6 +268,24 @@ export const ConstructorBuilder = () => {
     }
   }, [addedNodes, addedEdges]);
 
+  const addNodesAndEdges = (newNodes, newEdges) => {
+    setNodes((currentNodes) => [...currentNodes, ...newNodes]);
+    setEdges((currentEdges) => [...currentEdges, ...newEdges]);
+  };
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.addNodesAndEdges = addNodesAndEdges;
+    }
+
+    // Optional: clean up the window object when the component unmounts
+    return () => {
+      if (typeof window !== 'undefined') {
+        delete window.addNodesAndEdges;
+      }
+    };
+  }, []);
+
   //pass handleDelete prop to Object
   const mappedNodes = nodes.map(node =>({
     ...node,
@@ -330,7 +348,7 @@ export const ConstructorBuilder = () => {
             </div>
             
 
-            <div className='Textbox' contentEditable={false}>
+            <div data-testid = 'text' className='Textbox' contentEditable={false}>
                 {nodeLabels.length > 0 && (
                 <p dangerouslySetInnerHTML={{ __html: nodeLabels[0] }} />
                 )}

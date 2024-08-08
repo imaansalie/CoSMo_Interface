@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import axios from 'axios';
 import { Button } from '@chakra-ui/react';
 
 //CoSMo syntax dictionary
 const definitions = {
-    'TypeConstructor_InstanceConstructor_Connector_Object': (sourceNode, targetNode) => `TypeConstructor:${sourceNode.data.conID}(<br/>`,
+    'TypeConstructor_InstanceConstructor_Connector_Object': (sourceNode, targetNode) => `TypeConstructor:C${sourceNode.data.conID}(<br/>`,
 
-    'InstanceConstructor_InstanceConstructor_Connector_Object':(sourceNode, targetNode) => `InstanceConstructor:${sourceNode.data.conID}(<br/>`,
+    'InstanceConstructor_InstanceConstructor_Connector_Object':(sourceNode, targetNode) => `InstanceConstructor:C${sourceNode.data.conID}(<br/>`,
 
-    'InstanceConstructor_Instance_TypeConstructor': (sourceNode, targetNode) => `InstanceOf(${sourceNode.data.conID}, ${targetNode.data.conID})<br/><br/>`,
+    'InstanceConstructor_Instance_TypeConstructor': (sourceNode, targetNode) => `InstanceOf(C${sourceNode.data.conID}, C${targetNode.data.conID})<br/><br/>`,
 
-    'TypeConstructor_Sub-constructor_TypeConstructor': (sourceNode, targetNode) => `SubConstructorOf(${sourceNode.data.conID}, ${targetNode.data.conID})<br/><br/>`,
+    'TypeConstructor_Sub-constructor_TypeConstructor': (sourceNode, targetNode) => `SubConstructorOf(C${sourceNode.data.conID}, C${targetNode.data.conID})<br/><br/>`,
 
     'ValueConstraint_Instance_Object':(sourceNode, targetNode) => `${'&nbsp;&nbsp;&nbsp;&nbsp;'}ObjectType(${targetNode.data.itemID})={${sourceNode.data.itemID}}`,
 
-    'InstanceConstructor_PartOf_Object_InstanceConstructor': (sourceNode, targetNode) => `PartOf(${sourceNode.data.conID}, ${targetNode.data.conID})<br/><br/>`,
+    'InstanceConstructor_PartOf_Object_InstanceConstructor': (sourceNode, targetNode) => `PartOf(C${sourceNode.data.conID}, C${targetNode.data.conID})<br/><br/>`,
 
-    'TypeConstructor_PartOf_Object_TypeConstructor': (sourceNode, targetNode) => `PartOf(${sourceNode.data.conID}, ${targetNode.data.conID})<br/><br/>`
+    'TypeConstructor_PartOf_Object_TypeConstructor': (sourceNode, targetNode) => `PartOf(C${sourceNode.data.conID}, C${targetNode.data.conID})<br/><br/>`
 }
   
 const validKeys = [
@@ -360,6 +360,7 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
                 })
             }
         })
+        console.log(output);
         translateOutput(output);
     }
 
@@ -393,6 +394,20 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
         }
     }
 
+    useEffect(() => {
+        // Attach generateText to the window object
+        if (typeof window !== 'undefined') {
+          window.generateText = generateText;
+          console.log("Generate Text function attached to window.");
+        }
+    
+        // Clean up
+        return () => {
+          if (typeof window !== 'undefined') {
+            delete window.generateText;
+          }
+        };
+      }, [nodes, edges]);
 
     return(
         <div>

@@ -7,23 +7,23 @@ export const ConstructorManager = () =>{
     const {username, userID} = useContext(UserContext);
     const [constructors, setConstructors] = useState([]);
 
-    useEffect(() =>{
-        const getConstructors = async() =>{
-            if(userID){
-                try{
-                    const response = await axios.post('http://localhost:3001/getConstructors', {userID});
-                    console.log(response.data)
-                    setConstructors(response.data);
-                    return response.data;
-                } catch (error){
-                    console.error("Error getting items: ", error);
-                    throw error;
-                }
-            }
-        };
+    // useEffect(() =>{
+    //     const getConstructors = async() =>{
+    //         if(userID){
+    //             try{
+    //                 const response = await axios.post('http://localhost:3001/getConstructors', {userID});
+    //                 console.log(response.data)
+    //                 setConstructors(response.data);
+    //                 return response.data;
+    //             } catch (error){
+    //                 console.error("Error getting items: ", error);
+    //                 throw error;
+    //             }
+    //         }
+    //     };
 
-        getConstructors();
-    }, [userID]);
+    //     getConstructors();
+    // }, [userID]);
 
     
     return(

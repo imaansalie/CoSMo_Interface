@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Button } from '@chakra-ui/react';
 
 //CoSMo syntax dictionary
 const definitions = {
@@ -146,7 +147,6 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
 
             if(nextSourceNode && nextTargetNode){
                 const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`;
-                // console.log("next: ",nextKey);
 
                 if(nextKey === 'Property_Role_Object'){
                     localRoles.push(nextTargetNode.data.itemID);
@@ -159,20 +159,15 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
             }                
             nextIndex++;
         }
-        // console.log(localRoleIDs);
         output+= `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Property(${targetNode.data.itemID}(${localRoleIDs.join(',')})),<br/>`
 
         localRoles.forEach((role, i) => {
             if(i!==localRoles.length-1 || isMandatory){
                 output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}${localRoleIDs[i]}:ObjectType(${role}),<br/>`;
             }else{
-                // console.log('in');
                 output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}${localRoleIDs[i]}:ObjectType(${role})`;
             }
         })
-
-        // console.log("length: ", group.edges.length);
-        // console.log("nextIndex: ", nextIndex);
         
         if( group.edges.length > nextIndex){
             if(group.edges[nextIndex].type==='Instance' || group.edges[nextIndex].type==='Role'){
@@ -187,8 +182,6 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
                 }
             } 
         }
-
-        // console.log("current: ",currentRoleID);
         return {output, currentRoleID};
     }
 
@@ -219,7 +212,6 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
                 }
 
                 else if(nextKey === 'Arguments_Role_Function'){
-                    // console.log("Arguments found here: ", args);
                     output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}Function(${nextTargetNode.data.itemID}(${localArgs.join(', ')}))`;
 
                     if(group.edges.length> nextIndex +1 && group.edges[nextIndex+1].type !== 'Role_name'){
@@ -246,6 +238,10 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
     }
 
     const generateText = () =>{
+
+        console.log(nodes);
+        console.log(edges);
+
         nodes.forEach(node => {
             const conID = node.data.conID;
     
@@ -306,8 +302,6 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
                         output= handleArguments(group, nodes, index, sourceNode, output);
                     }
                     else if (key === 'Join_Join_Property'){
-    
-                        // console.log('in join');
                         if(!hasTwoConnectors(sourceNode.id, 'Join', edges)){
                             setErrorMessage("Join must be connected to at least two objects or properties.");
                         }
@@ -401,8 +395,8 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
 
 
     return(
-        <div onClick={()=>generateText()} className='TextGenerator'>
-            Generate Text
+        <div>
+            <Button onClick={()=>generateText()} className='TextGenerator'>Generate Text</Button>
         </div>
     )
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useReactFlow } from 'reactflow';
 import { Box } from '@chakra-ui/react';
 import { SearchForm } from '../Components/SearchForm';
+import axios from 'axios';
 
 const elements =[
     {code:"Ob", name:"Object", type: "Object", label: "Object"},
@@ -68,7 +69,9 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
     };
     
     //add object node
-    const handleObjectClick = (element) =>{
+    const handleObjectClick = async(element) =>{
+
+      const fetchedConID = await getConID();
 
       const x= Math.random() * 100;
       const y= Math.random() * 100;
@@ -102,7 +105,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
               inputType: element.name,
               picture:element.name,
               itemLabel: '',
-              conID: `C${conID}`,
+              conID: conID,
               itemID: '', 
               roleID: element.name === 'Property' ? localRoleID: null,
             }, 
@@ -183,10 +186,38 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
       setNewNodeId(newNodeId);
     }
 
+    //get latest ID from database
+    const getConID = async() =>{
+      try{
+        const response = await axios.post('http://localhost:3001/getID');
+        const newConID = response.data[0].idconstructors + 1;
+        
+        console.log("new: ", newConID);
+        console.log("set: ", conID);
+
+        return newConID;
+      } catch (error){
+          console.error("Error getting ID: ", error);
+          throw error;
+      }
+    }
+
     //decrement constructor counter on node delete
+    useEffect(() =>{
+      const initializeConID = async() =>{
+      try{
+        const initialConID = await getConID();
+        setConID(initialConID);        
+      } catch (error){
+        console.error("Failed to initialize conID", error);
+      }
+    }
+    initializeConID();
+  }, []);
+
     useEffect(() => {
       if(elementDeleted){
-        setConID(conID-1);
+        setConID(prevConID => prevConID -1);
       }
     }, [elementDeleted])
 

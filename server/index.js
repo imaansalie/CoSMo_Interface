@@ -87,10 +87,18 @@ app.post('/getLabel', (req, res) => {
 })
 
 app.post('/saveConstructor', (req, res) => {
-    const userID = req.body.userID;
+    const id= req.body.maxConID;
+    const nodes = JSON.stringify(req.body.nodes);
+    const edges = JSON.stringify(req.body.edges);
+    const conName = req.body.conName;
+    const conCollection = req.body.conCollection;
     const string = req.body.string;
+    const description = req.body.description;
 
-    let query = `INSERT INTO constructors (userID, output) VALUES ('${userID}', '${string}')`;
+    console.log(conName);
+    console.log(conCollection);
+
+    let query = `INSERT INTO constructors (idconstructors, name, collection, text, nodes, edges, description) VALUES (${id}, '${conName}', '${conCollection}', '${string}', '${nodes}', '${edges}','${description}')`;
 
     db.query(
         query, 
@@ -109,6 +117,38 @@ app.post('/getConstructors', (req, res) => {
     const userID = req.body.userID;
 
     let query = `SELECT * FROM constructors where userID='${userID}'`;
+
+    db.query(
+        query, 
+        (err, result)=>{
+            if(err){
+                console.log(err);
+            }
+            else{
+                res.json(result);
+            }
+        }
+    )
+})
+
+app.post('/getAllConstructors', (req, res) => {
+    let query = `SELECT idconstructors, nodes, edges, name, description FROM constructors`;
+
+    db.query(
+        query, 
+        (err, result)=>{
+            if(err){
+                console.log(err);
+            }
+            else{
+                res.json(result);
+            }
+        }
+    )
+})
+
+app.post('/getID', (req, res) => {
+    let query = `SELECT * FROM constructors ORDER BY idconstructors DESC LIMIT 1`;
 
     db.query(
         query, 

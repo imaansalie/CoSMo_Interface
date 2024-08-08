@@ -62,30 +62,6 @@ button, input, textarea{
   color: #f6f7fe;
 }
 
-/* .Sidebar .SidebarList .Sidebar-row{
-  width: 100%;
-  height: 60px;
-  list-style-type: none;
-  margin: 0%;
-  display: flex;
-  flex-direction: row;
-  color: white;
-  justify-content: center;
-  align-items: center;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-}
-
-.Sidebar .SidebarList .Sidebar-row .SB-item #SB-icon{
-  flex: 30%;
-  display: grid;
-  place-items: center;
-}
-
-.Sidebar .SidebarList .Sidebar-row .SB-item #SB-title{
-  flex: 70%;
-} */
-
-
 .Sidebar-row {
   display: flex;
   align-items: center;
@@ -163,6 +139,33 @@ button, input, textarea{
   transform: translate(-50%, -50%);
 }
 
+.CB-options{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.AddConstructorButton{
+  padding: 5px;
+  margin-bottom: 10px;
+  background-color: #2e3760;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 200px;
+}
+
+.AddConstructorButton svg{
+  font-size: 15px;
+  font-weight: bold;
+}
+
 /* GENERATE TEXT BUTTON */
 
 .buttons{
@@ -180,7 +183,7 @@ button, input, textarea{
   color: white;
   margin: 10px;
   cursor: pointer;
-  max-width: 100px;
+  max-width: 200px;
   font-family: sans-serif;
   font-size: 13px;
 }
@@ -542,6 +545,54 @@ button, input, textarea{
   padding: 4px;
 }
 
+/* SAVE CONSTRUCTOR FORM */
+
+.SaveConstructorBox{
+  background-color: white;
+  padding: 4px;
+  border: 1px solid grey;
+  border-radius: 5px;
+  box-shadow: gray;
+  /* z-index: 1000px; */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40%;
+  height: 45%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.save-input, .description-input{
+  width: 80%;
+  padding: 5px;
+  margin: 5px;
+  padding: 10px;
+  font-size: 16px;
+  font-family: sans-serif;
+}
+
+#collections-dd{
+  width: 83.6%;
+  padding: 10px;
+  font-family: sans-serif;
+  font-size: 16px;
+}
+
+.saveForm-button{
+  padding: 10px;
+  background-color: rgb(6, 26, 79);
+  border: 2px solid rgb(6, 26, 79);
+  border-radius: 6px;
+  color: white;
+  margin: 10px;
+  cursor: pointer;
+  font-family: sans-serif;
+  font-size: 13px;
+}
 
 @media screen and (max-width: 1500px) {
 

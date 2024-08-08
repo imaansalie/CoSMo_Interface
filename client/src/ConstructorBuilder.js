@@ -1,5 +1,5 @@
-import React, {useCallback, useContext, useEffect, useState } from 'react';
-import {Box, Button} from "@chakra-ui/react";
+import React, {useEffect, useState } from 'react';
+import {Box, Button, Icon} from "@chakra-ui/react";
 import ReactFlow, {ReactFlowProvider, addEdge,Controls,Background,useNodesState,useEdgesState} from 'reactflow';
 import 'reactflow/dist/style.css';
 import Object from './Nodes/Object';
@@ -17,9 +17,9 @@ import ValueConstraint from './Edges/ValueConstraint';
 import { SearchForm } from './Components/SearchForm';
 import { TextGenerator } from './TextGenerator';
 import { Settings } from './Components/Settings';
-import axios from 'axios';
-import { UserContext } from './Contexts/UserContext';
 import { ConstructorSaver } from './ConstructorSaver';
+import { ConstructorForm } from './Components/ConstructorForm';
+import { BsPlusCircle } from 'react-icons/bs';
 
 const nodeTypes = {
   'Object': Object,
@@ -93,6 +93,13 @@ export const ConstructorBuilder = () => {
 
   const [selectedLanguage, setSelectedLanguage] = useState('English');
   const [constructorAdded, setConstructorAdded] = useState(false);
+
+  const [saveForm, setSaveForm]= useState(false);
+
+  //states for adding existing constructors
+  const [constructorForm, setConstructorForm] = useState(false);
+  const [addedNodes, setAddedNodes] = useState([]);
+  const [addedEdges, setAddedEdges] = useState([]);
 
   //input form functions
   const handleInputChange = (e) =>{
@@ -251,6 +258,16 @@ export const ConstructorBuilder = () => {
     }
   }, [nextGroup]);
 
+  //Integrate added nodes and edges into the existing state
+  useEffect(() =>{
+    if(addedNodes.length>0 && addedEdges.length>0){
+      setNodes((nds) => [...nds, ...addedNodes]);
+      setEdges((eds) => [...eds, ...addedEdges]);
+      setAddedNodes([]);
+      setAddedEdges([]);
+    }
+  }, [addedNodes, addedEdges]);
+
   //pass handleDelete prop to Object
   const mappedNodes = nodes.map(node =>({
     ...node,
@@ -265,10 +282,16 @@ export const ConstructorBuilder = () => {
         <div className="FlowTest">
           <div className="ConstructorBuilder">
             <h1>Constructor Builder </h1>
-            <Settings
-              selectedLanguage={selectedLanguage}
-              setSelectedLanguage={setSelectedLanguage}
-            />
+
+            <div className='CB-options'>
+              <Settings
+                selectedLanguage={selectedLanguage}
+                setSelectedLanguage={setSelectedLanguage}
+              />
+
+              <Button className='AddConstructorButton' onClick= {()=>setConstructorForm(true)}>
+                <BsPlusCircle/> Add an existing Constructor</Button>
+            </div>
 
             <Box border="1px solid gray" className='Builder'>
                 <ReactFlow
@@ -296,10 +319,13 @@ export const ConstructorBuilder = () => {
               />
 
               <ConstructorSaver
+                nodes={nodes}
+                edges={edges}
                 nodeLabels={nodeLabels}
                 setConstructorAdded= {setConstructorAdded}
                 setErrorMessage= {setErrorMessage}
-
+                saveForm={saveForm}
+                setSaveForm= {setSaveForm}
               />
             </div>
             
@@ -374,6 +400,14 @@ export const ConstructorBuilder = () => {
                 <button onClick={()=>setConstructorAdded(false)}>Okay</button>
               </Box>
             </div>
+          )}
+
+          {constructorForm && (
+            <ConstructorForm
+              setConstructorForm={setConstructorForm}
+              setAddedNodes={setAddedNodes}
+              setAddedEdges={setAddedEdges}
+            />
           )}
       </div>
     </ReactFlowProvider>

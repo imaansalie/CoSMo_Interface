@@ -12,7 +12,7 @@ const Object = ({ id, data}) => {
     let textContent='';
 
     if(data.itemID !== ''){
-      textContent = `${data.conID} ${data.itemLabel} (${data.itemID})`;
+      textContent = `${data.itemLabel} (${data.itemID})`;
     }
     
     let style ={};
@@ -20,12 +20,12 @@ const Object = ({ id, data}) => {
     switch (data.inputType){
       case 'InstanceConstructor':
         style={ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', margin: 0 };
-        textContent= `${data.conID}: ${data.itemLabel}`;
+        textContent= `C${data.conID}: ${data.itemLabel}`;
         break;
 
         case 'TypeConstructor':
           style={ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', margin: 0 };
-          textContent= `${data.conID}: ${data.itemLabel}`;
+          textContent= `C${data.conID}: ${data.itemLabel}`;
           break;
 
       case 'Property':

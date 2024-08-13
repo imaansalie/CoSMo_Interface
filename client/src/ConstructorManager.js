@@ -1,41 +1,68 @@
 import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "./Contexts/UserContext";
 import axios from "axios";
+import { Button } from "@chakra-ui/react";
+import { useNavigate } from 'react-router-dom';
 
-export const ConstructorManager = () =>{
+export const ConstructorManager = ({addedNodes, addedEdges, setAddedNodes, setAddedEdges}) =>{
 
     const {username, userID} = useContext(UserContext);
-    const [constructors, setConstructors] = useState([]);
+    const [constructors, setConstructors] = useState({});
+    const navigate = useNavigate();
 
-    // useEffect(() =>{
-    //     const getConstructors = async() =>{
-    //         if(userID){
-    //             try{
-    //                 const response = await axios.post('http://localhost:3001/getConstructors', {userID});
-    //                 console.log(response.data)
-    //                 setConstructors(response.data);
-    //                 return response.data;
-    //             } catch (error){
-    //                 console.error("Error getting items: ", error);
-    //                 throw error;
-    //             }
-    //         }
-    //     };
+    useEffect(() =>{
+        const getConstructors = async() =>{
+            if(userID){
+                try{
+                    const response = await axios.post('http://localhost:3001/getConstructors', {userID});
+                    const data = response.data;
 
-    //     getConstructors();
-    // }, [userID]);
+                    //sorting constructors into groups
+                    const groupedConstructors = data.reduce((acc, constructor) =>{
+                        const collection = constructor.collection;
+                        if(!acc[collection]){
+                            acc[collection] = [];
+                        }
+                        acc[collection].push(constructor);
+                        return acc;
+                    }, {});
 
-    
+                    setConstructors(groupedConstructors);
+
+                } catch (error){
+                    console.error("Error getting items: ", error);
+                    throw error;
+                }
+            }
+        };
+
+        getConstructors();
+    }, [userID]);
+
+    const handleConstructorClick = (nodes, edges) =>{
+        const parsedEdges = JSON.parse(edges || '[]');
+        const parsedNodes = JSON.parse(nodes || '[]');
+        setAddedEdges(parsedEdges);
+        setAddedNodes(parsedNodes);
+        navigate('/ConstructorBuilder', {state: {parsedNodes, parsedEdges}});
+    }
     return(
-        <div>
-            <ul>
-                {constructors.map((constructor) => (
-                    <li key={constructor.conID}>
-                        <h2>Constructor ID: {constructor.conID}</h2>
-                        <div dangerouslySetInnerHTML={{ __html: constructor.output }} />
+        <div className="ConstructorManager">
+             {Object.entries(constructors).map(([collectionName, collectionConstructors]) => (
+                <div key={collectionName} className="constructor-collection">
+                <h2>{collectionName}</h2>
+                <ul className="MyConstructorList">
+                    {collectionConstructors.map((constructor) => (
+                    <li key={constructor.idconstructors} className="my-constructors">
+                        <Button className= "MyConstructorButton"onClick={() =>handleConstructorClick(constructor.nodes, constructor.edges)}>
+                            <h3>{constructor.name}</h3>
+                            <p>{constructor.description}</p>
+                        </Button>
                     </li>
-                ))}
-            </ul>
+                    ))}
+                </ul>
+            </div>
+            ))}
         </div>
     )
 }

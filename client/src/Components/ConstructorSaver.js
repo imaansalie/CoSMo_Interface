@@ -1,15 +1,8 @@
-import React, {useContext, useState} from "react";
+import React, {useContext, useState, useEffect} from "react";
 import axios from "axios";
-import { UserContext } from "./Contexts/UserContext";
-import { Button } from "@chakra-ui/react";
+import { UserContext } from "../Contexts/UserContext";
+import { Button, Input } from "@chakra-ui/react";
 import { Box } from "@chakra-ui/react";
-
-//will dynamically get collections later 
-const collections = [
-    {code: 'CO1', name: 'Collection1'},
-    {code: 'CO2', name: 'Collection2'},
-    {code: 'CO3', name: 'Collection3'}
-]
 
 export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded, setErrorMessage, saveForm, setSaveForm}) =>{
 
@@ -17,8 +10,17 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
     const [conName, setConName] = useState('');
     const [conCollection, setConCollection] = useState('Collection1');
     const [description, setDescription] = useState('');
-    // const [max, setMax] = useState(-1);
-    // const {collections, setCollections}= useState([]);
+    const [collections, setCollections]= useState([]);
+    const [newCollectionForm, setNewCollectionForm] = useState(false);
+    const [newCollection, setNewCollection] = useState('');
+
+    useEffect(() =>{
+        axios.post('http://localhost:3001/getCollections').then((response) =>{
+            setCollections(response.data);
+        }).catch(error=>{
+            console.error("Error getting items."+error);
+        })
+    }, []);
 
     const handleSave = () =>{
         setSaveForm(true);
@@ -34,8 +36,11 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
               const response = await sendConstructorToDB(nodeLabels[0]);
               
               console.log(response);
-              if (response === "Constructor added."){
+              if (response === "Constructor added." || response === "Constructor and new collection added."){
                 setConstructorAdded(true);
+              }
+              else{
+                setErrorMessage(response);
               }
             }
             else{
@@ -57,7 +62,7 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
         })
 
         try{
-            const response = await axios.post('http://localhost:3001/saveConstructor', {maxConID, nodes, edges, conName, conCollection, string, description});
+            const response = await axios.post('http://localhost:3001/saveConstructor', {maxConID, nodes, edges, conName, conCollection, string, description, userID});
             console.log(response.data)
             return response.data;
         } catch (error){
@@ -74,10 +79,22 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
         // console.log(conCollection);
     }
 
-    const handleCollectionSubmit = (event) =>{
-        const newCollection = event.target.value;
+    const handleCollectionChange = (event) =>{
+        setConCollection(event.target.value)
+    }
+
+    const handleNewCollection = () =>{
+        setNewCollectionForm(true);
+        setSaveForm(false);
+    }
+
+    const handleCollectionAdded = (newCollection) =>{
+        const updatedCollections = [...collections, { name: newCollection, idcollections: newCollection }];
+        setCollections(updatedCollections);
         setConCollection(newCollection);
-        // console.log(conCollection);
+        setNewCollectionForm(false);
+        setSaveForm(true);
+        setNewCollection('');
     }
 
     return(
@@ -100,14 +117,16 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
                     <select
                         id="collections-dd"
                         value={conCollection}
-                        onChange={handleCollectionSubmit}
+                        onChange={handleCollectionChange}
                     >
                         {collections.map((collection) =>(
-                            <option key={collection.code} value = {collection.name}>
+                            <option key={collection.idcollections} value = {collection.name}>
                                 {collection.name}
                             </option>
                         ))}
                     </select>
+
+                    <Button className="saveForm-button" onClick={() => handleNewCollection()}>Add a new collection</Button>
 
                     <textarea
                         className="description-input"
@@ -121,9 +140,18 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
                     type="submit" onClick={handleFormSubmit}>Confirm details</Button>
                 </Box>
             )}
-        </div>
-        
 
-        
+            {newCollectionForm &&(
+                <Box className="SaveConstructorBox">
+                    <Input
+                        className="save-input"
+                        placeholder="Name the collection..." 
+                        value={newCollection}
+                        onChange={(e) => setNewCollection(e.target.value)}
+                    ></Input>
+                    <Button onClick={() => handleCollectionAdded(newCollection)}>Save</Button>
+                </Box>
+            )}
+        </div>
     )
 }

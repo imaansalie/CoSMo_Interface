@@ -61,15 +61,15 @@ app.post('/getItems', (req, res) =>{
         }
     )
 
-    console.log(itemType);
+    // console.log(itemType);
 })
 
 app.post('/getLabel', (req, res) => {
     const label = req.body.label;
     const language = req.body.selectedLanguage;
 
-    console.log(label);
-    console.log(language);
+    // console.log(label);
+    // console.log(language);
 
     let query = `SELECT ${language} from languages WHERE English = '${label}'`;
 
@@ -94,23 +94,68 @@ app.post('/saveConstructor', (req, res) => {
     const conCollection = req.body.conCollection;
     const string = req.body.string;
     const description = req.body.description;
+    const userID= req.body.userID;
 
-    console.log(conName);
-    console.log(conCollection);
-
-    let query = `INSERT INTO constructors (idconstructors, name, collection, text, nodes, edges, description) VALUES (${id}, '${conName}', '${conCollection}', '${string}', '${nodes}', '${edges}','${description}')`;
+    const query1= `SELECT * from constructors where idconstructors=?`;
 
     db.query(
-        query, 
+        query1, 
+        [id],
         (err, result)=>{
             if(err){
                 console.log(err);
+                return res.status(500).send("Error saving constructor.");
+            }
+            else if(result.length>0){
+                return res.send(`Constructor ${id}: ${conName} already exists.`)
             }
             else{
-                res.send("Constructor added.");
+                const query2 = `INSERT INTO constructors (idconstructors, name, collection, text, nodes, edges, description, userID) VALUES (?,?,?,?,?,?,?, ?)`;
+
+                db.query(
+                    query2,
+                    [id, conName, conCollection, string, nodes, edges, description, userID],
+                    (err, result)=>{
+                        if(err){
+                            console.log(err);
+                            return res.status(500).send("Error saving constructor.");
+                        }
+                        else{
+                            const query3 = `SELECT * from collections WHERE name = ?`;
+                            db.query(
+                                query3, 
+                                [conCollection],
+                                (err, result)=>{
+                                    if(err){
+                                        console.log(err);
+                                        return res.status(500).send("Error checking collection.");
+                                    }
+                                    else{
+                                        //if not, add the collection
+                                        if(result.length === 0){
+                                            const query4 = `INSERT INTO collections (name) VALUES (?)`;
+                                            db.query(
+                                            query4,
+                                            [conCollection],
+                                            (err, result) =>{
+                                                if(err){
+                                                    console.log(err);
+                                                    return res.status(500).send("Error adding collection.");
+                                                }
+                                                res.send("Constructor and new collection added.");
+                                            });
+                                        }else {
+                                            res.send("Constructor added.");
+                                        }
+                                    }
+                                }
+                            )
+                        }
+                    }
+                )
             }
         }
-    )
+    )    
 })
 
 app.post('/getConstructors', (req, res) => {
@@ -131,8 +176,25 @@ app.post('/getConstructors', (req, res) => {
     )
 })
 
+app.post('/getCollections', (req, res) => {
+    let query = `SELECT * from collections`;
+
+    db.query(
+        query, 
+        (err, result)=>{
+            if(err){
+                console.log(err);
+            }
+            else{
+                res.json(result);
+            }
+        }
+    )
+})
+
 app.post('/getAllConstructors', (req, res) => {
-    let query = `SELECT idconstructors, nodes, edges, name, description FROM constructors`;
+    const collection= req.body.collection;
+    let query = `SELECT idconstructors, nodes, edges, name, description FROM constructors WHERE collection='${collection}'`;
 
     db.query(
         query, 

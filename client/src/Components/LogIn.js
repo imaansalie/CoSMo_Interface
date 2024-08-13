@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { UserContext } from '../Contexts/UserContext';
@@ -49,21 +49,25 @@ export const LogIn = () =>{
     }
 
     return(
-        <div>
-            <input 
-                placeholder='Enter username...' 
-                value = {username}
-                onChange={handleUsername}
-            />
+        <div className='Login' style={{backgroundImage: 'url(./icons/background.jpg)'}}>
+            <h1 className='Login-heading'>Welcome to the CoSMo User Interface</h1>
+            <p className='Login-text'>Log in using your Wikipedia credentials</p>
+            <div className='LoginBox'>
+                <input 
+                    placeholder='Enter username...' 
+                    value = {username}
+                    onChange={handleUsername}
+                />
 
-            <input 
-                placeholder='Enter password...' 
-                value = {password}
-                onChange={handlePassword}
-                type="password"
-            />
+                <input 
+                    placeholder='Enter password...' 
+                    value = {password}
+                    onChange={handlePassword}
+                    type="password"
+                />
 
-            <button onClick={handleLogin}>Log in</button>
+                <button onClick={handleLogin}>Log in</button>
+            </div>
         </div>
     )
 };

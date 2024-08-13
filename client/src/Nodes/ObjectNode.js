@@ -55,11 +55,11 @@ const ObjectNode = ({ id, data}) => {
   return (
     <div>
        <div style={{ position: 'relative', display: 'inline-block' }}>
-        <img src={imageUrl} alt={`${data.label}`} style={{ display: 'block', width: '100%' }} />
-        <p style={{ fontFamily:'sans-serif', ...style }}>
-          {textContent}
-        </p>
-      </div>
+          <img src={imageUrl} alt={`${data.label}`} style={{ display: 'block', width: '100%' }} />
+          <p style={{ fontFamily:'sans-serif', ...style }}>
+            {textContent}
+          </p>
+        </div>
 
        
       {/* Handles */}
@@ -173,7 +173,6 @@ const ObjectNode = ({ id, data}) => {
         bg="transparent"
         border="none"
         size="small"
-        // style={{ position: 'absolute', top: '0', right: '0' }}
         onClick={onDelete}
       />
     </div>

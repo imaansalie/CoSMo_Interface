@@ -7,11 +7,14 @@ import {ConstructorBuilder} from './ConstructorBuilder';
 import Navbar from "./Components/Navbar";
 import { ConstructorManager } from './ConstructorManager';
 import { UserContext } from './Contexts/UserContext';
+import PrivateRoute from './Components/PrivateRoute';
 
 export const App = () => {
   
   const location = useLocation();
   const hideNavbar = location.pathname === "/";
+  const [addedNodes, setAddedNodes] = useState([]);
+  const [addedEdges, setAddedEdges] = useState([]);
 
   return (
       <div className="App">
@@ -25,16 +28,29 @@ export const App = () => {
 
               <Route 
                 path="/ConstructorBuilder" 
-                element={<ConstructorBuilder/>}> 
-                Flow 
-              </Route>
+                element={
+                  <PrivateRoute>
+                    <ConstructorBuilder 
+                    addedNodes= {addedNodes} 
+                    addedEdges={addedEdges}
+                    setAddedEdges = {setAddedEdges}
+                    setAddedNodes = {setAddedNodes}
+                  />
+                  </PrivateRoute>
+                }/> 
 
               <Route 
                 path="/ConstructorManager" 
                 element={
-                <ConstructorManager/>}> 
-                Constructor Manager 
-              </Route>
+                  <PrivateRoute>
+                    <ConstructorManager
+                    addedNodes= {addedNodes} 
+                    addedEdges={addedEdges}
+                    setAddedEdges = {setAddedEdges}
+                    setAddedNodes = {setAddedNodes}
+                  />
+                  </PrivateRoute>
+                }/> 
             </Routes>
       </div> 
   );

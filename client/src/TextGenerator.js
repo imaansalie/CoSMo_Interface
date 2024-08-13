@@ -16,7 +16,9 @@ const definitions = {
 
     'InstanceConstructor_PartOf_Object_InstanceConstructor': (sourceNode, targetNode) => `PartOf(C${sourceNode.data.conID}, C${targetNode.data.conID})<br/><br/>`,
 
-    'TypeConstructor_PartOf_Object_TypeConstructor': (sourceNode, targetNode) => `PartOf(C${sourceNode.data.conID}, C${targetNode.data.conID})<br/><br/>`
+    'TypeConstructor_PartOf_Object_TypeConstructor': (sourceNode, targetNode) => `PartOf(C${sourceNode.data.conID}, C${targetNode.data.conID})<br/><br/>`,
+
+    'ValueConstraint_ValueConstraint_Function': (sourceNode, targetNode) => `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Function(${targetNode.data.itemID})={${sourceNode.data.itemID}}`
 }
   
 const validKeys = [
@@ -75,6 +77,9 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
 
     const conIDGroups = new Map();
     let currentRoleID= 0;
+
+    // console.log(nodes);
+    // console.log(edges);
 
     const checkSyntax = (src, edge, tgt) =>{
         const currentEdge = validKeys.find(key => key.edge === edge);
@@ -394,11 +399,12 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
         }
     }
 
+    //testing
     useEffect(() => {
         // Attach generateText to the window object
         if (typeof window !== 'undefined') {
           window.generateText = generateText;
-          console.log("Generate Text function attached to window.");
+        //   console.log("Generate Text function attached to window.");
         }
     
         // Clean up

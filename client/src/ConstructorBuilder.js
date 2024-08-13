@@ -1,5 +1,5 @@
 import React, {useEffect, useState } from 'react';
-import {Box, Button, Icon} from "@chakra-ui/react";
+import {Box, Button} from "@chakra-ui/react";
 import ReactFlow, {ReactFlowProvider, addEdge,Controls,Background,useNodesState,useEdgesState} from 'reactflow';
 import 'reactflow/dist/style.css';
 import ElementSelector from './Nodes/ElementSelector';
@@ -16,10 +16,12 @@ import ValueConstraint from './Edges/ValueConstraint';
 import { SearchForm } from './Components/SearchForm';
 import { TextGenerator } from './TextGenerator';
 import { Settings } from './Components/Settings';
-import { ConstructorSaver } from './ConstructorSaver';
+import { ConstructorSaver } from './Components/ConstructorSaver';
 import { ConstructorForm } from './Components/ConstructorForm';
 import { BsPlusCircle } from 'react-icons/bs';
 import ObjectNode from './Nodes/ObjectNode';
+import { useLocation } from 'react-router-dom';
+import { GrCircleInformation } from "react-icons/gr";
 
 const nodeTypes = {
   'Object': ObjectNode,
@@ -29,7 +31,7 @@ const nodeTypes = {
   'InstanceConstructor': ObjectNode,
   'Join': ObjectNode,
   'Property': ObjectNode,
-  'Role_name': ObjectNode,
+  'Role_name': InputNode,
   'TypeConstructor': ObjectNode,
   'ValueConstraint': InputNode,
 };
@@ -61,11 +63,11 @@ const connectors = [
 const initialNodes = [];
 const initialEdges = [];
 
-export const ConstructorBuilder = () => {
+export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAddedEdges}) => {
  
   //state hooks for nodes and edges
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  // const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  // const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   //state hook for text generator string
   const [nodeLabels, setNodeLabels] = useState([]);
@@ -98,8 +100,15 @@ export const ConstructorBuilder = () => {
 
   //states for adding existing constructors
   const [constructorForm, setConstructorForm] = useState(false);
-  const [addedNodes, setAddedNodes] = useState([]);
-  const [addedEdges, setAddedEdges] = useState([]);
+
+  //track if value constraint takes custom input or not
+  const [VCinput, setVCInput] = useState(false);
+
+  //loading user made constructors
+  const {state} = useLocation();
+  const { nodes: locationNodes = [], edges: locationEdges = [] } = state || {};
+  const [nodes, setNodes, onNodesChange] = useNodesState(locationNodes.length > 0 ? locationNodes : initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(locationEdges.length > 0 ? locationEdges : initialEdges);
 
   //input form functions
   const handleInputChange = (e) =>{
@@ -127,27 +136,6 @@ export const ConstructorBuilder = () => {
     setShowForm(false);
     setCurrentNodeID(null);
   }
-
-  // load constructor diagram from test folder
-  // useEffect(() => {
-  //   const loadConstructorData = async () => {
-  //     try{
-  //       const response = await fetch('./TestFiles/Capybara.txt');
-
-  //       const text= await response.text();
-  //       // console.log('raw response: ', text);
-
-  //       const conData = JSON.parse(text);
-
-  //       setNodes(conData.nodes);
-  //       setEdges(conData.edges);
-  //     } catch (error){
-  //       console.error('Error loading data:', error);
-  //     }
-  //   };
-
-  //   loadConstructorData();
-  // }, []);
 
   //handles adding edges (connectors) to between nodes using the selected edge type
   const onConnect = (params) => {
@@ -209,21 +197,58 @@ export const ConstructorBuilder = () => {
   }
 
   // assign selected data item to node
-  const handleAssign = (item) => {
-    setNodes((prevNodes) => //update state of nodes
-      prevNodes.map((node) =>//check each node
-        node.id === newNodeId ? { //check if node ID matches newNodeID
-          ...node, //create a new node object with updated data
-          data: { 
-            ...node.data, //copy the existing data
-            itemLabel: item.label,
-            itemID: item.itemID }
-          } 
-          : node //if it doesn't match, return the node as is
-      ),
-    );
-    // console.log(item.itemID);
-    setNewNodeId(null);
+  const handleAssign = (item, itemType) => {
+
+    if(itemType !== 'ValueConstraint'){
+      setNodes((prevNodes) => //update state of nodes
+        prevNodes.map((node) =>//check each node
+          node.id === newNodeId ? { //check if node ID matches newNodeID
+            ...node, //create a new node object with updated data
+            data: { 
+              ...node.data, //copy the existing data
+              itemLabel: item.label,
+              itemID: item.itemID }
+            } 
+            : node //if it doesn't match, return the node as is
+        ),
+      );
+      // console.log(item.itemID);
+      setNewNodeId(null);
+    }
+    else{
+      if(!VCinput){
+        console.log("in");
+        setNodes((prevNodes) => //update state of nodes
+          prevNodes.map((node) =>//check each node
+            node.id === newNodeId ? { //check if node ID matches newNodeID
+              ...node, //create a new node object with updated data
+              data: { 
+                ...node.data, //copy the existing data
+                itemLabel: item.label, 
+                itemID: item.itemID }
+              } 
+              : node //if it doesn't match, return the node as is
+          ),
+        );
+        // console.log(item.itemID);
+        setNewNodeId(null);
+      }else{
+        console.log(item);
+        setNodes((prevNodes) =>
+          prevNodes.map((node) =>//check each node
+          node.id === newNodeId ? { //check if node ID matches newNodeID
+            ...node, //create a new node object with updated data
+            data: { 
+              ...node.data, //copy the existing data
+              itemLabel: null,
+              itemID: item}
+            } 
+            : node //if it doesn't match, return the node as is
+        ),
+        );
+        setNewNodeId(null);
+      }
+    }
   };
 
   //check if constructor has been deleted
@@ -260,25 +285,46 @@ export const ConstructorBuilder = () => {
 
   //Integrate added nodes and edges into the existing state
   useEffect(() =>{
+
+    const mergeUniqueItems = (existingItems, newItems, key) => {
+      const existingIds = new Set(existingItems.map(item => item[key]));
+      return [
+        ...existingItems,
+        ...newItems.filter(item => !existingIds.has(item[key]))
+      ];
+    };
+
+    if (locationNodes.length > 0 || locationEdges.length > 0) {
+      // Merge location nodes and edges into the state
+      setNodes(nds => mergeUniqueItems(nds, locationNodes, 'id'));
+      setEdges(eds => mergeUniqueItems(eds, locationEdges, 'id'));
+  
+      // Clear location nodes and edges after setting them
+      locationNodes.length = 0;
+      locationEdges.length = 0;
+    }
+
     if(addedNodes.length>0 && addedEdges.length>0){
-      setNodes((nds) => [...nds, ...addedNodes]);
-      setEdges((eds) => [...eds, ...addedEdges]);
+      setNodes(nds => mergeUniqueItems(nds, addedNodes, 'id'));
+      setEdges(eds => mergeUniqueItems(eds, addedEdges, 'id'));
       setAddedNodes([]);
       setAddedEdges([]);
     }
-  }, [addedNodes, addedEdges]);
+  }, [locationNodes, locationEdges, addedNodes, addedEdges]);
+
+  //testing
 
   const addNodesAndEdges = (newNodes, newEdges) => {
     setNodes((currentNodes) => [...currentNodes, ...newNodes]);
     setEdges((currentEdges) => [...currentEdges, ...newEdges]);
   };
-  
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.addNodesAndEdges = addNodesAndEdges;
     }
 
-    // Optional: clean up the window object when the component unmounts
+    //clean up the window object when the component unmounts
     return () => {
       if (typeof window !== 'undefined') {
         delete window.addNodesAndEdges;
@@ -345,8 +391,9 @@ export const ConstructorBuilder = () => {
                 saveForm={saveForm}
                 setSaveForm= {setSaveForm}
               />
+
+              <Button>Clear all</Button>
             </div>
-            
 
             <div data-testid = 'text' className='Textbox' contentEditable={false}>
                 {nodeLabels.length > 0 && (
@@ -356,7 +403,15 @@ export const ConstructorBuilder = () => {
           </div>
           
           <div className='toolbox'>
-            <p>Add elements</p>
+            
+            <div className='toolbox-info'>
+              <p>Add elements</p>
+              <div className='tooltip'>
+                <GrCircleInformation className='info-icon'/>
+                <span className= 'tooltiptext'>Click on an element to add it to the diagram.</span>
+              </div>
+            </div>
+            
             <div>
               <ElementSelector 
                 setCurrentType={setCurrentType} 
@@ -370,7 +425,13 @@ export const ConstructorBuilder = () => {
                 />  
             </div>
            
-            <p>Choose a connector</p>
+            <div className='toolbox-info'>
+              <p>Choose a connector</p>
+              <div className='tooltip'>
+                <GrCircleInformation className='info-icon'/>
+                <span className= 'tooltiptext'>Click on a connector to select it. To connect two elements, drag the connector between the handles of the elements.</span>
+              </div>
+            </div>
             <div className='connectors'>
               <ul>
                 {connectors.map((connector, index)=>(
@@ -386,7 +447,7 @@ export const ConstructorBuilder = () => {
           </div>
 
           {newNodeId && showSearchForm &&(
-          <SearchForm onAssign={handleAssign} itemType={currentType} />
+          <SearchForm onAssign={handleAssign} itemType={currentType} setVCInput= {setVCInput}/>
           )}
 
           {showForm && (

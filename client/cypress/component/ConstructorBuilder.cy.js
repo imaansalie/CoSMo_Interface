@@ -1,5 +1,3 @@
-import ConstructorBuilder from "../../src/ConstructorBuilder"
-
 describe('ConstructorBuilder Component', () => {
   beforeEach(() => {
       // Visit the page with the ConstructorBuilder component

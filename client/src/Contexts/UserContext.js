@@ -7,8 +7,18 @@ export const UserProvider = ({children}) =>{
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    const value = {
+        username,
+        setUsername,
+        password,
+        setPassword,
+        userID,
+        setUserID,
+        isAuthenticated: !!userID,
+    }
+
     return(
-        <UserContext.Provider value ={{userID, setUserID, password, setPassword, username, setUsername}}>
+        <UserContext.Provider value ={value}>
             {children}
         </UserContext.Provider>
     )

@@ -11,7 +11,7 @@ export const Settings = ({selectedLanguage, setSelectedLanguage}) =>{
     const handleChange = (event) =>{
         const newLanguage= event.target.value;
         setSelectedLanguage(newLanguage);
-        console.log("in settings: ", selectedLanguage);
+        // console.log("in settings: ", selectedLanguage);
     }
 
     useEffect(() => {

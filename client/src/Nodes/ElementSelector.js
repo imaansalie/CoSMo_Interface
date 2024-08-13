@@ -78,7 +78,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
       const newNodeId= generateUniqueId();
 
       if (element.name === 'InstanceConstructor'|| element.name ==='TypeConstructor'){
-        console.log("in");
+        // console.log("in");
         setConID(conID + 1);
         setShowForm(true);
         setCurrentNodeID(newNodeId);
@@ -159,7 +159,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
     const handlePropClick = (property) =>{
       setShowProps(!showProps);
       setSelectedProperty(property);
-      console.log(localRoleID);
+      // console.log(localRoleID);
       
       const x= Math.random() * 100;
       const y= Math.random() * 100;
@@ -190,12 +190,14 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
     const getConID = async() =>{
       try{
         const response = await axios.post('http://localhost:3001/getID');
-        const newConID = response.data[0].idconstructors + 1;
+        if(response.data.length>0){
+          const newConID = response.data[0].idconstructors + 1;
+          return newConID;
+        }
+        else{
+          return 1;
+        }
         
-        console.log("new: ", newConID);
-        console.log("set: ", conID);
-
-        return newConID;
       } catch (error){
           console.error("Error getting ID: ", error);
           throw error;
@@ -225,7 +227,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
       if(propertyDeleted){
         setLocalRoleID(Math.max(localRoleID -2, 0));
       }
-      console.log(localRoleID);
+      // console.log(localRoleID);
     }, [propertyDeleted])
 
     useEffect(() => {

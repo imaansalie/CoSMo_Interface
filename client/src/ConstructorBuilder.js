@@ -49,15 +49,15 @@ const edgeTypes = {
 }
 
 const connectors = [
-  {code: "RE", name:"Role", label: "Role"},
-  {code: "SCE", name:"Sub-constructor", label: "Sub Constructor Of"},
-  {code: "IE", name: "Instance", label: "Instance Of"},
-  {code: "POE", name: "PartOf_Object", label: "Part Of"},
-  {code: "ICE", name: "InstanceConstructor_Connector", label: "Instance Constructor"},
-  {code: "IM", name:"IsMandatory", label: "Is Mandatory"},
-  {code: "JO", name: "Join", label: "Join"},
-  {code: "RN", name: "Role_name", label: "Role Name Connector"},
-  {code: "VC", name: "ValueConstraint", label: "Value Constraint Connector"},
+  {code: "RE", picture: "Role", name:"Role", label: "Role"},
+  {code: "SCE", picture: "Sub-constructor", name:"Sub-constructor", label: "Sub Constructor Of"},
+  {code: "IE", picture: "Instance", name: "Instance", label: "Instance Of"},
+  {code: "POE", picture: "PartOf_Object", name: "PartOf_Object", label: "Part Of"},
+  {code: "ICE", picture: "InstanceConstructor_Connector", name: "InstanceConstructor_Connector", label: "Instance Constructor"},
+  {code: "IM", picture: "IsMandatory_Connector", name:"IsMandatory", label: "Is Mandatory"},
+  {code: "JO", picture: "Join_connector", name: "Join", label: "Join"},
+  {code: "RN", picture: "RN_connector", name: "Role_name", label: "Role Name Connector"},
+  {code: "VC", picture: "VC_connector", name: "ValueConstraint", label: "Value Constraint Connector"},
 ]
 
 const initialNodes = [];
@@ -109,6 +109,8 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
   const { nodes: locationNodes = [], edges: locationEdges = [] } = state || {};
   const [nodes, setNodes, onNodesChange] = useNodesState(locationNodes.length > 0 ? locationNodes : initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(locationEdges.length > 0 ? locationEdges : initialEdges);
+
+  const [clearNodes, setClearNodes] = useState(false);
 
   //input form functions
   const handleInputChange = (e) =>{
@@ -264,6 +266,28 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
     setEdges((prevEdges) => prevEdges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId))
   }
 
+  //functions to clear all nodes once confirmed or cancelled
+
+  const clearAllNodes = () =>{
+    nodes.forEach(node =>{
+      const inputType = node.data.inputType;
+      const nodeId= node.id;
+
+      if(inputType === 'InstanceConstructor' || inputType === 'TypeConstructor' || inputType === 'Property'){
+        handleNodeDelete(inputType, nodeId);
+      }
+    });
+
+    setNodes([]);
+    setEdges([]);
+    setNodeLabels([]);
+    setClearNodes(false);
+  }
+
+  const handleClearCancel = () =>{
+    setClearNodes(false);
+  }
+
   //after informing element selector, reset checkDeleted boolean to true after 1 second
   useEffect(() =>{
     if(checkDeleted){
@@ -294,9 +318,30 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
       ];
     };
 
+    const calculateNewPosition = (existingNodes) =>{
+      if (existingNodes.length === 0) return 0;
+      else{
+        const maxY = Math.max(...existingNodes.map(node => node.position.y));
+        return maxY;
+      }
+    }
+
+    const positionNodes = (nodes, existingNodes) =>{
+      const newPosition = calculateNewPosition(existingNodes);
+      return nodes.map((node, index) => ({
+        ...node,
+        position:{
+          x:node.position.x,
+          y:node.position.y+newPosition+100,
+        }
+      }))
+    }
+
     if (locationNodes.length > 0 || locationEdges.length > 0) {
+
+      const positionedLocationNodes= positionNodes(locationNodes, nodes);
       // Merge location nodes and edges into the state
-      setNodes(nds => mergeUniqueItems(nds, locationNodes, 'id'));
+      setNodes(nds => mergeUniqueItems(nds, positionedLocationNodes, 'id'));
       setEdges(eds => mergeUniqueItems(eds, locationEdges, 'id'));
   
       // Clear location nodes and edges after setting them
@@ -305,7 +350,8 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
     }
 
     if(addedNodes.length>0 && addedEdges.length>0){
-      setNodes(nds => mergeUniqueItems(nds, addedNodes, 'id'));
+      const positionedAddedNodes= positionNodes(addedNodes, nodes);
+      setNodes(nds => mergeUniqueItems(nds, positionedAddedNodes, 'id'));
       setEdges(eds => mergeUniqueItems(eds, addedEdges, 'id'));
       setAddedNodes([]);
       setAddedEdges([]);
@@ -392,10 +438,10 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
                 setSaveForm= {setSaveForm}
               />
 
-              <Button>Clear all</Button>
+              <button className='clear-button' onClick={() => setClearNodes(true)}>Clear all</button>
             </div>
 
-            <div data-testid = 'text' className='Textbox' contentEditable={false}>
+            <div data-testid = 'text' className='Textbox'>
                 {nodeLabels.length > 0 && (
                 <p dangerouslySetInnerHTML={{ __html: nodeLabels[0] }} />
                 )}
@@ -437,7 +483,7 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
                 {connectors.map((connector, index)=>(
                   <li key={index}>
                     <button onClick={() => handleEdgeChange (connector)}>
-                      <img src={"/icons/"+connector.name+".png"} className='selector-img'/>
+                      <img src={"/icons/"+connector.picture+".png"} className='selector-img'/>
                         <span className='name'>{connector.label}</span>
                     </button>  
                   </li>
@@ -487,6 +533,16 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
               setAddedNodes={setAddedNodes}
               setAddedEdges={setAddedEdges}
             />
+          )}
+
+          {(nodes.length>0 || edges.length>0) && clearNodes &&(
+            <Box className='clearBox'>
+              <p className='clearBox-text'>Are you sure you want to clear all constructors?</p>
+              <div className='clearBox-buttons'>
+                <Button className='clearBox-button' onClick={() => clearAllNodes()}>Confirm</Button>
+                <Button className='clearBox-button' onClick={() => handleClearCancel()}>Cancel</Button>
+              </div>
+            </Box>
           )}
       </div>
     </ReactFlowProvider>

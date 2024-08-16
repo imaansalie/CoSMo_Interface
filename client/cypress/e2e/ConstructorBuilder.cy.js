@@ -1,7 +1,35 @@
 describe('ConstructorBuilder Tests', () => {
-  beforeEach(() => {
-    cy.visit('/ConstructorBuilder'); // Adjust the URL to where your component is rendered
-  });
+
+    beforeEach(() => {
+        cy.intercept('POST', 'http://localhost:3001/getConstructors', {
+            fixture: 'constructors.json', 
+          }).as('getConstructors');
+
+        // Visit the login page 
+        cy.visit('/'); 
+    
+        // Fill out the login form
+        cy.get('input[placeholder="Enter username..."]').type('test1'); 
+        cy.get('input[placeholder="Enter password..."]').type('123'); 
+    
+        // Submit the form
+        cy.get('button').contains('Log in').click();
+    
+        // Wait for navigation
+        cy.url().should('include', '/ConstructorManager');
+
+        // Wait for the constructors to load after login
+        cy.wait('@getConstructors');
+
+        //simulate navigating to ConstructorBuilder using Navbar
+    
+        cy.get('.Sidebar').should('be.visible');
+        cy.get('.SidebarList .Sidebar-row') 
+        .contains('Constructor Builder') 
+        .click();
+
+        cy.url().should('include', '/ConstructorBuilder');
+      });
 
   //test basic constructors
 

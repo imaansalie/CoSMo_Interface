@@ -42,6 +42,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
     const [showArgs, setShowArgs] = useState(false);
     const [showProps, setShowProps] = useState(false);
     const [selectedProperty, setSelectedProperty] = useState(null);
+    const [initialConID, setInitialConID] = useState(0);
 
     //function to add text node (value constraint and role type -- must adapt to use search form as well)
     const addTextNode = (adornment) => {
@@ -192,6 +193,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
         const response = await axios.post('http://localhost:3001/getID');
         if(response.data.length>0){
           const newConID = response.data[0].idconstructors + 1;
+          console.log(newConID);
           return newConID;
         }
         else{
@@ -208,8 +210,9 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
     useEffect(() =>{
       const initializeConID = async() =>{
       try{
-        const initialConID = await getConID();
-        setConID(initialConID);        
+        const DB_ConID = await getConID();
+        setInitialConID(DB_ConID);
+        setConID(DB_ConID);        
       } catch (error){
         console.error("Failed to initialize conID", error);
       }
@@ -219,7 +222,9 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
 
     useEffect(() => {
       if(elementDeleted){
-        setConID(prevConID => prevConID -1);
+        setConID(Math.max(conID -1, initialConID));
+        console.log(conID);
+        console.log(initialConID);
       }
     }, [elementDeleted])
 

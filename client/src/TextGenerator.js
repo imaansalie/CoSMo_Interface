@@ -353,7 +353,21 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
                         output += `${edge_string(sourceNode, targetNode)}`;
                         if(key === 'ValueConstraint_Instance_Object'){
                             if( group.edges.length >= index+2){
-                            output+=',<br/>'
+                                let nextIndex = index+1;
+                                const nextEdge = group.edges[nextIndex];
+                                const nextSourceNode = nodes.find((node) => node.id === nextEdge.source);
+                                const nextTargetNode = nodes.find((node) => node.id === nextEdge.target);
+
+                                if(nextSourceNode && nextTargetNode){
+                                    const nextKey = `${nextSourceNode.data.inputType}_${nextEdge.type}_${nextTargetNode.data.inputType}`;
+
+                                    if(nextKey === 'InstanceConstructor_Instance_TypeConstructor'){
+                                        output+=')<br/><br/>';
+                                    }
+                                    else{
+                                        output+=',<br/>'
+                                    }
+                                }
                             }
                         }
                     }

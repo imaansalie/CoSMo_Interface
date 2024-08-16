@@ -1,4 +1,9 @@
 describe('ConstructorBuilder Component', () => {
+
+    before(() => {
+        cy.login('test1', '123'); // Perform login with valid credentials
+    });
+
   beforeEach(() => {
       // Visit the page with the ConstructorBuilder component
       cy.visit('/ConstructorBuilder'); // Adjust this to the correct path

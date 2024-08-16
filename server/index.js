@@ -219,10 +219,11 @@ app.post('/getID', (req, res) => {
                 console.log(err);
             }
             else{
+                console.log(result);
                 res.json(result);
             }
         }
-    )
+    )    
 })
 
 app.listen(3001, () => {

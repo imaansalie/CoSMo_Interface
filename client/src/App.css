@@ -1,5 +1,5 @@
 .App {
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   display: flex;
   border: none;
@@ -13,6 +13,7 @@ body{
   align-items: center;
   border: none;
   padding: none;
+  overflow-x: hidden;
 }
 
 .FlowTest, .ConstructorBuilder, .toolbox, .Textbox, .buttons {
@@ -21,8 +22,8 @@ body{
 
 .FlowTest{
   display: flex;
-  border: none;
-  padding: none;
+  border: 0;
+  padding: 0;
 }
 
 h1, h2, h3, p {
@@ -121,15 +122,15 @@ button, input, textarea{
 .ConstructorBuilder .Textbox{
   border: solid 1px grey;
   max-width: 1000px;
-  max-height: 130px;
+  max-height: 150px;
   margin-top: 10px;
   padding-top: 20px;
   padding-bottom: 20px;
-  /* margin-left: 270px; */
   text-align: left;
   padding-left: 10px;
   font-family: sans-serif;
   overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .label{
@@ -201,11 +202,50 @@ button, input, textarea{
   font-size: 13px;
 }
 
+/* CLEAR ALL BUTTON */
+
+.clear-button{
+  background-color: rgb(198, 6, 6);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 12px;
+  margin-left: 10px;
+}
+
+.clearBox{
+  background-color: white;
+  padding: 4px;
+  border: 1px solid grey;
+  border-radius: 5px;
+  box-shadow: gray;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40%;
+  height: 20%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: sans-serif;
+  justify-content: center;
+}
+
+.clearBox .clearBox-button{
+  background-color: #2e3760;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  margin-left: 5px;
+}
+
 /* TOOLBOX */
 .toolbox .elements{
-  /* display: grid; */
   grid-template-columns: repeat(2, 1fr); /* Two columns with equal width */
-  gap: 5px; /* Adjust the gap between items as needed */
+  gap: 5px; 
   padding: 5px; /* Add some padding around the container */
   margin-right: 10px;
   max-height: 360px;
@@ -339,7 +379,7 @@ button, input, textarea{
   list-style: none;
   padding: 0;
   margin: 0;
-  gap: 2px; /* Adjust the gap between items as needed */
+  
 }
 
 .toolbox .connectors li {
@@ -352,12 +392,13 @@ button, input, textarea{
   border: 1px solid #ccc; /* Border for each item */
   border-radius: 4px; /* Optional: rounded corners */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: shadow effect */
+  margin-bottom: 2px;
+  padding-top: 2px;
+  padding-bottom: 6px;
 }
 
 .toolbox .connectors button {
   display: flex;
-  /* flex-direction: column; */
-  /* align-items: center; */
   justify-content: center;
   width: 100%;
   height: 100%;
@@ -369,14 +410,9 @@ button, input, textarea{
 }
 
 .toolbox .connectors .name {
-  font-size: 12px; /* Adjust font size as needed */
-  /* line-height: 1.2; Adjust line height for better spacing */
-  /* white-space: normal; /* Allow text to wrap */
-  /* word-wrap: break-word; Break long words if necessary */
-  /* overflow-wrap: break-word; Ensures long words break properly */
+  font-size: 12px;
   text-align: right; 
   width: 100%;
-  /* margin-bottom: 10px; */
 }
 
 .toolbox .connectors .selector-img {
@@ -422,8 +458,6 @@ button, input, textarea{
   margin-top: 4px;
   z-index: 1000px;
   background-color: white;
-  overflow-y: auto;
-  max-height: 300px;
   width: 680px;
 }
 
@@ -434,7 +468,12 @@ button, input, textarea{
   margin-top: 10px;
 }
 
-.search-form ul{
+.search-form .search-form-list{
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.search-form .ul{
   list-style: none;
   gap: 1px;
   margin: 4px;
@@ -553,7 +592,6 @@ button, input, textarea{
   border: 1px solid grey;
   border-radius: 5px;
   box-shadow: gray;
-  /* z-index: 1000px; */
   position: absolute;
   top: 50%;
   left: 50%;
@@ -597,9 +635,28 @@ button, input, textarea{
 /* MY CONSTRUCTORS -- i.e. user made constructors */
 
 .ConstructorManager{
-  width: 60%;
   font-family: sans-serif;
   margin-left: 20px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  border: 0;
+  padding: 0;
+  width: 1061px;
+}
+
+.ConstructorManager > div:first-child {
+  flex-shrink: 0;
+}
+
+.ConstructorManager .MyConstructor-Box{
+  max-height: 75%;
+  background-color: #d9dce6;
+  flex-grow: 1; /* Fills the remaining space */
+  padding: 20px;
+  overflow-y: auto;
+  width: 95%;
+  
 }
 
 .MyConstructorList{
@@ -607,7 +664,7 @@ button, input, textarea{
 }
 .my-constructors{
   background-color: rgb(158, 192, 219);
-  width: 100%;
+  width: 70%;
   padding: 10px;
   margin-top: 10px;
   border: 2px solid #14192d;
@@ -680,7 +737,7 @@ button, input, textarea{
 /* Login screen */
 
 .Login{
-  width: 100%;
+  width: 1400px;
   height: 100vh;
   background-size: cover;
   background-repeat: no-repeat;
@@ -741,10 +798,26 @@ button, input, textarea{
   background-color: #0056b3; 
 }
 
+
 @media screen and (max-width: 1500px) {
 
   .App{
     height: 100vh;
+  }
+
+  .Sidebar{
+    width: 200px;
+  }
+
+  .Sidebar p{
+    font-size: medium;
+  }
+
+  .FlowTest h1{
+    margin-top: 8px;
+    margin-bottom: 10px;
+    text-align: left;
+    font-size: 25px;
   }
 
   .ConstructorBuilder{
@@ -753,29 +826,67 @@ button, input, textarea{
   }
 
   .ConstructorBuilder .Textbox{
-    max-height: 150px;
+    font-size: small;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    max-height: 135px;
   }
 
   .ConstructorBuilder .Builder{
-    width: 800px;
-    height: 300px;
+    width: 820px;
+    height: 280px;
   }
 
   .toolbox{
-    margin-right: 5px;
+    /* margin-right: 5px; */
     padding: 0;
+    width: 200px;
+  }
+
+  .toolbox .elements li {
+    width: 75px; /* Fixed width for each item */
+    height: 70px; /* Fixed height for each item */
   }
 
   .toolbox .elements{
     height: 250px;
+    width:170px;
   }
 
   .toolbox .connectors{
     height: 180px;
   }
 
-  .toolbox .adornments{
-    height: 140px;
+  .toolbox .connectors li{
+    width: 160px;
+    height: 25px;
   }
 
+  .toolbox .connectors .name {
+    font-size: 10.5px;
+    text-align: right; 
+    width: 100%;
+  }
+
+  .ConstructorSaver{
+    padding: 6px;
+    font-size: 12px;
+    margin-right: 5px;
+    margin-bottom: 2px;
+  }
+
+  .buttons .TextGenerator{
+    padding: 6px;
+    font-size: 12px;
+    margin-right: 5px;
+    margin-bottom: 2px;
+  }
+
+  .clear-button{
+    padding: 8px;
+    font-size: 12px;
+    margin-right: 5px;
+    margin-top: 10px;
+    margin-bottom: 2px;
+  }
 }

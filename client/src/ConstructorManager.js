@@ -17,6 +17,8 @@ export const ConstructorManager = ({addedNodes, addedEdges, setAddedNodes, setAd
                     const response = await axios.post('http://localhost:3001/getConstructors', {userID});
                     const data = response.data;
 
+                    console.log(response.data);
+
                     //sorting constructors into groups
                     const groupedConstructors = data.reduce((acc, constructor) =>{
                         const collection = constructor.collection;
@@ -26,7 +28,6 @@ export const ConstructorManager = ({addedNodes, addedEdges, setAddedNodes, setAd
                         acc[collection].push(constructor);
                         return acc;
                     }, {});
-
                     setConstructors(groupedConstructors);
 
                 } catch (error){
@@ -48,21 +49,29 @@ export const ConstructorManager = ({addedNodes, addedEdges, setAddedNodes, setAd
     }
     return(
         <div className="ConstructorManager">
-             {Object.entries(constructors).map(([collectionName, collectionConstructors]) => (
-                <div key={collectionName} className="constructor-collection">
-                <h2>{collectionName}</h2>
-                <ul className="MyConstructorList">
-                    {collectionConstructors.map((constructor) => (
-                    <li key={constructor.idconstructors} className="my-constructors">
-                        <Button className= "MyConstructorButton"onClick={() =>handleConstructorClick(constructor.nodes, constructor.edges)}>
-                            <h3>{constructor.name}</h3>
-                            <p>{constructor.description}</p>
-                        </Button>
-                    </li>
-                    ))}
-                </ul>
+            <div>
+                <h1>My Constructors</h1>
             </div>
-            ))}
+            <div className="MyConstructor-Box">
+                {Object.entries(constructors).map(([collectionName, collectionConstructors]) => (
+                    <div key={collectionName} className="constructor-collection">
+                        <h2>{collectionName}</h2>
+                        <ul className="MyConstructorList">
+                            {collectionConstructors.map((constructor) => (
+                            <li key={constructor.idconstructors} className="my-constructors">
+                                <Button className= "MyConstructorButton"onClick={() =>handleConstructorClick(constructor.nodes, constructor.edges)}>
+                                    <h3>{constructor.name}</h3>
+                                    <p>{constructor.description}</p>
+                                </Button>
+                            </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
+                {Object.keys(constructors).length===0 && (
+                    <p style ={{marginTop: '200px', marginLeft:'350px'}}>Your saved constructors will appear here.</p>
+                )}
+            </div>
         </div>
     )
 }

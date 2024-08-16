@@ -69,20 +69,22 @@ export const SearchForm = ({onAssign, itemType, setVCInput}) =>{
             {showDBForm &&(
                 <Box className='search-form'>
                     <Input placeholder='Search...' value={searchTerm} onChange={handleSearch} mb={2} className='search-input'/>
-                    <ul>
-                        {filteredItems.map(item=>(
-                            <li key={item.itemID}>
-                                <Button className='button' onClick={()=> onAssign(item, itemType)}>
-                                    <div className='itemLabel'>
-                                        {item.label}
-                                    </div>
-                                    <div className='description'>
-                                        {item.description}
-                                    </div>
-                                </Button>
-                            </li>
-                        ))}
-                    </ul>
+                    <div className='search-form-list'>
+                        <ul>
+                            {filteredItems.map(item=>(
+                                <li key={item.itemID}>
+                                    <Button className='button' onClick={()=> onAssign(item, itemType)}>
+                                        <div className='itemLabel'>
+                                            {item.label}
+                                        </div>
+                                        <div className='description'>
+                                            {item.description}
+                                        </div>
+                                    </Button>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </Box>
             )}
             

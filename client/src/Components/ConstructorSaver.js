@@ -75,8 +75,6 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
         event.preventDefault();
         setSaveForm(false);
         saveConstructor();
-        // console.log(conName);
-        // console.log(conCollection);
     }
 
     const handleCollectionChange = (event) =>{
@@ -99,7 +97,6 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
 
     return(
         <div>
-            
             <Button onClick={() => handleSave()} className='ConstructorSaver'>
             Save Constructor
             </Button>
@@ -136,20 +133,28 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
                         cols="30"
                     ></textarea>
                     
-                    <Button className="saveForm-button"
-                    type="submit" onClick={handleFormSubmit}>Confirm details</Button>
+                    <div>
+                        <Button className="saveForm-button" type="submit" onClick={handleFormSubmit}>Confirm details</Button>
+                        <Button className="saveForm-button" onClick={()=>setSaveForm(false)}>Cancel</Button>
+                    </div>
+                    
                 </Box>
             )}
 
             {newCollectionForm &&(
-                <Box className="SaveConstructorBox">
+                <Box className="SaveConstructorBox" style ={{margin: 'auto', justifyContent: 'center', maxHeight:'30%'}}>
                     <Input
                         className="save-input"
                         placeholder="Name the collection..." 
                         value={newCollection}
                         onChange={(e) => setNewCollection(e.target.value)}
                     ></Input>
-                    <Button onClick={() => handleCollectionAdded(newCollection)}>Save</Button>
+
+                    <div>
+                        <Button className="saveForm-button" onClick={() => handleCollectionAdded(newCollection)}>Save</Button>
+                        <Button className="saveForm-button" onClick = {() => {setNewCollectionForm(false); setSaveForm(true)}}>Cancel</Button>
+                    </div>
+                    
                 </Box>
             )}
         </div>

@@ -15,6 +15,8 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
     const [newCollection, setNewCollection] = useState('');
     const [textGenerated, setTextGenerated] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
+    const [confirmForm, setConfirmForm] = useState(false);
+    const [conID, setConID] = useState(0);
 
     useEffect(() =>{
         axios.post('http://localhost:3001/getCollections').then((response) =>{
@@ -26,7 +28,7 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
 
     useEffect(() => {
         if (!errorMessage && textGenerated && nodeLabels.length > 0 && nodeLabels[0].length > 0) {
-            setSaveForm(true);
+            checkForExistingConstructor();
         } else {
             setSaveForm(false);
         }
@@ -34,7 +36,7 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
 
     const handleSave = async () =>{
         setSaveMessage(""); // Reset save message
-        setTextGenerated(false);
+        setIsGenerating(true);
         try {
             await generateText_Save();
             setTextGenerated(true);
@@ -44,6 +46,42 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
         } finally {
             setIsGenerating(false);
         }
+    }
+
+    const checkForExistingConstructor = async () =>{
+        //check if constructor exists
+        //check if constructor was made by user
+        let maxConID= -1;
+
+        nodes.forEach(node =>{
+            if(node.data.conID>maxConID){
+                maxConID=node.data.conID;
+            }
+        })
+
+        setConID(maxConID);
+
+        try{
+            const response = await axios.post('http://localhost:3001/findConstructor', {maxConID, userID});
+            if (response.data === "Constructor found.") {
+                setConfirmForm(true);
+            } else if (response.data === "Constructor not created by user."){
+                setSaveMessage("Cannot modify constructors made by other users.")
+            }else if(response.data === "Constructor does not exist."){
+                setSaveForm(true);
+            }
+        } catch (error){
+            console.error("Error getting items: ", error);
+            throw error;
+        }
+        //if it was, ask user to confirm changes
+    }
+
+    
+
+    const handleFormSubmit = async (event) =>{
+        event.preventDefault();
+        await saveConstructor();
     }
 
     const saveConstructor = async() =>{
@@ -68,6 +106,7 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
     
     const sendConstructorToDB = async(string) =>{
         
+        setConfirmForm(false);
         let maxConID= -1;
 
         nodes.forEach(node =>{
@@ -94,11 +133,6 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
             setSaveMessage("Text generation failed.");
             throw error;
         }
-    }
-
-    const handleFormSubmit = async (event) =>{
-        event.preventDefault();
-        await saveConstructor();
     }
 
     const handleCollectionChange = (event) =>{
@@ -179,6 +213,13 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
                         <Button className="saveForm-button" onClick = {() => {setNewCollectionForm(false); setSaveForm(true)}}>Cancel</Button>
                     </div>
                     
+                </Box>
+            )}
+
+            {confirmForm && (
+                <Box className = 'SaveConstructorBox'>
+                    <p>Are you sure you want to save changes to constructor {conID}?</p>
+                    <button onClick={()=> saveConstructor()}>Confirm</button>
                 </Box>
             )}
         </div>

@@ -286,6 +286,36 @@ app.post('/saveConstructor', (req, res) => {
     )    
 })
 
+app.post('/findConstructor', (req, res) => {
+    const conID = req.body.maxConID;
+    const userID = req.body.userID;
+
+    let query = `SELECT * FROM constructors where idconstructors=?`
+
+    db.query(
+        query,
+        [conID],
+        (err, result)=>{
+            if(err){
+                console.log(err);
+            }
+            else{
+                if(result[0].length>0){
+                    if(result[0].userID == userID){
+                        return res.send("Constructor found.");
+                    }
+                    else{
+                        return res.send("Constructor not created by user.")
+                    }
+                }
+                else{
+                    return res.send("Constructor does not exist.")
+                }
+            }
+        }
+    )
+})
+
 app.post('/getConstructors', (req, res) => {
     const userID = req.body.userID;
 

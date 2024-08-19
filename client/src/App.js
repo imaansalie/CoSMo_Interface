@@ -3,9 +3,9 @@ import { useContext, useState } from 'react';
 import axios from 'axios';
 import {BrowserRouter as Router, Route, Routes, useLocation} from "react-router-dom";
 import { LogIn } from './Components/LogIn';
-import {ConstructorBuilder} from './ConstructorBuilder'; 
+import { ConstructorBuilder } from './Components/ConstructorBuilder';
 import Navbar from "./Components/Navbar";
-import { ConstructorManager } from './ConstructorManager';
+import { ConstructorManager } from './Components/ConstructorManager';
 import { UserContext } from './Contexts/UserContext';
 import PrivateRoute from './Components/PrivateRoute';
 

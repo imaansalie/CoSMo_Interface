@@ -80,6 +80,7 @@ export const ConstructorForm = ({setConstructorForm, setAddedNodes, setAddedEdge
                         </li>
                     ))}
                 </ul>
+                <button onClick={()=>setConstructorForm(false)}>Cancel</button>
             </Box>
             )}
             
@@ -101,6 +102,7 @@ export const ConstructorForm = ({setConstructorForm, setAddedNodes, setAddedEdge
                         </li>
                     ))}
                 </ul>
+                <button onClick={()=>setConstructorForm(false)}>Cancel</button>
                 </Box>
             )}
             

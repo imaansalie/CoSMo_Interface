@@ -7,6 +7,16 @@ import { px } from 'framer-motion';
 const InputNode = ({id, data, selected}) =>{
     const {setNodes} = useReactFlow();
 
+    const onDelete = () =>{
+        setNodes((prevNodes) => prevNodes.filter((node) => node.id !==id));
+        if(data.handleDelete){
+          data.handleDelete(data.inputType, id);
+        }
+        else{
+          console.error("handleDelete function not provided");
+        }
+      }
+
     const getDisplayText = () => {
         switch (data.inputType) {
             case 'Role_name':
@@ -52,7 +62,7 @@ const InputNode = ({id, data, selected}) =>{
                 bg="transparent"
                 border="none"
                 size="small"
-                onClick={()=> setNodes(prevNodes => prevNodes.filter(node=>node.id !== id))}
+                onClick={onDelete}
             />
         </div>
     );

@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from 'react';
+import React, {useEffect, useRef, useState } from 'react';
 import {Box, Button} from "@chakra-ui/react";
 import ReactFlow, {ReactFlowProvider, addEdge,Controls,Background,useNodesState,useEdgesState} from 'reactflow';
 import 'reactflow/dist/style.css';
@@ -111,6 +111,9 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
   const [edges, setEdges, onEdgesChange] = useEdgesState(locationEdges.length > 0 ? locationEdges : initialEdges);
 
   const [clearNodes, setClearNodes] = useState(false);
+  const [saveMessage, setSaveMessage] = useState('');
+
+  const textGeneratorRef = useRef();
 
   //input form functions
   const handleInputChange = (e) =>{
@@ -201,7 +204,12 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
   // assign selected data item to node
   const handleAssign = (item, itemType) => {
 
-    if(itemType !== 'ValueConstraint'){
+    if(item === 'cancelled'){
+      // console.log('in cancelled');
+      setNodes((prevNodes) => prevNodes.filter((node) => node.id !==newNodeId));
+      setNewNodeId(null);
+    }
+    else if(itemType !== 'ValueConstraint'){
       setNodes((prevNodes) => //update state of nodes
         prevNodes.map((node) =>//check each node
           node.id === newNodeId ? { //check if node ID matches newNodeID
@@ -286,6 +294,18 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
 
   const handleClearCancel = () =>{
     setClearNodes(false);
+  }
+
+  const handleConstructorCancel = () =>{
+    setNodes((prevNodes) => prevNodes.filter((node) => node.id !==newNodeId));
+    setNewNodeId(null);
+    setShowForm(false);
+    setCheckDeleted(true);
+  }
+
+  const handleClearError = () =>{
+    setErrorMessage(null);
+    setNodeLabels([]);
   }
 
   //after informing element selector, reset checkDeleted boolean to true after 1 second
@@ -376,7 +396,7 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
         delete window.addNodesAndEdges;
       }
     };
-  }, []);
+  }, []);  
 
   //pass handleDelete prop to Object
   const mappedNodes = nodes.map(node =>({
@@ -420,9 +440,12 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
             
             <div className='buttons'>
               <TextGenerator
+                ref={textGeneratorRef}
                 nodes={nodes}
                 edges={edges}
+                nodeLabels={nodeLabels}
                 setNodeLabels={setNodeLabels}
+                errorMessage={errorMessage}
                 setErrorMessage={setErrorMessage}
                 setNextGroup={setNextGroup}
                 selectedLanguage={selectedLanguage}
@@ -433,16 +456,18 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
                 edges={edges}
                 nodeLabels={nodeLabels}
                 setConstructorAdded= {setConstructorAdded}
-                setErrorMessage= {setErrorMessage}
+                errorMessage={errorMessage}
+                setSaveMessage= {setSaveMessage}
                 saveForm={saveForm}
                 setSaveForm= {setSaveForm}
+                textGeneratorRef={textGeneratorRef}
               />
 
               <button className='clear-button' onClick={() => setClearNodes(true)}>Clear all</button>
             </div>
 
             <div data-testid = 'text' className='Textbox'>
-                {nodeLabels.length > 0 && (
+                {nodeLabels.length > 0 && !errorMessage &&(
                 <p dangerouslySetInnerHTML={{ __html: nodeLabels[0] }} />
                 )}
             </div>
@@ -480,14 +505,25 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
             </div>
             <div className='connectors'>
               <ul>
-                {connectors.map((connector, index)=>(
-                  <li key={index}>
-                    <button onClick={() => handleEdgeChange (connector)}>
-                      <img src={"/icons/"+connector.picture+".png"} className='selector-img'/>
-                        <span className='name'>{connector.label}</span>
-                    </button>  
-                  </li>
-                ))}
+              {connectors.map((connector, index) => (
+                <li key={index}>
+                  <label className='radio-label'>
+                    <input
+                      type='radio'
+                      name='connector'
+                      value={connector.label}
+                      onChange={() => handleEdgeChange(connector)}
+                      className='radio-input'
+                    />
+                    <img
+                      src={`/icons/${connector.picture}.png`}
+                      className='selector-img'
+                      alt={connector.label}
+                    />
+                    <span className='name'>{connector.label}</span>
+                  </label>
+                </li>
+              ))}
               </ul>
             </div>
           </div>
@@ -504,6 +540,7 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
                 <input className="input" type="text" value={formData} onChange={handleInputChange} placeholder="Enter label" required />
                 <button type="submit">Submit</button>
                 </form>
+                <button onClick={() => handleConstructorCancel()}>Cancel</button>
               </div>
               
             </Box>
@@ -513,7 +550,16 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
             <div>
               <Box className='error-message'>
                 <p className='error-text'>{errorMessage}</p>
-                <button onClick={()=>setErrorMessage(null)}>Okay</button>
+                <button onClick={()=>handleClearError()}>Okay</button>
+              </Box>
+            </div>
+          )}
+
+          {saveMessage && (
+            <div>
+              <Box className='save-message'>
+                <p className='save-text'>{saveMessage}</p>
+                <button onClick={()=>setSaveMessage(null)}>Okay</button>
               </Box>
             </div>
           )}

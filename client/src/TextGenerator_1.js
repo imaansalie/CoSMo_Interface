@@ -90,6 +90,7 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
         if(currentEdge){
           if(!currentEdge.validPairs.includes(pair)){
             setErrorMessage(currentEdge.error);
+            setNodeLabels('');
           }
         }
     }
@@ -98,6 +99,7 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
         nodes.forEach((node) => {
             if(!hasEdges(node.id)){
                 setErrorMessage("Every node must have a connector.");
+                setNodeLabels('');
             }
         })
     }
@@ -126,7 +128,8 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
     const handleRoles = (group, nodes, index, sourceNode, targetNode, currentRoleID, output, key) =>{
         
         if(!hasTwoConnectors(targetNode.id, 'Role', edges)){
-            setErrorMessage("Properties must have at least two roles.")
+            setErrorMessage("Properties must have at least two roles.");
+            setNodeLabels('');
             return '';
         }
 
@@ -199,6 +202,7 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
 
         if(index === group.edges.length-1){
             setErrorMessage("Arguments must be connected to at least one object and one function.");
+            setNodeLabels('');
             return '';
         }
 
@@ -238,6 +242,7 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
         }
         else{
             setErrorMessage("Arguments must be connected to a function.");
+            setNodeLabels('');
             return '';
         }
     }
@@ -331,6 +336,7 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
                         } else if (key === 'Join_Join_Property') {
                             if (!hasTwoConnectors(sourceNode.id, 'Join', edges)) {
                                 setErrorMessage("Join must be connected to at least two objects or properties.");
+                                setNodeLabels('');
                             }
     
                             if (index < group.edges.length - 1) {
@@ -344,6 +350,7 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
                                     if (nextKey === 'Join_Join_Property') {
                                         if (!hasTwoConnectors(nextSourceNode.id, 'Join', edges)) {
                                             setErrorMessage("Join must be connected to at least two objects or properties.");
+                                            setNodeLabels('');
                                         }
                                         output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Join(${targetNode.data.itemID}, ${nextTargetNode.data.itemID})`
                                     }

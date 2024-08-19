@@ -46,7 +46,6 @@ export const SearchForm = ({onAssign, itemType, setVCInput}) =>{
     const handleInput = (e) =>{
         setUserInput(e.target.value);
     }
-
     
     return(
         <>
@@ -54,6 +53,7 @@ export const SearchForm = ({onAssign, itemType, setVCInput}) =>{
                 <Box className='search-form'>
                     <Button onClick ={()=> {setShowInputForm(true); setShowDBForm(false); setVCInput(true);}} >Custom Input</Button>
                     <Button onClick = {() => {setShowDBForm(true); setShowInputForm(false); setVCInput(false)}}>Get Q item from database</Button>
+                    <button onClick = {() => onAssign('cancelled', itemType)}>Cancel</button>
                 </Box>
             )}
 
@@ -85,6 +85,7 @@ export const SearchForm = ({onAssign, itemType, setVCInput}) =>{
                             ))}
                         </ul>
                     </div>
+                    <button onClick = {() => onAssign('cancelled', itemType)}>Cancel</button>
                 </Box>
             )}
             

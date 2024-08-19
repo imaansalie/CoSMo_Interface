@@ -4,7 +4,7 @@ import { UserContext } from "../Contexts/UserContext";
 import { Button, Input } from "@chakra-ui/react";
 import { Box } from "@chakra-ui/react";
 
-export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded, setErrorMessage, saveForm, setSaveForm}) =>{
+export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded, errorMessage, setSaveMessage, saveForm, setSaveForm, textGeneratorRef}) =>{
 
     const {userID} = useContext(UserContext);
     const [conName, setConName] = useState('');
@@ -13,6 +13,8 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
     const [collections, setCollections]= useState([]);
     const [newCollectionForm, setNewCollectionForm] = useState(false);
     const [newCollection, setNewCollection] = useState('');
+    const [textGenerated, setTextGenerated] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
 
     useEffect(() =>{
         axios.post('http://localhost:3001/getCollections').then((response) =>{
@@ -22,33 +24,46 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
         })
     }, []);
 
-    const handleSave = () =>{
-        setSaveForm(true);
-        // console.log(userID);
+    useEffect(() => {
+        if (!errorMessage && textGenerated && nodeLabels.length > 0 && nodeLabels[0].length > 0) {
+            setSaveForm(true);
+        } else {
+            setSaveForm(false);
+        }
+    }, [textGenerated, nodeLabels, setSaveForm]);
+
+    const handleSave = async () =>{
+        setSaveMessage(""); // Reset save message
+        setTextGenerated(false);
+        try {
+            await generateText_Save();
+            setTextGenerated(true);
+        } catch (error) {
+            console.error("Error during text generation or handling save:", error);
+            setSaveMessage("Error generating text or saving constructor.");
+        } finally {
+            setIsGenerating(false);
+        }
     }
 
     const saveConstructor = async() =>{
-        if(nodeLabels.length>0){
-            if(nodeLabels[0].length>0){
-              const string = nodeLabels[0];
-              console.log(conName);
-              console.log(conCollection);
-              const response = await sendConstructorToDB(nodeLabels[0]);
-              
-              console.log(response);
-              if (response === "Constructor added." || response === "Constructor and new collection added."){
-                setConstructorAdded(true);
-              }
-              else{
-                setErrorMessage(response);
-              }
+        if(nodeLabels.length > 0 && nodeLabels[0].length > 0){
+                try{
+                    const response = await sendConstructorToDB(nodeLabels[0]);
+                    if (response === "Constructor added." || response === "Constructor and new collection added."){
+                        setConstructorAdded(true);
+                    }
+                    else{
+                        setSaveMessage(response);
+                    }
+                }catch(error){
+                    console.error("Error saving constructor:", error);
+                    setSaveMessage("Error saving constructor.");
+                } 
             }
             else{
-              setErrorMessage("Constructor is empty, generate text before saving.");
+                setSaveMessage("Constructor is empty.");
             }
-          }else{
-            setErrorMessage("Constructor is empty, generate text before saving.");
-          }
     }
     
     const sendConstructorToDB = async(string) =>{
@@ -71,10 +86,19 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
         }
     }
 
-    const handleFormSubmit = (event) =>{
+    const generateText_Save = async() =>{
+        try {
+            await textGeneratorRef.current.generateText();
+        } catch (error) {
+            console.error("Error generating text:", error);
+            setSaveMessage("Text generation failed.");
+            throw error;
+        }
+    }
+
+    const handleFormSubmit = async (event) =>{
         event.preventDefault();
-        setSaveForm(false);
-        saveConstructor();
+        await saveConstructor();
     }
 
     const handleCollectionChange = (event) =>{

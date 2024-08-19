@@ -280,12 +280,13 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
               </li>
             ))}
             </ul>
+            <button onClick={() => setShowArgs(false)}>Cancel</button>
           </Box>
         )}
 
         {showProps && (
           <Box className='args'>
-            <p>Choose the number of arguments:</p>
+            <p>Choose the number of roles:</p>
             <ul>
             {properties.map((property, index) => (
               <li key = {index} className='args-list-item'>
@@ -296,7 +297,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
               </li>
             ))}
             </ul>
-            {/* <button onClick={setShowProps(false)}>Confirm</button> */}
+            <button onClick={() => setShowProps(false)}>Cancel</button>
           </Box>
         )}
         {selectedProperty && <SearchForm onAssign={handleAssign} itemType='Property'></SearchForm>}

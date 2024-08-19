@@ -691,7 +691,7 @@ describe('ConstructorBuilder Tests', () => {
 
       cy.get('.Textbox p').should(($p) => {
         const text = $p.html(); // Get the HTML content
-        expect(text).to.contain('TypeConstructor:C5(<br>&nbsp;&nbsp;&nbsp;&nbsp;Property(P22(r1,r2,r3,r4)),<br>&nbsp;&nbsp;&nbsp;&nbsp;r1:ObjectType(Q9960),<br>&nbsp;&nbsp;&nbsp;&nbsp;r2:ObjectType(Q29514218),<br>&nbsp;&nbsp;&nbsp;&nbsp;r3:ObjectType(Q42 ),<br>&nbsp;&nbsp;&nbsp;&nbsp;r4:ObjectType(Q62070381))<br><br>');
+        expect(text).to.contain('TypeConstructor:C5(<br>&nbsp;&nbsp;&nbsp;&nbsp;Property(P22(r1,r2,r3,r4)),<br>&nbsp;&nbsp;&nbsp;&nbsp;r1:ObjectType(Q9960),<br>&nbsp;&nbsp;&nbsp;&nbsp;r2:ObjectType(Q42 ),<br>&nbsp;&nbsp;&nbsp;&nbsp;r3:ObjectType(Q62070381),<br>&nbsp;&nbsp;&nbsp;&nbsp;r4:ObjectType(Q29514218))<br><br>');
       });
     });
   });

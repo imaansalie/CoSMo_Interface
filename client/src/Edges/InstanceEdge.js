@@ -11,6 +11,14 @@ const InstanceEdge = (props) => {
   const [edgePath, labelX, labelY] = getBezierPath({ sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition });
   const { setEdges } = useReactFlow();
 
+  const handleDelete = () => {
+    setEdges((prevEdges) => {
+      const updatedEdges = prevEdges.filter(edge => edge.id !== id);
+      console.log('Edges after deletion:', updatedEdges); // Log updated edges
+      return updatedEdges;
+    });
+  };
+
   return (
     <>
     {/* Render path for the edge */}
@@ -41,7 +49,7 @@ const InstanceEdge = (props) => {
             bg="transparent"
             size="small"
             onClick={() =>
-              setEdges((prevEdges) => prevEdges.filter((edge) => edge.id !== id))
+              handleDelete()
             }
           />
         </div>

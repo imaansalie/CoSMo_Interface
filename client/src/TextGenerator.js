@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle} from 'react';
 import axios from 'axios';
 import { Button } from '@chakra-ui/react';
 
@@ -28,47 +28,47 @@ const validKeys = [
     {
         edge: 'Role',
         validPairs: ['Object_Property', 'Property_Object', 'Object_Arguments', 'Arguments_Function', 'Arguments_Object'],
-        error: 'Invalid connection for role connector.'
+        error: 'CoSMo syntax error: Invalid connection for role connector.'
     },
     {
         edge: 'Sub-constructor',
         validPairs: ['TypeConstructor_TypeConstructor'],
-        error: 'Only a Type Constructor can be a sub constructor of a Type Constructor.'
+        error: 'CoSMo syntax error: Sub Constructor connector can only be used between a Type Constructor and a Type Constructor.'
     },
     {
         edge: 'Instance',
         validPairs: ['InstanceConstructor_TypeConstructor', 'ValueConstraint_Object'],
-        error: 'Only a Type Constructor can be an instance of an Instance Constructor.'
+        error: 'CoSMo syntax error: Instance Of connector can only be used between an Instance Constructor and a Type Constructor, or a Value Constraint and an Object.'
     },
     {
         edge: 'PartOf_Object',
         validPairs: ['TypeConstructor_TypeConstructor', 'InstanceConstructor_InstanceConstructor'],
-        error: 'A Type Constructor can only be part of a Type Constructor, and an Instance Constructor can only be part of an Instance Constructor.'
+        error: 'CoSMo syntax error: Part Of connector can only be used between a Type Constructor and a Type Constructor, or an Instance Constructor and an Instance Constructor.'
     },
     {
         edge: 'InstanceConstructor_Connector',
         validPairs: ['InstanceConstructor_Object', 'TypeConstructor_Object'],
-        error: 'Only an object can participate in a relationship with an Instance Constructor or a Type Constructor.'
+        error: 'CoSMo syntax error: Only an object can participate in a relationship with an Instance Constructor or a Type Constructor.'
     },
     {
         edge: 'IsMandatory',
         validPairs: ['Object_Property'],
-        error: 'Is Mandatory connector can only be applied to roles (between an Object and a Property).'
+        error: 'CoSMo syntax error: Is Mandatory connector can only be applied to roles (between an Object and a Property).'
     },
     {
         edge: 'Join',
         validPairs: ['Join_Object', 'Object_Join', 'Join_Property', 'Property_Join'],
-        error: 'Join connector can only be used between the Join element and Objects or Properties.'
+        error: 'CoSMo syntax error: Join connector can only be used between the Join element and Objects or Properties.'
     },
     {
         edge: 'Role_name',
         validPairs: ['Role_name_Property', 'Property_Role_name'],
-        error: 'Role names can only be applied to roles (attach to Property).'
+        error: 'CoSMo syntax error: Role names can only be applied to roles (attach to Property).'
     },
     {
         edge: 'ValueConstraint',
         validPairs: ['ValueConstraint_Function'],
-        error: 'Value constraint connectors can only be used between Value Constraints and Functions.'
+        error: 'CoSMo syntax error: Value constraint connectors can only be used between Value Constraints and Functions.'
     },
 ]
 
@@ -76,19 +76,12 @@ const labels = [
     'ObjectType', 'Object', 'Function', 'InstanceConstructor', 'TypeConstructor', 'Property',  'SubConstructorOf', 'InstanceOf', 'PartOf', 'Join', 'IsMandatory'
 ]
 
-export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, setNextGroup, selectedLanguage}) =>{
-
-    const conIDGroups = new Map();
+export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabels, errorMessage, setErrorMessage, setNextGroup, selectedLanguage}, ref) =>{
     let currentRoleID= 0;
-
-    // console.log(nodes);
-    // console.log(edges);
 
     const checkSyntax = (src, edge, tgt) =>{
         const currentEdge = validKeys.find(key => key.edge === edge);
-        // console.log("given edge: ", edge);
         const pair = `${src}_${tgt}`;
-        // console.log("pair: ",pair);
     
         if(currentEdge){
           if(!currentEdge.validPairs.includes(pair)){
@@ -123,14 +116,17 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
             );
         }
         
+        // console.log(matchingEdges.length);
         return matchingEdges.length + isMandEdges.length >=2;
     }
 
     const handleRoles = (key, keys, index, sourceNode, targetNode, currentRoleID, output) => {
+
         if (!hasTwoConnectors(targetNode.id, 'Role', edges)) {
             setErrorMessage("Properties must have at least two roles.");
             return '';
         }
+
     
         let localRoles = [];
         let localRoleIDs = [];
@@ -164,7 +160,6 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
     
             nextIndex++;
         }
-        // console.log(localRoleIDs);
     
         output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}Property(${targetNode.data.itemID}(${localRoleIDs.join(',')})),<br/>`;
     
@@ -201,7 +196,6 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
         localArgs.push(sourceNode.data.itemID);
         
         let nextIndex= index +1;
-        // console.log(nextIndex);
 
         if(index === keys.length-1){
             setErrorMessage("Arguments must be connected to at least one object and one function.");
@@ -210,7 +204,6 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
 
         while(nextIndex< keys.length){
             const nextKey = keys[nextIndex];
-            // console.log("next key: ", nextKey);
 
             if(nextKey.key === 'Arguments_Role_Object'){
                 if(!localArgs.includes(nextKey.targetNode.data.itemID)){
@@ -253,10 +246,10 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
         let nextIndex = index+1;
 
         if(nextIndex < keys.length){
-            const nextKey = keys [nextIndex];
+            const nextKey = keys[nextIndex];
 
             if (nextKey.key === 'Join_Join_Property') {
-                console.log("handling next join");
+                // console.log("handling next join");
                 if (!hasTwoConnectors(nextKey.sourceNode.id, 'Join', edges)) {
                     setErrorMessage("Join must be connected to at least two objects or properties.");
                 }
@@ -273,17 +266,17 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
     }
 
     const handleRoleName = (key, keys, index, sourceNode, targetNode, output) =>{
-        console.log(currentRoleID);
+        // console.log(currentRoleID);
         if (key === 'Role_name_Role_name_Property') {
             const oldSequence = `r${targetNode.data.roleID - 1}:`;
-            console.log(oldSequence);
+            // console.log(oldSequence);
             const newSequence = `r${targetNode.data.roleID - 1}[${sourceNode.data.itemID}]:`;
             output = output.replaceAll(oldSequence, newSequence);
         }
         else if (key === 'Property_Role_name_Role_name') {
             const oldSequence = `r${sourceNode.data.roleID}:`;
-            console.log(oldSequence);
-            console.log(`r${sourceNode.data.roleID}:`);
+            // console.log(oldSequence);
+            // console.log(`r${sourceNode.data.roleID}:`);
             const newSequence = `r${sourceNode.data.roleID}[${targetNode.data.itemID}]:`;
             output = output.replaceAll(oldSequence, newSequence);
         }
@@ -292,22 +285,34 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
     }
 
     const generateText = () => {
+        
+        console.log(edges);
+
         let output = '';
+        checkNodesForEdges(nodes);
         let keys = generateTextDFS(nodes, edges);
-        console.log(keys);
+        // console.log(keys);
 
         let previousConID = null;
     
         keys.forEach((item, index) => {
+            
             const {key, sourceNode, edge, targetNode, conID} = item;
             const edge_string = definitions[key];
             const constructor_string = constructor_definitions[key];
+
+            checkSyntax(sourceNode.data.inputType, edge, targetNode.data.inputType);
             
             if( key === 'Object_Role_Property' || key === 'Object_IsMandatory_Property'){
                 //handle roles
                 const result= handleRoles(key, keys, index, sourceNode, targetNode, currentRoleID, output);
                 output=result.output;
                 currentRoleID = result.currentRoleID;
+            }
+            else if(key === 'Property_Role_Object'){
+                if(!hasTwoConnectors(sourceNode.id, 'Role', edges)){
+                    setErrorMessage("Property must have at least two roles.")
+                }
             }
             else if(key === 'Object_Role_Arguments'){
                 //handle arguments
@@ -324,7 +329,7 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
             else if(edge_string){
                 //handle default types
                 output += `${edge_string(sourceNode, targetNode)}`;
-                // console.log(edge_string);
+                
                 if(key.startsWith('ValueConstraint_')){
                     if(index< keys.length-1 && !keys[index+1].key.startsWith('Role_name')){
                         output+=`,<br/>`;
@@ -332,7 +337,7 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
                 }
             }
             else if (constructor_string){
-                console.log(`${constructor_string(sourceNode, targetNode)}`);
+                // console.log(`${constructor_string(sourceNode, targetNode)}`);
                 output += `${constructor_string(sourceNode, targetNode)}`;
             }
 
@@ -356,9 +361,12 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
             previousConID=conID;
         });
     
-        console.log(output);
-        setNodeLabels([output]);
+        translateOutput(output);
     };
+
+    useImperativeHandle(ref, () => ({
+        generateText,
+    }));
     
     function generateTextDFS(nodes, edges) {
         const nodeMap = new Map(nodes.map(node => [node.id, node]));
@@ -376,6 +384,16 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
             }
             return b.position.y - a.position.y; // For other nodes, highest y value first
         });
+
+        // Check if there is any 'InstanceConstructor' or 'TypeConstructor' node
+        const hasStartingNode = nodes.some(
+            node => node.data.inputType === 'InstanceConstructor' || node.data.inputType === 'TypeConstructor'
+        );
+
+        if (!hasStartingNode) {
+            setErrorMessage("CoSMo syntax error: All CoSMo constructors must start with an 'InstanceConstructor' or 'TypeConstructor'.");
+            return []; // Return an empty result or handle this case as needed
+        }
     
         const result = [];
         const visited = new Set();
@@ -423,11 +441,12 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
     //handle first layer of multilingualism
 
     const translateOutput = async(output) =>{
+        console.log('translating...');
         for(let label of labels){
             if(output.includes(label)){
                 try{
                     const newLabel = await findLabel(label);
-                    console.log(newLabel);
+
                     output = output.replaceAll(label, newLabel);
                 }catch(error){
                     console.error("Error fetching label: ", error);
@@ -435,6 +454,7 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
             }
         }
         setNodeLabels([output]);
+        // console.log(nodeLabels);
     }
 
     const findLabel = async (label) =>{
@@ -442,7 +462,7 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
             const response = await axios.post('http://localhost:3001/getLabel', {label, selectedLanguage});
             const column = `${selectedLanguage}`
             const responseData= response.data[0];
-            console.log(responseData);
+            // console.log(responseData);
             return responseData[column];
         } catch (error){
              console.error("Error getting items: ", error);
@@ -450,6 +470,7 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
         }
     }
 
+    
     //testing
     useEffect(() => {
         // Attach generateText to the window object
@@ -471,5 +492,5 @@ export const TextGenerator = ({nodes, edges, setNodeLabels, setErrorMessage, set
             <Button onClick={()=>generateText()} className='TextGenerator'>Generate Text</Button>
         </div>
     )
-}
+})
 

@@ -73,7 +73,7 @@ const validKeys = [
 ]
 
 const labels = [
-    'ObjectType', 'Object', 'Function', 'InstanceConstructor', 'TypeConstructor', 'Property',  'SubConstructorOf', 'InstanceOf', 'PartOf', 'Join', 'IsMandatory'
+    'ObjectType', 'Function', 'InstanceConstructor', 'TypeConstructor', 'Property',  'SubConstructorOf', 'InstanceOf', 'PartOf', 'Join', 'IsMandatory'
 ]
 
 export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabels, errorMessage, setErrorMessage, setNextGroup, selectedLanguage}, ref) =>{
@@ -331,7 +331,7 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
                 output += `${edge_string(sourceNode, targetNode)}`;
                 
                 if(key.startsWith('ValueConstraint_')){
-                    if(index< keys.length-1 && !keys[index+1].key.startsWith('Role_name')){
+                    if(index< keys.length-1 && !keys[index+1].key.startsWith('Role_name') && keys[index+1].sourceNode.data.conID===previousConID){
                         output+=`,<br/>`;
                     }
                 }
@@ -350,7 +350,7 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
             if(previousConID !== null && previousConID !== conID){
                 currentRoleID = 0;
                 if(!constructor_definitions[key]){
-                    output+='blah)<br/><br/>';
+                    output+=')<br/><br/>';
                 }
             }
 
@@ -445,9 +445,14 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
         for(let label of labels){
             if(output.includes(label)){
                 try{
-                    const newLabel = await findLabel(label);
-
-                    output = output.replaceAll(label, newLabel);
+                    const translatedLabel = await findLabel(label);
+                    
+                    if (translatedLabel) {
+                        output = output.replaceAll(label, translatedLabel);
+                    } else {
+                        console.warn(`Label not found: ${label}`);
+                    }
+                    
                 }catch(error){
                     console.error("Error fetching label: ", error);
                 }
@@ -460,10 +465,14 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
     const findLabel = async (label) =>{
         try{
             const response = await axios.post('http://localhost:3001/getLabel', {label, selectedLanguage});
-            const column = `${selectedLanguage}`
-            const responseData= response.data[0];
+            // const column = `${selectedLanguage}`
+            const responseData= response.data;
             // console.log(responseData);
-            return responseData[column];
+            if (responseData.translatedLabel) {
+                return responseData.translatedLabel;
+            } else {
+                return null; // Label not found
+            }
         } catch (error){
              console.error("Error getting items: ", error);
              throw error;

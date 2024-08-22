@@ -567,7 +567,7 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
           {constructorAdded && (
             <div>
               <Box className='error-message'>
-                <p className='error-text'>Constructor has been sucessfully saved.</p>
+                <p className='save-text'>Constructor has been sucessfully saved.</p>
                 <button onClick={()=>setConstructorAdded(false)}>Okay</button>
               </Box>
             </div>

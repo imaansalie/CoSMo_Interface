@@ -3,7 +3,8 @@ import React, {useState, useEffect} from "react";
 const languages = [
     {code: 'en', name: 'English'},
     {code: 'sp', name: 'Spanish'},
-    {code: 'ba', name: 'Basque'}
+    {code: 'ba', name: 'Basque'},
+    {code: 'ar', name: 'Arabic'}
 ]
 
 export const Settings = ({selectedLanguage, setSelectedLanguage}) =>{

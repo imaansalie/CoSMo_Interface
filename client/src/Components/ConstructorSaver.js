@@ -17,6 +17,7 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
     const [isGenerating, setIsGenerating] = useState(false);
     const [confirmForm, setConfirmForm] = useState(false);
     const [conID, setConID] = useState(0);
+    const [saveButtonClicked, setSaveButtonClicked] = useState(false);
 
     useEffect(() =>{
         axios.post('http://localhost:3001/getCollections').then((response) =>{
@@ -27,7 +28,7 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
     }, []);
 
     useEffect(() => {
-        if (!errorMessage && textGenerated && nodeLabels.length > 0 && nodeLabels[0].length > 0) {
+        if (!errorMessage && textGenerated && saveButtonClicked && nodeLabels.length > 0 && nodeLabels[0].length > 0) {
             checkForExistingConstructor();
         } else {
             setSaveForm(false);
@@ -36,6 +37,7 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
 
     const handleSave = async () =>{
         setSaveMessage(""); // Reset save message
+        setSaveButtonClicked(true);
         setIsGenerating(true);
         try {
             await generateText_Save();
@@ -62,12 +64,17 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
         setConID(maxConID);
 
         try{
-            const response = await axios.post('http://localhost:3001/findConstructor', {maxConID, userID});
-            if (response.data === "Constructor found.") {
+            const response = await axios.post('http://localhost:3001/findConstructor', {nodes, edges, maxConID, userID});
+            if (response.data === "Constructor found, not modified.") {
+                setSaveMessage("Constructor has not been modified.");
+                setSaveButtonClicked(false);
+            }else if(response.data === "Constructor found, modified."){
                 setConfirmForm(true);
-            } else if (response.data === "Constructor not created by user."){
+            }else if (response.data === "Constructor not created by user."){
                 setSaveMessage("Cannot modify constructors made by other users.")
+                setSaveButtonClicked(false);
             }else if(response.data === "Constructor does not exist."){
+                console.log("Constructor does not exist.");
                 setSaveForm(true);
             }
         } catch (error){
@@ -77,22 +84,23 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
         //if it was, ask user to confirm changes
     }
 
-    
-
     const handleFormSubmit = async (event) =>{
         event.preventDefault();
         await saveConstructor();
     }
 
     const saveConstructor = async() =>{
+        setSaveForm(false);
         if(nodeLabels.length > 0 && nodeLabels[0].length > 0){
                 try{
                     const response = await sendConstructorToDB(nodeLabels[0]);
                     if (response === "Constructor added." || response === "Constructor and new collection added."){
                         setConstructorAdded(true);
+                        setSaveButtonClicked(false);
                     }
                     else{
                         setSaveMessage(response);
+                        setSaveButtonClicked(false);
                     }
                 }catch(error){
                     console.error("Error saving constructor:", error);
@@ -101,6 +109,7 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
             }
             else{
                 setSaveMessage("Constructor is empty.");
+                setSaveButtonClicked(false);
             }
     }
     

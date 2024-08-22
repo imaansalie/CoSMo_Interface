@@ -68,9 +68,6 @@ app.post('/getLabel', (req, res) => {
     const label = req.body.label;
     const language = req.body.selectedLanguage;
 
-    // console.log(label);
-    // console.log(language);
-
     let query = `SELECT ${language} from languages WHERE English = '${label}'`;
 
     db.query(
@@ -78,9 +75,14 @@ app.post('/getLabel', (req, res) => {
         (err, result)=>{
             if(err){
                 console.log(err);
+                res.send("Label not found.");
             }
             else{
-                res.json(result);
+                if (result.length > 0 && result[0][language]) {
+                    res.json({ translatedLabel: result[0][language] });
+                } else {
+                    res.send("Label not found.");
+                }
             }
         }
     )
@@ -130,8 +132,8 @@ function areNodesEqualIgnoringPositions(nodes1, nodes2) {
     const sortedNodes1 = sortNodes(sanitizedNodes1);
     const sortedNodes2 = sortNodes(sanitizedNodes2);
 
-    console.log(sortedNodes1);
-    console.log(sortedNodes2);
+    // console.log(sortedNodes1);
+    // console.log(sortedNodes2);
 
     // Compare the sorted and sanitized nodes
     return JSON.stringify(sortedNodes1) === JSON.stringify(sortedNodes2);
@@ -161,8 +163,8 @@ const checkEdgesEqual = (arr1, arr2) => {
     const sortedStr1 = sortEdges(arr1);
     const sortedStr2 = sortEdges(arr2);
 
-    console.log("sortedStr1: ", sortedStr1);
-    console.log("sortedStr2: ", sortedStr2);
+    // console.log("sortedStr1: ", sortedStr1);
+    // console.log("sortedStr2: ", sortedStr2);
   
     return JSON.stringify(sortedStr1) === JSON.stringify(sortedStr2);
 };
@@ -261,8 +263,8 @@ app.post('/saveConstructor', (req, res) => {
 
                     const edgesEqual = checkEdgesEqual(dbEdges, givenEdges);
 
-                    console.log("nodes equal: ", nodesEqual);
-                    console.log("edges equal: ", edgesEqual);
+                    // console.log("nodes equal: ", nodesEqual);
+                    // console.log("edges equal: ", edgesEqual);
 
                     if (!nodesEqual || !edgesEqual) {
                         //modify constructor
@@ -289,6 +291,8 @@ app.post('/saveConstructor', (req, res) => {
 app.post('/findConstructor', (req, res) => {
     const conID = req.body.maxConID;
     const userID = req.body.userID;
+    const nodes = JSON.stringify(req.body.nodes);
+    const edges = JSON.stringify(req.body.edges);
 
     let query = `SELECT * FROM constructors where idconstructors=?`
 
@@ -300,9 +304,18 @@ app.post('/findConstructor', (req, res) => {
                 console.log(err);
             }
             else{
-                if(result[0].length>0){
+                if(result.length>0){
                     if(result[0].userID == userID){
-                        return res.send("Constructor found.");
+                        const nodesEqual=areNodesEqualIgnoringPositions(result[0].nodes, nodes);
+                        const dbEdges = JSON.parse(result[0].edges);
+                        const givenEdges = JSON.parse(edges);
+                        const edgesEqual = checkEdgesEqual(dbEdges, givenEdges);
+                        if(nodesEqual && edgesEqual){
+                            return res.send("Constructor found, not modified.");
+                        }
+                        else{
+                            return res.send("Constructor found, modified.");
+                        }
                     }
                     else{
                         return res.send("Constructor not created by user.")
@@ -377,12 +390,32 @@ app.post('/getID', (req, res) => {
                 console.log(err);
             }
             else{
-                console.log(result);
+                // console.log(result);
                 res.json(result);
             }
         }
     )    
 })
+
+app.post('/deleteConstructor', (req, res) => {
+    const conID= req.body.conID;
+
+    let query = `DELETE FROM constructors where idconstructors=?`;
+
+    db.query(
+        query,
+        [conID], 
+        (err, result)=>{
+            if(err){
+                console.log(err);
+            }
+            else{
+                res.send("Constructor deleted.");
+            }
+        }
+    )    
+})
+
 
 app.listen(3001, () => {
     console.log("server running on port 3001");

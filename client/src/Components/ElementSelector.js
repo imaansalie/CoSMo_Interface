@@ -223,8 +223,6 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
     useEffect(() => {
       if(elementDeleted){
         setConID(Math.max(conID -1, initialConID));
-        console.log(conID);
-        console.log(initialConID);
       }
     }, [elementDeleted])
 

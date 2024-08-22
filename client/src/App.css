@@ -586,6 +586,12 @@ button, input, textarea{
   color: red;
 }
 
+.error-message .save-text{
+  font-family: sans-serif;
+  font-weight: bold;
+  color: black;
+}
+
 /* SAVE MESSAGE */
 .save-message .save-text{
   font-family: sans-serif;
@@ -695,11 +701,11 @@ button, input, textarea{
   font-family: sans-serif;
   color: #14192d;
   cursor: pointer;
+  position: relative;
 }
 
 .my-constructors:hover{
   background-color: rgb(116, 166, 206);
-  color: white;
 }
 
 .MyConstructorButton{
@@ -718,6 +724,40 @@ button, input, textarea{
   flex: 1;
   cursor: pointer;
 }
+.ellipsis-menu {
+  position: absolute;
+  margin-bottom: 80px;
+  display: inline-block;
+}
+
+.ellipsis-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.menu {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  z-index: 1000;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.menu p {
+  margin: 0;
+  cursor: pointer;
+}
+
+.menu p:hover {
+  color: red;
+}
+
 
 /* TOOLTIPS */
 
@@ -819,6 +859,34 @@ button, input, textarea{
 
 .LoginBox button:hover {
   background-color: #0056b3; 
+}
+
+.DeleteBox{
+  background-color: white;
+  padding: 4px;
+  border: 1px solid grey;
+  border-radius: 5px;
+  box-shadow: gray;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40%;
+  height: 25%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.DeleteBox button{
+  padding: 10px;
+  background-color: #14192d;
+  color: #d9dce6;
+  border: none;
+  border-radius: 4px;
+  margin-right: 3px;
 }
 
 

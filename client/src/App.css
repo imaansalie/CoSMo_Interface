@@ -327,12 +327,12 @@ button, input, textarea{
   left: 50%;
   transform: translate(-50%, -50%);
   width: 20%;
-  height: 40%;
+  height: 50%;
   text-align: center;
   /* margin: auto; */
   gap: 5px; /* Adjust the gap between items as needed */
   /* margin-right: 10px; */
-  max-height: 200px;
+  max-height: 240px;
   overflow-y: auto;
 }
 
@@ -381,6 +381,17 @@ button, input, textarea{
 .toolbox .args .arg-name{
   flex:1;
   text-align: right;
+}
+
+.toolbox .args .cancelArgs{
+  /* padding: 10px; */
+  background-color: #071a65;
+  color: #d9dce6;
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
+  margin-bottom: 5px;
 }
 
 .toolbox .connectors{
@@ -461,11 +472,10 @@ button, input, textarea{
 
 /* SEARCH FORM */
 
-.search-form{
+.search-form, .vc-form, .vc-input-form{
   position:fixed;
   top: 30%;
   margin-left: 280px;
-  /* transform: translate(-10%, -50%); */
   border: 1px solid gray;
   border-radius: 5px;
   padding: 4px;
@@ -473,6 +483,8 @@ button, input, textarea{
   z-index: 1000px;
   background-color: white;
   width: 680px;
+  justify-content: center;
+  text-align: center;
 }
 
 .search-form .search-input{
@@ -529,6 +541,89 @@ button, input, textarea{
   flex: 70%;
   text-align: right;
   color: #555;
+}
+
+.search-form .cancelSearch, .constructor-input-box .contents .cancelButton{
+  background-color: #071a65;
+  padding: 10px;
+  color: #d9dce6;
+  border: none;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+.vc-form{
+  height: 35%;
+  text-align: center;
+  justify-content: center;
+}
+
+.vc-form .vc-options{
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.vc-form .vc-options button{
+  padding: 10px;
+  width: 150px;
+  height: 150px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid gray;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+.vc-form .vc-options button .vc-icon{
+  font-size: 80px;
+  margin-bottom: 5px;
+}
+
+.vc-form .vc-options :hover{
+  background-color: #e8eaef;
+}
+
+.vc-form .vc-options button span {
+  font-size: 14px; /* Smaller text */
+  text-align: center;
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+.vc-form .vc-cancel{
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #071a65;
+  color: #d9dce6;
+}
+
+.vc-input-form{
+  height: 15%;
+  text-align: center;
+  justify-content: center;
+}
+
+.vc-input-form .vc-input{
+  width: 80%;
+  padding: 8px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.vc-input-form .buttons button{
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #071a65;
+  color: #d9dce6;
 }
 
 /* Constructor input label */

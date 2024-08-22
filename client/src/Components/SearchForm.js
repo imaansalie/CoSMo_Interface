@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import { Box, Button, Input } from "@chakra-ui/react";
 import axios from 'axios';
+import { HiPencilAlt } from "react-icons/hi";
+import { FaDatabase } from "react-icons/fa";
 
 import { useEffect} from 'react';
 
@@ -50,19 +52,25 @@ export const SearchForm = ({onAssign, itemType, setVCInput}) =>{
     return(
         <>
             {showChoice && !showInputForm && !showDBForm &&(
-                <Box className='search-form'>
-                    <Button onClick ={()=> {setShowInputForm(true); setShowDBForm(false); setVCInput(true);}} >Custom Input</Button>
-                    <Button onClick = {() => {setShowDBForm(true); setShowInputForm(false); setVCInput(false)}}>Get Q item from database</Button>
-                    <button onClick = {() => onAssign('cancelled', itemType)}>Cancel</button>
+                <Box className='vc-form'>
+                    <div className='vc-options'>
+                        <button onClick ={()=> {setShowInputForm(true); setShowDBForm(false); setVCInput(true);}} ><HiPencilAlt className='vc-icon'/><span>Custom Input</span></button>
+                        <button onClick = {() => {setShowDBForm(true); setShowInputForm(false); setVCInput(false)}}><FaDatabase className='vc-icon'/><span>Get Q item from database</span></button>
+                    </div>
+                    
+                    <button className= 'vc-cancel' onClick = {() => onAssign('cancelled', itemType)}>Cancel</button>
                 </Box>
             )}
 
             {showInputForm && (
-                <Box className='search-form'>
+                <Box className='vc-input-form'>
                     <Input
-                        placeholder='Enter custom value constraint...' value={userInput} onChange={handleInput} mb={2} className='search-input'
+                        placeholder='Enter custom value constraint...' value={userInput} onChange={handleInput} mb={2} className='vc-input'
                     ></Input>
-                    <Button onClick={()=>onAssign(userInput, itemType)}>Submit</Button>
+                    <div className='buttons'>
+                        <button onClick={()=>onAssign(userInput, itemType)}>Submit</button>
+                        <button onClick = {() => setShowInputForm(false)}>Cancel</button>
+                    </div>
                 </Box>
             )}
 
@@ -85,7 +93,7 @@ export const SearchForm = ({onAssign, itemType, setVCInput}) =>{
                             ))}
                         </ul>
                     </div>
-                    <button onClick = {() => onAssign('cancelled', itemType)}>Cancel</button>
+                    <button className= 'cancelSearch' onClick = {() => onAssign('cancelled', itemType)}>Cancel</button>
                 </Box>
             )}
             

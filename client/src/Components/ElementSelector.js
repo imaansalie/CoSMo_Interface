@@ -269,16 +269,16 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
           <Box className='args'>
             <p>Choose the number of arguments:</p>
             <ul>
-            {args.map((arg, index) => (
-              <li key = {index} className='args-list-item'>
-                <button className='arg-button' onClick={() => handleArgumentsClick(arg)}>
-                  <img src={"/icons/"+arg.picture+".png"} className='arguments-img' alt='img'/>
-                  <span className='arg-name'>{arg.label}</span>
-                </button>
-              </li>
-            ))}
+              {args.map((arg, index) => (
+                <li key = {index} className='args-list-item'>
+                  <button className='arg-button' onClick={() => handleArgumentsClick(arg)}>
+                    <img src={"/icons/"+arg.picture+".png"} className='arguments-img' alt='img'/>
+                    <span className='arg-name'>{arg.label}</span>
+                  </button>
+                </li>
+              ))}
             </ul>
-            <button onClick={() => setShowArgs(false)}>Cancel</button>
+            <button className= 'cancelArgs' onClick={() => setShowArgs(false)}>Cancel</button>
           </Box>
         )}
 
@@ -295,7 +295,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
               </li>
             ))}
             </ul>
-            <button onClick={() => setShowProps(false)}>Cancel</button>
+            <button className= 'cancelArgs' onClick={() => setShowProps(false)}>Cancel</button>
           </Box>
         )}
         {selectedProperty && <SearchForm onAssign={handleAssign} itemType='Property'></SearchForm>}

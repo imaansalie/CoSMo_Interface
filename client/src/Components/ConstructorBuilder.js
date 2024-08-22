@@ -540,7 +540,7 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
                 <input className="input" type="text" value={formData} onChange={handleInputChange} placeholder="Enter label" required />
                 <button type="submit">Submit</button>
                 </form>
-                <button onClick={() => handleConstructorCancel()}>Cancel</button>
+                <button className="cancelButton" onClick={() => handleConstructorCancel()}>Cancel</button>
               </div>
               
             </Box>

@@ -354,7 +354,7 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
                 }
             }
 
-            if(index === keys.length -1){
+            if(index === keys.length -1 && !constructor_definitions[key]){
                 output+=')<br/><br/>';
             }
 

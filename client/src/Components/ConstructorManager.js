@@ -5,7 +5,7 @@ import { Button, Box} from "@chakra-ui/react";
 import { useNavigate } from 'react-router-dom';
 import { FaEllipsisH, FaEllipsisV } from "react-icons/fa";
 
-export const ConstructorManager = ({addedNodes, addedEdges, setAddedNodes, setAddedEdges}) =>{
+const ConstructorManager = ({addedNodes, addedEdges, setAddedNodes, setAddedEdges}) =>{
 
     const {username, userID} = useContext(UserContext);
     const [constructors, setConstructors] = useState({});
@@ -157,3 +157,5 @@ export const ConstructorManager = ({addedNodes, addedEdges, setAddedNodes, setAd
         </div>
     )
 }
+
+export default ConstructorManager;

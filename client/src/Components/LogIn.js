@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { UserContext } from '../Contexts/UserContext';
 
-export const LogIn = () =>{
+export const LogIn = ({setIsNavbarVisible}) =>{
 
     const {username, setUsername, password, setPassword, setUserID} = useContext(UserContext);
     const navigate = useNavigate();
@@ -17,16 +17,17 @@ export const LogIn = () =>{
     }
 
     const handleLogin = async() =>{
-        //add actual login logic later
-
+        
         const userID = await getUserID(username, password);
         console.log(userID);
         setUserID(userID);
 
-        if(userID){
+        if (userID) {
+            localStorage.setItem('userID', userID);  // Store in localStorage
+            localStorage.setItem('username', username);  // Store in localStorage
+            setIsNavbarVisible(true);
             navigate('/ConstructorManager');
-        }
-        else{
+        } else {
             console.log("User not found.");
         }
     }

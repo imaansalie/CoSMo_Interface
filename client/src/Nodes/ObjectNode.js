@@ -53,8 +53,8 @@ const ObjectNode = ({ id, data}) => {
   }
 
   return (
-    <div>
-       <div style={{ position: 'relative', display: 'inline-block' }}>
+    <div >
+       <div className='node' style={{ position: 'relative', display: 'inline-block' }}>
           <img src={imageUrl} alt={`${data.label}`} style={{ display: 'block', width: '100%' }} />
           <p style={{ fontFamily:'sans-serif', ...style }}>
             {textContent}

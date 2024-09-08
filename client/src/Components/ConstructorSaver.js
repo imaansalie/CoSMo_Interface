@@ -226,7 +226,7 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
             )}
 
             {confirmForm && (
-                <Box className = 'SaveConstructorBox'>
+                <Box className = 'ConfirmSaveConstructorBox'>
                     <p>Are you sure you want to save changes to constructor {conID}?</p>
                     <button onClick={()=> saveConstructor()}>Confirm</button>
                 </Box>

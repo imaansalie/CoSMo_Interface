@@ -31,7 +31,7 @@ describe('ConstructorBuilder Tests', () => {
         cy.url().should('include', '/ConstructorBuilder');
       });
 
-  //test basic constructors
+  //test a basic constructor
 
   it('should add a constructor of type "TypeConstructor" and verify text', () => {
     cy.get('.FlowTest').should('be.visible');
@@ -122,6 +122,17 @@ describe('ConstructorBuilder Tests', () => {
       });
     });
   });
+
+  //testing adding an element to the editor
+
+  it('should add a node of type "Object" and assign a data item to it',()=>{
+    cy.get('.FlowTest').should('be.visible');
+
+    cy.get('button').contains('Object').click();
+    cy.get('button').contains('Greece').click();
+
+    cy.get('.Builder').contains('Q41').should('exist');
+  })
 
   //testing dynamic properties
 
@@ -1786,4 +1797,1161 @@ describe('ConstructorBuilder Tests', () => {
   });
 
   //test more complex constructor examples (from technical report)
+
+  it('should add the Edith Eger example constructor, and verify text', () => {
+    cy.get('.FlowTest').should('be.visible');
+
+    // Add nodes and edges
+    cy.window().then((win) => {
+      const nodes = [
+        {
+            "id": "node_sglfc7k6h",
+            "data": {
+                "conID": 1,
+                "label": "Type Constructor",
+                "itemID": "",
+                "roleID": null,
+                "picture": "TypeConstructor",
+                "inputType": "TypeConstructor",
+                "itemLabel": "Offspring"
+            },
+            "type": "TypeConstructor",
+            "width": 133,
+            "height": 121,
+            "position": {
+                "x": 14.627359607343472,
+                "y": 264.4494738193365
+            },
+            "positionAbsolute": {
+                "x": 14.627359607343472,
+                "y": 264.4494738193365
+            }
+        },
+        {
+            "id": "node_hvj1kng0n",
+            "data": {
+                "conID": 1,
+                "label": "Object",
+                "itemID": "Q7566",
+                "roleID": null,
+                "picture": "Object",
+                "inputType": "Object",
+                "itemLabel": "parent"
+            },
+            "type": "Object",
+            "width": 163,
+            "height": 71,
+            "dragging": false,
+            "position": {
+                "x": 226.5595219629974,
+                "y": 290.3236464077195
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 226.5595219629974,
+                "y": 290.3236464077195
+            }
+        },
+        {
+            "id": "node_12xzrhksi",
+            "data": {
+                "conID": 1,
+                "label": "Two Roles",
+                "itemID": "P40",
+                "roleID": 2,
+                "picture": "Property",
+                "inputType": "Property",
+                "itemLabel": "child"
+            },
+            "type": "Property",
+            "width": 133,
+            "height": 48,
+            "dragging": false,
+            "position": {
+                "x": 449.12837705221017,
+                "y": 302.05787932324336
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 449.12837705221017,
+                "y": 302.05787932324336
+            }
+        },
+        {
+            "id": "node_lznj20swj",
+            "data": {
+                "conID": 1,
+                "label": "Object",
+                "itemID": "Q29514218",
+                "roleID": null,
+                "picture": "Object",
+                "inputType": "Object",
+                "itemLabel": "child"
+            },
+            "type": "Object",
+            "width": 163,
+            "height": 71,
+            "dragging": false,
+            "position": {
+                "x": 652.2872017519342,
+                "y": 290.954643533905
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 652.2872017519342,
+                "y": 290.954643533905
+            }
+        },
+        {
+            "id": "node_2vxuy8acx",
+            "data": {
+                "conID": 2,
+                "label": "Instance Constructor",
+                "itemID": "",
+                "roleID": null,
+                "picture": "InstanceConstructor",
+                "inputType": "InstanceConstructor",
+                "itemLabel": "EEger"
+            },
+            "type": "InstanceConstructor",
+            "width": 108,
+            "height": 98,
+            "dragging": false,
+            "position": {
+                "x": 27.055126105953832,
+                "y": 454.82161122553873
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 27.055126105953832,
+                "y": 454.82161122553873
+            }
+        },
+        {
+            "id": "node_26gwvl9ag",
+            "data": {
+                "conID": 2,
+                "label": "Object",
+                "itemID": "Q7566",
+                "roleID": null,
+                "picture": "Object",
+                "inputType": "Object",
+                "itemLabel": "parent"
+            },
+            "type": "Object",
+            "width": 163,
+            "height": 71,
+            "dragging": false,
+            "position": {
+                "x": 232.8227606139418,
+                "y": 469.2758854896731
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 232.8227606139418,
+                "y": 469.2758854896731
+            }
+        },
+        {
+            "id": "node_5rf8fkr0i",
+            "data": {
+                "conID": 2,
+                "label": "Two Roles",
+                "itemID": "P40",
+                "roleID": 4,
+                "picture": "Property",
+                "inputType": "Property",
+                "itemLabel": "child"
+            },
+            "type": "Property",
+            "width": 133,
+            "height": 48,
+            "dragging": false,
+            "position": {
+                "x": 454.750505776569,
+                "y": 478.0843329023776
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 454.750505776569,
+                "y": 478.0843329023776
+            }
+        },
+        {
+            "id": "node_bhwrwtirn",
+            "data": {
+                "conID": 2,
+                "label": "Object",
+                "itemID": "Q29514218",
+                "roleID": null,
+                "picture": "Object",
+                "inputType": "Object",
+                "itemLabel": "child"
+            },
+            "type": "Object",
+            "width": 163,
+            "height": 71,
+            "dragging": false,
+            "position": {
+                "x": 653.8590849700131,
+                "y": 463.02555366414265
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 653.8590849700131,
+                "y": 463.02555366414265
+            }
+        },
+        {
+            "id": "node_57gruzzkx",
+            "data": {
+                "conID": 3,
+                "label": "Type Constructor",
+                "itemID": "",
+                "roleID": null,
+                "picture": "TypeConstructor",
+                "inputType": "TypeConstructor",
+                "itemLabel": "Age"
+            },
+            "type": "TypeConstructor",
+            "width": 133,
+            "height": 121,
+            "dragging": false,
+            "position": {
+                "x": -180.4192166592365,
+                "y": 588.5968145117462
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": -180.4192166592365,
+                "y": 588.5968145117462
+            }
+        },
+        {
+            "id": "node_evw2a9p20",
+            "data": {
+                "conID": 3,
+                "label": "Object",
+                "itemID": "Q7566",
+                "roleID": null,
+                "picture": "Object",
+                "inputType": "Object",
+                "itemLabel": "parent"
+            },
+            "type": "Object",
+            "width": 163,
+            "height": 71,
+            "dragging": false,
+            "position": {
+                "x": 38.08699930529269,
+                "y": 611.8232457732927
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 38.08699930529269,
+                "y": 611.8232457732927
+            }
+        },
+        {
+            "id": "node_ovk4c2qq9",
+            "data": {
+                "conID": 3,
+                "label": "Two Roles",
+                "itemID": "P40",
+                "roleID": 6,
+                "picture": "Property",
+                "inputType": "Property",
+                "itemLabel": "child"
+            },
+            "type": "Property",
+            "width": 133,
+            "height": 48,
+            "dragging": false,
+            "position": {
+                "x": 307.11441599639943,
+                "y": 621.7662341110404
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 307.11441599639943,
+                "y": 621.7662341110404
+            }
+        },
+        {
+            "id": "node_ozcxhniqw",
+            "data": {
+                "conID": 3,
+                "label": "Object",
+                "itemID": "Q29514218",
+                "roleID": null,
+                "picture": "Object",
+                "inputType": "Object",
+                "itemLabel": "child"
+            },
+            "type": "Object",
+            "width": 163,
+            "height": 71,
+            "dragging": false,
+            "position": {
+                "x": 504.7946675677893,
+                "y": 611.4664799010484
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 504.7946675677893,
+                "y": 611.4664799010484
+            }
+        },
+        {
+            "id": "node_szkzxs2o5",
+            "data": {
+                "conID": 3,
+                "label": "One Argument",
+                "itemID": "",
+                "roleID": null,
+                "picture": "Arguments",
+                "inputType": "Arguments",
+                "itemLabel": ""
+            },
+            "type": "Arguments",
+            "width": 133,
+            "height": 33,
+            "dragging": false,
+            "position": {
+                "x": 721.0324481326288,
+                "y": 631.4348122399127
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 721.0324481326288,
+                "y": 631.4348122399127
+            }
+        },
+        {
+            "id": "node_35tfsfxdh",
+            "data": {
+                "conID": 3,
+                "label": "Function",
+                "itemID": "Z12345",
+                "roleID": null,
+                "picture": "Function",
+                "inputType": "Function",
+                "itemLabel": "Age"
+            },
+            "type": "Function",
+            "width": 163,
+            "height": 76,
+            "dragging": false,
+            "position": {
+                "x": 898.1719092595877,
+                "y": 610.0450540906606
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 898.1719092595877,
+                "y": 610.0450540906606
+            }
+        },
+        {
+            "id": "node_96cezid99",
+            "data": {
+                "conID": 2,
+                "label": "Value Constraint",
+                "itemID": "Q62070381",
+                "picture": "ValueConstraint",
+                "inputType": "ValueConstraint",
+                "itemLabel": "Edith Eger"
+            },
+            "type": "ValueConstraint",
+            "width": 96,
+            "height": 41,
+            "dragging": false,
+            "position": {
+                "x": 685.440108687228,
+                "y": 570.3267227399999
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 685.440108687228,
+                "y": 570.3267227399999
+            }
+        }
+    ];
+      const edges = [
+        {
+            "id": "reactflow__edge-node_sglfc7k6hsource-right-node_hvj1kng0ntarget-left",
+            "type": "InstanceConstructor_Connector",
+            "source": "node_sglfc7k6h",
+            "target": "node_hvj1kng0n",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_hvj1kng0nsource-right-node_12xzrhksitarget-left",
+            "type": "Role",
+            "source": "node_hvj1kng0n",
+            "target": "node_12xzrhksi",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_12xzrhksisource-right-node_lznj20swjtarget-left",
+            "type": "Role",
+            "source": "node_12xzrhksi",
+            "target": "node_lznj20swj",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_2vxuy8acxsource-top-node_sglfc7k6htarget-bottom",
+            "type": "Instance",
+            "source": "node_2vxuy8acx",
+            "target": "node_sglfc7k6h",
+            "sourceHandle": "source-top",
+            "targetHandle": "target-bottom"
+        },
+        {
+            "id": "reactflow__edge-node_2vxuy8acxsource-right-node_26gwvl9agtarget-left",
+            "type": "InstanceConstructor_Connector",
+            "source": "node_2vxuy8acx",
+            "target": "node_26gwvl9ag",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_26gwvl9agsource-right-node_5rf8fkr0itarget-left",
+            "type": "Role",
+            "source": "node_26gwvl9ag",
+            "target": "node_5rf8fkr0i",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_5rf8fkr0isource-right-node_bhwrwtirntarget-left",
+            "type": "Role",
+            "source": "node_5rf8fkr0i",
+            "target": "node_bhwrwtirn",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_57gruzzkxsource-top-node_sglfc7k6htarget-left",
+            "type": "Sub-constructor",
+            "source": "node_57gruzzkx",
+            "target": "node_sglfc7k6h",
+            "sourceHandle": "source-top",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_57gruzzkxsource-right-node_evw2a9p20target-left",
+            "type": "InstanceConstructor_Connector",
+            "source": "node_57gruzzkx",
+            "target": "node_evw2a9p20",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_evw2a9p20source-right-node_ovk4c2qq9target-left",
+            "type": "Role",
+            "source": "node_evw2a9p20",
+            "target": "node_ovk4c2qq9",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_ovk4c2qq9source-right-node_ozcxhniqwtarget-left",
+            "type": "Role",
+            "source": "node_ovk4c2qq9",
+            "target": "node_ozcxhniqw",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_ozcxhniqwsource-right-node_szkzxs2o5target-left",
+            "type": "Role",
+            "source": "node_ozcxhniqw",
+            "target": "node_szkzxs2o5",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_szkzxs2o5source-right-node_35tfsfxdhtarget-left",
+            "type": "Role",
+            "source": "node_szkzxs2o5",
+            "target": "node_35tfsfxdh",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_96cezid99IN-top-node_bhwrwtirntarget-bottom",
+            "type": "Instance",
+            "source": "node_96cezid99",
+            "target": "node_bhwrwtirn",
+            "sourceHandle": "IN-top",
+            "targetHandle": "target-bottom"
+        }
+    ];
+
+      // Call the custom method to add nodes and edges
+      win.addNodesAndEdges(nodes, edges);
+
+      // Continue with your test assertions
+      cy.wait(1000); // Wait for the state to update
+
+      // Call generateText and check the results
+      cy.window().then((win) => {
+        if (typeof win.generateText === 'function') {
+          win.generateText(); // Call the function
+        } else {
+          throw new Error("Generate Text function is not available");
+        }
+      });
+
+      cy.wait(1000); // Adjust time as needed to allow for async operations
+
+      cy.get('.Textbox p').should(($p) => {
+        const text = $p.html(); // Get the HTML content
+        expect(text).to.contain('TypeConstructor:C1(<br>&nbsp;&nbsp;&nbsp;&nbsp;Property(P40(r1,r2)),<br>&nbsp;&nbsp;&nbsp;&nbsp;r1:ObjectType(Q7566),<br>&nbsp;&nbsp;&nbsp;&nbsp;r2:ObjectType(Q29514218))<br><br>InstanceOf(C2, C1)<br><br>InstanceConstructor:C2(<br>&nbsp;&nbsp;&nbsp;&nbsp;Property(P40(r1,r2)),<br>&nbsp;&nbsp;&nbsp;&nbsp;r1:ObjectType(Q7566),<br>&nbsp;&nbsp;&nbsp;&nbsp;r2:ObjectType(Q29514218),<br>&nbsp;&nbsp;&nbsp;&nbsp;ObjectType(Q29514218)={Q62070381})<br><br>SubConstructorOf(C3, C1)<br><br>TypeConstructor:C3(<br>&nbsp;&nbsp;&nbsp;&nbsp;Property(P40(r1,r2)),<br>&nbsp;&nbsp;&nbsp;&nbsp;r1:ObjectType(Q7566),<br>&nbsp;&nbsp;&nbsp;&nbsp;r2:ObjectType(Q29514218),<br>&nbsp;&nbsp;&nbsp;&nbsp;Function(Z12345(Q29514218)))<br><br>');
+      });
+    });
+  });
+
+  it('should add the San Fransisco example constructor, and verify text', () => {
+    cy.get('.FlowTest').should('be.visible');
+
+    // Add nodes and edges
+    cy.window().then((win) => {
+      const nodes = [
+        {
+            "id": "node_82l420wir",
+            "data": {
+                "conID": 4,
+                "label": "Instance Constructor",
+                "itemID": "",
+                "roleID": null,
+                "picture": "InstanceConstructor",
+                "inputType": "InstanceConstructor",
+                "itemLabel": "SF ranking"
+            },
+            "type": "InstanceConstructor",
+            "width": 108,
+            "height": 98,
+            "position": {
+                "x": 46.20456133027344,
+                "y": 119.54693856340941
+            },
+            "positionAbsolute": {
+                "x": 46.20456133027344,
+                "y": 19.546938563409412
+            }
+        },
+        {
+            "id": "node_qiu457bbp",
+            "data": {
+                "conID": 4,
+                "label": "Object",
+                "itemID": "Q515",
+                "roleID": null,
+                "picture": "Object",
+                "inputType": "Object",
+                "itemLabel": "city"
+            },
+            "type": "Object",
+            "width": 163,
+            "height": 71,
+            "dragging": false,
+            "position": {
+                "x": 213.40613677871465,
+                "y": 132.52601298298077
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 213.40613677871465,
+                "y": 32.526012982980774
+            }
+        },
+        {
+            "id": "node_sn8x9z42n",
+            "data": {
+                "conID": 4,
+                "label": "Object",
+                "itemID": "Q107390",
+                "roleID": null,
+                "picture": "Object",
+                "inputType": "Object",
+                "itemLabel": "state"
+            },
+            "type": "Object",
+            "width": 163,
+            "height": 71,
+            "dragging": false,
+            "position": {
+                "x": 667.8303428064821,
+                "y": 135.41307588068793
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 667.8303428064821,
+                "y": 35.41307588068793
+            }
+        },
+        {
+            "id": "node_7urk91dr4",
+            "data": {
+                "conID": 4,
+                "label": "Two Roles",
+                "itemID": "P361",
+                "roleID": 2,
+                "picture": "Property",
+                "inputType": "Property",
+                "itemLabel": "part of"
+            },
+            "type": "Property",
+            "width": 133,
+            "height": 48,
+            "dragging": false,
+            "position": {
+                "x": 462.8645615731335,
+                "y": 145.3232708067854
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 462.8645615731335,
+                "y": 45.32327080678539
+            }
+        },
+        {
+            "id": "node_tb92ja9cf",
+            "data": {
+                "conID": 4,
+                "label": "Value Constraint",
+                "itemID": "Q62",
+                "picture": "ValueConstraint",
+                "inputType": "ValueConstraint",
+                "itemLabel": "San Fransisco"
+            },
+            "type": "ValueConstraint",
+            "width": 43,
+            "height": 41,
+            "dragging": false,
+            "position": {
+                "x": 275.4979448892765,
+                "y": 259.8256094726553
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 275.4979448892765,
+                "y": 159.82560947265526
+            }
+        },
+        {
+            "id": "node_vmjp045c0",
+            "data": {
+                "conID": 4,
+                "label": "Three Arguments",
+                "itemID": "",
+                "roleID": null,
+                "picture": "Arguments_3",
+                "inputType": "Arguments",
+                "itemLabel": ""
+            },
+            "type": "Arguments",
+            "width": 133,
+            "height": 25,
+            "dragging": false,
+            "position": {
+                "x": 496.0095310658051,
+                "y": 256.18165894495814
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 496.0095310658051,
+                "y": 156.18165894495817
+            }
+        },
+        {
+            "id": "node_p8k1t5sc6",
+            "data": {
+                "conID": 4,
+                "label": "Object",
+                "itemID": "Q1613416",
+                "roleID": null,
+                "picture": "Object",
+                "inputType": "Object",
+                "itemLabel": "population"
+            },
+            "type": "Object",
+            "width": 163,
+            "height": 71,
+            "dragging": false,
+            "position": {
+                "x": 493.51685383283115,
+                "y": 326.93690356645965
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 493.51685383283115,
+                "y": 226.93690356645965
+            }
+        },
+        {
+            "id": "node_2pw33yz2a",
+            "data": {
+                "conID": 4,
+                "label": "Function",
+                "itemID": "Z6789",
+                "roleID": null,
+                "picture": "Function",
+                "inputType": "Function",
+                "itemLabel": "Rank"
+            },
+            "type": "Function",
+            "width": 163,
+            "height": 76,
+            "dragging": false,
+            "position": {
+                "x": 685.0874840083362,
+                "y": 254.23934128465154
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 685.0874840083362,
+                "y": 154.23934128465154
+            }
+        },
+        {
+            "id": "node_6bicai7gu",
+            "data": {
+                "conID": 4,
+                "label": "Value Constraint",
+                "itemID": "<=4",
+                "picture": "ValueConstraint",
+                "inputType": "ValueConstraint",
+                "itemLabel": null
+            },
+            "type": "ValueConstraint",
+            "width": 40,
+            "height": 41,
+            "dragging": false,
+            "position": {
+                "x": 746.3167120515812,
+                "y": 373.43352793934343
+            },
+            "selected": true,
+            "positionAbsolute": {
+                "x": 746.3167120515812,
+                "y": 273.43352793934343
+            }
+        }
+    ];
+      const edges = [
+        {
+            "id": "reactflow__edge-node_82l420wirsource-right-node_qiu457bbptarget-left",
+            "type": "InstanceConstructor_Connector",
+            "source": "node_82l420wir",
+            "target": "node_qiu457bbp",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_qiu457bbpsource-right-node_7urk91dr4target-left",
+            "type": "Role",
+            "source": "node_qiu457bbp",
+            "target": "node_7urk91dr4",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_7urk91dr4source-right-node_sn8x9z42ntarget-left",
+            "type": "Role",
+            "source": "node_7urk91dr4",
+            "target": "node_sn8x9z42n",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_tb92ja9cfIN-top-node_qiu457bbptarget-bottom",
+            "type": "Instance",
+            "source": "node_tb92ja9cf",
+            "target": "node_qiu457bbp",
+            "sourceHandle": "IN-top",
+            "targetHandle": "target-bottom"
+        },
+        {
+            "id": "reactflow__edge-node_qiu457bbpsource-right-node_vmjp045c0target-left",
+            "type": "Role",
+            "source": "node_qiu457bbp",
+            "target": "node_vmjp045c0",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_vmjp045c0source-top-node_sn8x9z42ntarget-bottom",
+            "type": "Role",
+            "source": "node_vmjp045c0",
+            "target": "node_sn8x9z42n",
+            "sourceHandle": "source-top",
+            "targetHandle": "target-bottom"
+        },
+        {
+            "id": "reactflow__edge-node_vmjp045c0source-bottom-node_p8k1t5sc6target-top",
+            "type": "Role",
+            "source": "node_vmjp045c0",
+            "target": "node_p8k1t5sc6",
+            "sourceHandle": "source-bottom",
+            "targetHandle": "target-top"
+        },
+        {
+            "id": "reactflow__edge-node_vmjp045c0source-right-node_2pw33yz2atarget-left",
+            "type": "Role",
+            "source": "node_vmjp045c0",
+            "target": "node_2pw33yz2a",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_6bicai7guIN-top-node_2pw33yz2atarget-bottom",
+            "type": "ValueConstraint",
+            "source": "node_6bicai7gu",
+            "target": "node_2pw33yz2a",
+            "sourceHandle": "IN-top",
+            "targetHandle": "target-bottom"
+        }
+    ];
+
+      // Call the custom method to add nodes and edges
+      win.addNodesAndEdges(nodes, edges);
+
+      // Continue with your test assertions
+      cy.wait(1000); // Wait for the state to update
+
+      // Call generateText and check the results
+      cy.window().then((win) => {
+        if (typeof win.generateText === 'function') {
+          win.generateText(); // Call the function
+        } else {
+          throw new Error("Generate Text function is not available");
+        }
+      });
+
+      cy.wait(1000); // Adjust time as needed to allow for async operations
+
+      cy.get('.Textbox p').should(($p) => {
+        const text = $p.html(); // Get the HTML content
+        expect(text).to.contain(`InstanceConstructor:C4(<br>&nbsp;&nbsp;&nbsp;&nbsp;Property(P361(r1,r2)),<br>&nbsp;&nbsp;&nbsp;&nbsp;r1:ObjectType(Q515),<br>&nbsp;&nbsp;&nbsp;&nbsp;r2:ObjectType(Q107390),<br>&nbsp;&nbsp;&nbsp;&nbsp;Function(Z6789(Q515, Q1613416, Q107390)),<br>&nbsp;&nbsp;&nbsp;&nbsp;Function(Z6789)={&lt;=4},<br>&nbsp;&nbsp;&nbsp;&nbsp;ObjectType(Q515)={Q62})<br><br>`);
+      });
+    });
+  });
+
+  it('should add the Capybara example constructor, and verify text', () => {
+    cy.get('.FlowTest').should('be.visible');
+
+    // Add nodes and edges
+    cy.window().then((win) => {
+      const nodes = [
+        {
+            "id": "node_vitlpj2vv",
+            "data": {
+                "conID": 7,
+                "label": "Type Constructor",
+                "itemID": "",
+                "roleID": null,
+                "picture": "TypeConstructor",
+                "inputType": "TypeConstructor",
+                "itemLabel": "test"
+            },
+            "type": "TypeConstructor",
+            "width": 133,
+            "height": 121,
+            "dragging": false,
+            "position": {
+                "x": 90.65952047922542,
+                "y": 158.31539590404168
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 90.65952047922542,
+                "y": 58.31539590404168
+            }
+        },
+        {
+            "id": "node_4fxbcsf4n",
+            "data": {
+                "conID": 7,
+                "label": "Object",
+                "itemID": "Q131538",
+                "roleID": null,
+                "picture": "Object",
+                "inputType": "Object",
+                "itemLabel": "Capybara"
+            },
+            "type": "Object",
+            "width": 163,
+            "height": 71,
+            "dragging": false,
+            "position": {
+                "x": 301.4734289326083,
+                "y": 183.82555082260035
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 301.4734289326083,
+                "y": 83.82555082260035
+            }
+        },
+        {
+            "id": "node_tsvepayz6",
+            "data": {
+                "conID": 7,
+                "label": "Two Roles",
+                "itemID": "P183",
+                "roleID": 2,
+                "picture": "Property",
+                "inputType": "Property",
+                "itemLabel": "endemic to"
+            },
+            "type": "Property",
+            "width": 133,
+            "height": 48,
+            "dragging": false,
+            "position": {
+                "x": 546.3020226314542,
+                "y": 47.20153388784436
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 546.3020226314542,
+                "y": -52.79846611215564
+            }
+        },
+        {
+            "id": "node_s68g5o76y",
+            "data": {
+                "conID": 7,
+                "label": "Object",
+                "itemID": "Q82794",
+                "roleID": null,
+                "picture": "Object",
+                "inputType": "Object",
+                "itemLabel": "region"
+            },
+            "type": "Object",
+            "width": 163,
+            "height": 71,
+            "dragging": false,
+            "position": {
+                "x": 722.1587641302565,
+                "y": 175.3886173979354
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 722.1587641302565,
+                "y": 75.3886173979354
+            }
+        },
+        {
+            "id": "node_tsotzqkue",
+            "data": {
+                "conID": 7,
+                "label": "Two Roles",
+                "itemID": "P9714",
+                "roleID": 4,
+                "picture": "Property",
+                "inputType": "Property",
+                "itemLabel": "taxon range"
+            },
+            "type": "Property",
+            "width": 133,
+            "height": 48,
+            "dragging": false,
+            "position": {
+                "x": 551.3307845544091,
+                "y": 311.09867648719876
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 551.3307845544091,
+                "y": 211.09867648719873
+            }
+        },
+        {
+            "id": "node_6uq0ln7z8",
+            "data": {
+                "conID": 7,
+                "label": "Role Name",
+                "itemID": "Q22947",
+                "picture": "Role_name",
+                "inputType": "Role_name",
+                "itemLabel": "inhabitant"
+            },
+            "type": "Role_name",
+            "width": 159,
+            "height": 41,
+            "dragging": false,
+            "position": {
+                "x": 369.8455872531938,
+                "y": 26.986287427108294
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 369.8455872531938,
+                "y": 26.986287427108294
+            }
+        },
+        {
+            "id": "node_01wp5lk0q",
+            "data": {
+                "conID": 7,
+                "label": "Role Name",
+                "itemID": "Q17334923",
+                "picture": "Role_name",
+                "inputType": "Role_name",
+                "itemLabel": "location"
+            },
+            "type": "Role_name",
+            "width": 171,
+            "height": 41,
+            "dragging": false,
+            "position": {
+                "x": 695.5075824315428,
+                "y": 32.99999243988461
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 695.5075824315428,
+                "y": 32.99999243988461
+            }
+        },
+        {
+            "id": "node_bzo69au9k",
+            "data": {
+                "conID": 7,
+                "label": "Join",
+                "itemID": "",
+                "roleID": null,
+                "picture": "Join",
+                "inputType": "Join",
+                "itemLabel": ""
+            },
+            "type": "Join",
+            "width": 80,
+            "height": 77,
+            "dragging": false,
+            "position": {
+                "x": 564.2195751165118,
+                "y": 159.82237137577619
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 564.2195751165118,
+                "y": 59.822371375776186
+            }
+        }
+    ];
+      const edges = [
+        {
+            "id": "reactflow__edge-node_vitlpj2vvsource-right-node_4fxbcsf4ntarget-left",
+            "type": "InstanceConstructor_Connector",
+            "source": "node_vitlpj2vv",
+            "target": "node_4fxbcsf4n",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_4fxbcsf4nsource-right-node_tsvepayz6target-left",
+            "type": "IsMandatory",
+            "source": "node_4fxbcsf4n",
+            "target": "node_tsvepayz6",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_tsvepayz6source-right-node_s68g5o76ytarget-left",
+            "type": "Role",
+            "source": "node_tsvepayz6",
+            "target": "node_s68g5o76y",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_4fxbcsf4nsource-right-node_tsotzqkuetarget-left",
+            "type": "IsMandatory",
+            "source": "node_4fxbcsf4n",
+            "target": "node_tsotzqkue",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_tsotzqkuesource-right-node_s68g5o76ytarget-left",
+            "type": "Role",
+            "source": "node_tsotzqkue",
+            "target": "node_s68g5o76y",
+            "sourceHandle": "source-right",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_9uo5ouhlzIN-top-node_tsvepayz6target-left",
+            "type": "Role_name",
+            "source": "node_9uo5ouhlz",
+            "target": "node_tsvepayz6",
+            "sourceHandle": "IN-top",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_6uq0ln7z8IN-top-node_tsvepayz6target-left",
+            "type": "Role_name",
+            "source": "node_6uq0ln7z8",
+            "target": "node_tsvepayz6",
+            "sourceHandle": "IN-top",
+            "targetHandle": "target-left"
+        },
+        {
+            "id": "reactflow__edge-node_tsvepayz6source-right-node_01wp5lk0qIN-bottom",
+            "type": "Role_name",
+            "source": "node_tsvepayz6",
+            "target": "node_01wp5lk0q",
+            "sourceHandle": "source-right",
+            "targetHandle": "IN-bottom"
+        },
+        {
+            "id": "reactflow__edge-node_bzo69au9ksource-top-node_tsvepayz6target-bottom",
+            "type": "Join",
+            "source": "node_bzo69au9k",
+            "target": "node_tsvepayz6",
+            "sourceHandle": "source-top",
+            "targetHandle": "target-bottom"
+        },
+        {
+            "id": "reactflow__edge-node_bzo69au9ksource-bottom-node_tsotzqkuetarget-top",
+            "type": "Join",
+            "source": "node_bzo69au9k",
+            "target": "node_tsotzqkue",
+            "sourceHandle": "source-bottom",
+            "targetHandle": "target-top"
+        }
+    ];
+
+      // Call the custom method to add nodes and edges
+      win.addNodesAndEdges(nodes, edges);
+
+      // Continue with your test assertions
+      cy.wait(1000); // Wait for the state to update
+
+      // Call generateText and check the results
+      cy.window().then((win) => {
+        if (typeof win.generateText === 'function') {
+          win.generateText(); // Call the function
+        } else {
+          throw new Error("Generate Text function is not available");
+        }
+      });
+
+      cy.wait(1000); // Adjust time as needed to allow for async operations
+
+      cy.get('.Textbox p').should(($p) => {
+        const text = $p.html(); // Get the HTML content
+        expect(text).to.contain('TypeConstructor:C7(<br>&nbsp;&nbsp;&nbsp;&nbsp;Property(P183(r1,r2)),<br>&nbsp;&nbsp;&nbsp;&nbsp;r1[Q22947]:ObjectType(Q131538),<br>&nbsp;&nbsp;&nbsp;&nbsp;r2[Q17334923]:ObjectType(Q82794),<br>&nbsp;&nbsp;&nbsp;&nbsp;isMandatory(r1),<br>&nbsp;&nbsp;&nbsp;&nbsp;Property(P9714(r3,r4)),<br>&nbsp;&nbsp;&nbsp;&nbsp;r3:ObjectType(Q131538),<br>&nbsp;&nbsp;&nbsp;&nbsp;r4:ObjectType(Q82794),<br>&nbsp;&nbsp;&nbsp;&nbsp;isMandatory(r3),<br>&nbsp;&nbsp;&nbsp;&nbsp;Join(P183, P9714))<br><br>');
+      });
+    });
+  });
 });

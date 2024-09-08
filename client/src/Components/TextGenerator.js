@@ -286,6 +286,7 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
 
     const generateText = () => {
         
+        console.log(nodes);
         console.log(edges);
 
         let output = '';
@@ -359,6 +360,7 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
             }
 
             previousConID=conID;
+            console.log(previousConID);
         });
     
         translateOutput(output);
@@ -441,7 +443,7 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
     //handle first layer of multilingualism
 
     const translateOutput = async(output) =>{
-        console.log('translating...');
+        console.log(output);
         for(let label of labels){
             if(output.includes(label)){
                 try{

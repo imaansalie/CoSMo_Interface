@@ -16,8 +16,8 @@ import ValueConstraint from '../Edges/ValueConstraint';
 import { SearchForm } from './SearchForm';
 import { TextGenerator } from './TextGenerator';
 import { Settings } from './Settings';
-import { ConstructorSaver } from './ConstructorSaver';
-import { ConstructorForm } from './ConstructorForm';
+import {ConstructorSaver} from './ConstructorSaver';
+import {ConstructorForm} from './ConstructorForm';
 import { BsPlusCircle } from 'react-icons/bs';
 import ObjectNode from '../Nodes/ObjectNode';
 import { useLocation } from 'react-router-dom';
@@ -63,7 +63,7 @@ const connectors = [
 const initialNodes = [];
 const initialEdges = [];
 
-export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAddedEdges}) => {
+const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNodes, setAddedEdges}) => {
  
   //state hooks for nodes and edges
   // const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -410,187 +410,191 @@ export const ConstructorBuilder = ({addedNodes, addedEdges, setAddedNodes, setAd
   return (
     <ReactFlowProvider>
         <div className="FlowTest">
-          <div className="ConstructorBuilder">
-            <h1>Constructor Builder </h1>
+            <div className={`ConstructorBuilder ${!isNavbarVisible ? 'full-width' : ''}`}>
+              <h1>Constructor Builder </h1>
 
-            <div className='CB-options'>
-              <Settings
-                selectedLanguage={selectedLanguage}
-                setSelectedLanguage={setSelectedLanguage}
-              />
+              <div className='CB-options'>
+                <Settings
+                  selectedLanguage={selectedLanguage}
+                  setSelectedLanguage={setSelectedLanguage}
+                />
 
-              <Button className='AddConstructorButton' onClick= {()=>setConstructorForm(true)}>
-                <BsPlusCircle/> Add an existing Constructor</Button>
-            </div>
+                <Button className='AddConstructorButton' onClick= {()=>setConstructorForm(true)}>
+                  <BsPlusCircle/> Add an existing Constructor</Button>
+              </div>
 
-            <Box border="1px solid gray" className='Builder'>
-                <ReactFlow
-                  nodes={mappedNodes}
+              <Box border="1px solid gray" className='Builder'>
+                  <ReactFlow
+                    nodes={mappedNodes}
+                    edges={edges}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onConnect={onConnect}
+                    nodeTypes={nodeTypes}
+                    edgeTypes={edgeTypes}
+                  >
+                    <Controls />
+                    <Background />
+                  </ReactFlow>
+              </Box>
+              
+              <div className='buttons'>
+                <TextGenerator
+                  ref={textGeneratorRef}
+                  nodes={nodes}
                   edges={edges}
-                  onNodesChange={onNodesChange}
-                  onEdgesChange={onEdgesChange}
-                  onConnect={onConnect}
-                  nodeTypes={nodeTypes}
-                  edgeTypes={edgeTypes}
-                >
-                  <Controls />
-                  <Background />
-                </ReactFlow>
-            </Box>
-            
-            <div className='buttons'>
-              <TextGenerator
-                ref={textGeneratorRef}
-                nodes={nodes}
-                edges={edges}
-                nodeLabels={nodeLabels}
-                setNodeLabels={setNodeLabels}
-                errorMessage={errorMessage}
-                setErrorMessage={setErrorMessage}
-                setNextGroup={setNextGroup}
-                selectedLanguage={selectedLanguage}
-              />
+                  nodeLabels={nodeLabels}
+                  setNodeLabels={setNodeLabels}
+                  errorMessage={errorMessage}
+                  setErrorMessage={setErrorMessage}
+                  setNextGroup={setNextGroup}
+                  selectedLanguage={selectedLanguage}
+                />
 
-              <ConstructorSaver
-                nodes={nodes}
-                edges={edges}
-                nodeLabels={nodeLabels}
-                setConstructorAdded= {setConstructorAdded}
-                errorMessage={errorMessage}
-                setSaveMessage= {setSaveMessage}
-                saveForm={saveForm}
-                setSaveForm= {setSaveForm}
-                textGeneratorRef={textGeneratorRef}
-              />
+                <ConstructorSaver
+                  nodes={nodes}
+                  edges={edges}
+                  nodeLabels={nodeLabels}
+                  setConstructorAdded= {setConstructorAdded}
+                  errorMessage={errorMessage}
+                  setSaveMessage= {setSaveMessage}
+                  saveForm={saveForm}
+                  setSaveForm= {setSaveForm}
+                  textGeneratorRef={textGeneratorRef}
+                />
 
-              <button className='clear-button' onClick={() => setClearNodes(true)}>Clear all</button>
-            </div>
+                <button className='clear-button' onClick={() => setClearNodes(true)}>Clear all</button>
+              </div>
 
-            <div data-testid = 'text' className='Textbox'>
-                {nodeLabels.length > 0 && !errorMessage &&(
-                <p dangerouslySetInnerHTML={{ __html: nodeLabels[0] }} />
-                )}
-            </div>
-          </div>
-          
-          <div className='toolbox'>
-            
-            <div className='toolbox-info'>
-              <p>Add elements</p>
-              <div className='tooltip'>
-                <GrCircleInformation className='info-icon'/>
-                <span className= 'tooltiptext'>Click on an element to add it to the diagram.</span>
+              <div data-testid = 'text' className='Textbox'>
+                  {nodeLabels.length > 0 && !errorMessage &&(
+                  <p dangerouslySetInnerHTML={{ __html: nodeLabels[0] }} />
+                  )}
               </div>
             </div>
             
-            <div>
-              <ElementSelector 
-                setCurrentType={setCurrentType} 
-                setNewNodeId={setNewNodeId}
-                elementDeleted={checkDeleted}
-                propertyDeleted={propertyDeleted}
-                nextGroup={nextGroup}
-                setShowForm={setShowForm}
-                setCurrentNodeID={setCurrentNodeID}
-                handleAssign={handleAssign}
-                />  
-            </div>
-           
-            <div className='toolbox-info'>
-              <p>Choose a connector</p>
-              <div className='tooltip'>
-                <GrCircleInformation className='info-icon'/>
-                <span className= 'tooltiptext'>Click on a connector to select it. To connect two elements, drag the connector between the handles of the elements.</span>
-              </div>
-            </div>
-            <div className='connectors'>
-              <ul>
-              {connectors.map((connector, index) => (
-                <li key={index}>
-                  <label className='radio-label'>
-                    <input
-                      type='radio'
-                      name='connector'
-                      value={connector.label}
-                      onChange={() => handleEdgeChange(connector)}
-                      className='radio-input'
-                    />
-                    <img
-                      src={`/icons/${connector.picture}.png`}
-                      className='selector-img'
-                      alt={connector.label}
-                    />
-                    <span className='name'>{connector.label}</span>
-                  </label>
-                </li>
-              ))}
-              </ul>
-            </div>
-          </div>
-
-          {newNodeId && showSearchForm &&(
-          <SearchForm onAssign={handleAssign} itemType={currentType} setVCInput= {setVCInput}/>
-          )}
-
-          {showForm && (
-            <Box className='constructor-input-box'>
-              <div className='contents'> 
-                <p>Provide a label for the constructor:</p>
-                <form onSubmit={handleFormSubmit}>
-                <input className="input" type="text" value={formData} onChange={handleInputChange} placeholder="Enter label" required />
-                <button type="submit">Submit</button>
-                </form>
-                <button className="cancelButton" onClick={() => handleConstructorCancel()}>Cancel</button>
+            <div className='toolbox'>
+              
+              <div className='toolbox-info'>
+                <p>Click on an element</p>
+                <div className='tooltip'>
+                  <GrCircleInformation className='info-icon'/>
+                  <span className= 'tooltiptext'>Click on an element to add it to the diagram.</span>
+                </div>
               </div>
               
-            </Box>
-          )}
-
-          {errorMessage && (
-            <div>
-              <Box className='error-message'>
-                <p className='error-text'>{errorMessage}</p>
-                <button onClick={()=>handleClearError()}>Okay</button>
-              </Box>
-            </div>
-          )}
-
-          {saveMessage && (
-            <div>
-              <Box className='save-message'>
-                <p className='save-text'>{saveMessage}</p>
-                <button onClick={()=>setSaveMessage(null)}>Okay</button>
-              </Box>
-            </div>
-          )}
-
-          {constructorAdded && (
-            <div>
-              <Box className='error-message'>
-                <p className='save-text'>Constructor has been sucessfully saved.</p>
-                <button onClick={()=>setConstructorAdded(false)}>Okay</button>
-              </Box>
-            </div>
-          )}
-
-          {constructorForm && (
-            <ConstructorForm
-              setConstructorForm={setConstructorForm}
-              setAddedNodes={setAddedNodes}
-              setAddedEdges={setAddedEdges}
-            />
-          )}
-
-          {(nodes.length>0 || edges.length>0) && clearNodes &&(
-            <Box className='clearBox'>
-              <p className='clearBox-text'>Are you sure you want to clear all constructors?</p>
-              <div className='clearBox-buttons'>
-                <Button className='clearBox-button' onClick={() => clearAllNodes()}>Confirm</Button>
-                <Button className='clearBox-button' onClick={() => handleClearCancel()}>Cancel</Button>
+              <div>
+                <ElementSelector 
+                  setCurrentType={setCurrentType} 
+                  setNewNodeId={setNewNodeId}
+                  elementDeleted={checkDeleted}
+                  propertyDeleted={propertyDeleted}
+                  nextGroup={nextGroup}
+                  setShowForm={setShowForm}
+                  setCurrentNodeID={setCurrentNodeID}
+                  handleAssign={handleAssign}
+                  />  
               </div>
-            </Box>
-          )}
+            
+              <div className='toolbox-info'>
+                <p>Select a connector</p>
+                <div className='tooltip'>
+                  <GrCircleInformation className='info-icon'/>
+                  <span className= 'tooltiptext'>Click on a connector to select it. To connect two elements, drag the connector between the handles of the elements.</span>
+                </div>
+              </div>
+              <div className='connectors'>
+                <ul>
+                {connectors.map((connector, index) => (
+                  <li key={index}>
+                    <label className='radio-label'>
+                      <input
+                        type='radio'
+                        name='connector'
+                        value={connector.label}
+                        onChange={() => handleEdgeChange(connector)}
+                        className='radio-input'
+                      />
+                      <img
+                        src={`/icons/${connector.picture}.png`}
+                        className='selector-img'
+                        alt={connector.label}
+                      />
+                      <span className='name'>{connector.label}</span>
+                    </label>
+                  </li>
+                ))}
+                </ul>
+              </div>
+            </div>
+
+            {newNodeId && showSearchForm &&(
+            <SearchForm onAssign={handleAssign} itemType={currentType} setVCInput= {setVCInput}/>
+            )}
+
+            {showForm && (
+              <Box className='constructor-input-box'>
+                <div className='contents'> 
+                  <p>Provide a label for the constructor:</p>
+                  <form onSubmit={handleFormSubmit}>
+                    <input className="input" type="text" value={formData} onChange={handleInputChange} placeholder="Enter label" required />
+                    <div>
+                      <button type="submit" className="cancelButton" style={{marginRight:"5px"}}>Submit</button>
+                      <button className="cancelButton" onClick={() => handleConstructorCancel()}>Cancel</button>
+                    </div>
+                  </form>
+                </div>
+                
+              </Box>
+            )}
+
+            {errorMessage && (
+              <div>
+                <Box className='error-message'>
+                  <p className='error-text'>{errorMessage}</p>
+                  <button onClick={()=>handleClearError()}>Okay</button>
+                </Box>
+              </div>
+            )}
+
+            {saveMessage && (
+              <div>
+                <Box className='save-message'>
+                  <p className='save-text'>{saveMessage}</p>
+                  <button onClick={()=>setSaveMessage(null)}>Okay</button>
+                </Box>
+              </div>
+            )}
+
+            {constructorAdded && (
+              <div>
+                <Box className='error-message'>
+                  <p className='save-text'>Constructor has been sucessfully saved.</p>
+                  <button onClick={()=>setConstructorAdded(false)}>Okay</button>
+                </Box>
+              </div>
+            )}
+
+            {constructorForm && (
+              <ConstructorForm
+                setConstructorForm={setConstructorForm}
+                setAddedNodes={setAddedNodes}
+                setAddedEdges={setAddedEdges}
+              />
+            )}
+
+            {(nodes.length>0 || edges.length>0) && clearNodes &&(
+              <Box className='clearBox'>
+                <p className='clearBox-text'>Are you sure you want to clear all constructors?</p>
+                <div className='clearBox-buttons'>
+                  <Button className='clearBox-button' onClick={() => clearAllNodes()}>Confirm</Button>
+                  <Button className='clearBox-button' onClick={() => handleClearCancel()}>Cancel</Button>
+                </div>
+              </Box>
+            )}
       </div>
     </ReactFlowProvider>
   );
 };
+
+export default ConstructorBuilder;

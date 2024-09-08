@@ -48,10 +48,19 @@ const InputNode = ({id, data, selected}) =>{
                     {getDisplayText()}
                 </div>
 
-                <>
-                    <Handle type="source" position={Position.Top} id="IN-top"/>
-                    <Handle type="target" position={Position.Bottom} id="IN-bottom"/>
-                </>
+                {data.inputType ==='Role_name' && (
+                    <>
+                        <Handle type="source" position={Position.Right} id="IN-right"/>
+                        <Handle type="target" position={Position.Left} id="IN-left"/>
+                    </>
+                )}
+                
+                {data.inputType ==='ValueConstraint' && (
+                    <>
+                        <Handle type="source" position={Position.Top} id="IN-top"/>
+                        <Handle type="target" position={Position.Bottom} id="IN-bottom"/>
+                    </>
+                )}
             </div>
             
             <IconButton

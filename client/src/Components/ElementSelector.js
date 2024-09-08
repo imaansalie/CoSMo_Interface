@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useReactFlow } from 'reactflow';
 import { Box } from '@chakra-ui/react';
-import { SearchForm } from '../Components/SearchForm';
+import { SearchForm } from './SearchForm';
+import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 
 const elements =[
-    {code:"Ob", name:"Object", type: "Object", label: "Object"},
-    {code:"Func", name:"Function", type: "Object", label: "Function"},
-    {code:"Arg", name:"Arguments", type: "Object", label: "Arguments"},
-    {code:"InstCo", name:"InstanceConstructor", type: "Object", label: "Instance Constructor"},
-    {code:"Prop", name:"Property", type: "Object", label: "Property"},
-    {code:"TC1", name:"TypeConstructor", type: "Object", label: "Type Constructor"},
+    {code:"Ob", name:"Object", type: "Object", label: "Object", tooltip: "Add an object to the constructor, representing a Q item."},
+    {code:"Func", name:"Function", type: "Object", label: "Function", tooltip: "Apply a function to the constructor (Z item)."},
+    {code:"Arg", name:"Arguments", type: "Object", label: "Arguments", tooltip: "Supply functions with arguments by connecting it to at least one object and one function."},
+    {code:"InstCo", name:"InstanceConstructor", type: "Object", label: "Instance Constructor", tooltip: "Initiate a constructor at the instance level."},
+    {code:"Prop", name:"Property", type: "Object", label: "Property", tooltip: "Add a property to the constructor to relate objects (at least two) to one another."},
+    {code:"TC1", name:"TypeConstructor", type: "Object", label: "Type Constructor", tooltip: "Initiate a constructor at the type level."},
 ];
 
 const adornments =[
@@ -242,12 +243,16 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
     return(
       <div>
         <div className='elements'>
-          <ul>
+          <ul style={{marginBottom:"2px"}}>
             {elements.map((element,index)=>(
               <li key={index}>
-                <button onClick={() => onElementClick(element)}>
+                <button onClick={() => onElementClick(element)} className='element-button'>
                   <img src={"/icons/"+element.name+".png"} className='selector-img' alt='icon'/>
-                    <span className='name'>{element.label}</span>
+                  <span className='name'>{element.label}</span>
+                  <div className='element-tooltip'>
+                    <span className='element-tooltip-text'>{element.tooltip}</span>
+                  </div>
+                  
                 </button>  
               </li>
             ))}

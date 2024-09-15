@@ -6,19 +6,19 @@ import { FaDatabase } from "react-icons/fa";
 
 import { useEffect} from 'react';
 
-export const SearchForm = ({onAssign, itemType, setVCInput}) =>{
+export const SearchForm = ({onAssign, itemType, setVCInput, setSelectedProperty}) =>{
     const [searchTerm, setSearchTerm] = useState('');
     const [results, setResults] = useState([]);
     const [userInput, setUserInput]= useState('');
     const [showInputForm, setShowInputForm] = useState(false);
     const [showDBForm, setShowDBForm]= useState(false);
     const [showChoice, setShowChoice] = useState(false);
+    const [inputError, setInputError] = useState('');
 
     useEffect(() =>{
         //fetch items based on item type
         axios.post('http://localhost:3001/getItems', {itemType}).then((response) =>{
             setResults(response.data);
-            // console.log(response.data);
         }).catch(error=>{
             console.error("Error getting items."+error);
         })
@@ -48,6 +48,15 @@ export const SearchForm = ({onAssign, itemType, setVCInput}) =>{
     const handleInput = (e) =>{
         setUserInput(e.target.value);
     }
+
+    const handleInputSubmit = (userInput) =>{
+        if(userInput.length > 0){
+            onAssign(userInput, itemType)
+        }
+        else{
+            setInputError("Enter a custom value constraint.")
+        }
+    }
     
     return(
         <>
@@ -64,11 +73,16 @@ export const SearchForm = ({onAssign, itemType, setVCInput}) =>{
 
             {showInputForm && (
                 <Box className='vc-input-form'>
+                    {inputError !== '' && (
+                        <div className='save-error'>
+                            <p>{inputError}</p>
+                        </div>
+                    )}
                     <Input
                         placeholder='Enter custom value constraint...' value={userInput} onChange={handleInput} mb={2} className='vc-input'
                     ></Input>
                     <div className='buttons'>
-                        <button onClick={()=>onAssign(userInput, itemType)}>Submit</button>
+                        <button onClick={()=>handleInputSubmit(userInput)}>Submit</button>
                         <button onClick = {() => setShowInputForm(false)}>Cancel</button>
                     </div>
                 </Box>
@@ -76,6 +90,7 @@ export const SearchForm = ({onAssign, itemType, setVCInput}) =>{
 
             {showDBForm &&(
                 <Box className='search-form'>
+                    <h2 style={{fontFamily: 'sans-serif'}}>Assign an item from the database to the selected node:</h2>
                     <Input placeholder='Search...' value={searchTerm} onChange={handleSearch} mb={2} className='search-input'/>
                     <div className='search-form-list'>
                         <ul>

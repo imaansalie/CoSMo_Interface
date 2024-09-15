@@ -1,11 +1,13 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { UserContext } from '../Contexts/UserContext';
+import { Box } from '@chakra-ui/react';
 
 export const LogIn = ({setIsNavbarVisible}) =>{
 
     const {username, setUsername, password, setPassword, setUserID} = useContext(UserContext);
+    const [userError, setUserError] = useState('');
     const navigate = useNavigate();
 
     const handleUsername = (event) =>{
@@ -19,7 +21,6 @@ export const LogIn = ({setIsNavbarVisible}) =>{
     const handleLogin = async() =>{
         
         const userID = await getUserID(username, password);
-        console.log(userID);
         setUserID(userID);
 
         if (userID) {
@@ -28,7 +29,7 @@ export const LogIn = ({setIsNavbarVisible}) =>{
             setIsNavbarVisible(true);
             navigate('/ConstructorManager');
         } else {
-            console.log("User not found.");
+            setUserError(`User ${username} not found.`);
         }
     }
 
@@ -51,7 +52,7 @@ export const LogIn = ({setIsNavbarVisible}) =>{
 
     return(
         <div className='Login' style={{backgroundImage: 'url(./icons/background.jpg)'}}>
-            <h1 className='Login-heading'>Welcome to the CoSMo User Interface</h1>
+            <h1 className='Login-heading'>Welcome to CoSMo Studio</h1>
             <p className='Login-text'>Log in using your Wikipedia credentials</p>
             <div className='LoginBox'>
                 <input 
@@ -69,6 +70,13 @@ export const LogIn = ({setIsNavbarVisible}) =>{
 
                 <button onClick={handleLogin}>Log in</button>
             </div>
+
+            {userError !== '' && (
+                <Box className='Login-error box-common'>
+                    <p>{userError}</p>
+                    <button className="login-error-button" onClick={() => setUserError('')}>Okay</button>
+                </Box>
+            )}
         </div>
     )
 };

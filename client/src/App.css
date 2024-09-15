@@ -29,11 +29,15 @@ body {
   height: 100%;
   display: flex;
   border: none;
-  padding: 0; /* Changed to 0 instead of 'none' */
+  padding: 0;
 }
 
 *, *::before, *::after {
   box-sizing: border-box;
+}
+
+button:hover {
+  cursor: pointer;
 }
 
 .FlowTest{
@@ -70,6 +74,7 @@ body {
 .Sidebar-container.hidden {
   transform: translateX(-100%);
 }
+
 .Sidebar-container {
   position: fixed;
   top: 0;
@@ -165,7 +170,6 @@ body {
   margin-left: 35px;
   margin-right: 30px;
   text-align: center;
-  /* margin-left: 260px; */
 }
 
 .ConstructorBuilder .Builder{
@@ -279,33 +283,24 @@ body {
   margin-left: 10px;
 }
 
-.clearBox{
+.box-common{
   background-color: white;
   padding: 4px;
   border: 1px solid grey;
   border-radius: 5px;
-  box-shadow: gray;
+  box-shadow: 0px 0px 2px gray;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 40%;
-  height: 20%;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: sans-serif;
   justify-content: center;
-}
-
-.clearBox .clearBox-button{
-  background-color: #2e3760;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 4px;
-  margin-left: 5px;
+  z-index: 1000;
+  font-family: sans-serif;
 }
 
 /* TOOLBOX */
@@ -316,7 +311,6 @@ body {
   margin-right: 10px;
   max-height: 360px;
   overflow-y: auto;
-  /* margin-bottom: 4px; */
 }
 
 .toolbox .elements ul {
@@ -325,7 +319,7 @@ body {
   margin: 0;
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* Two columns within the UL */
-  gap: 2px; /* Adjust the gap between items as needed */
+  gap: 2px;
 }
 
 .toolbox .elements li {
@@ -336,9 +330,8 @@ body {
   height: 80px; /* Fixed height for each item */
   background-color: #f0f0f0; /* Background color for each item */
   border: 1px solid #ccc; /* Border for each item */
-  border-radius: 4px; /* Optional: rounded corners */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: shadow effect */
-  /* position: relative; */
+  border-radius: 4px; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
 }
 
 .toolbox .elements button {
@@ -367,30 +360,16 @@ body {
 }
 
 .toolbox .args{
-  background-color: white;
-  padding: 4px;
-  border: 1px solid grey;
-  border-radius: 5px;
-  box-shadow: gray;
-  z-index: 1000px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 20%;
-  height: 50%;
-  text-align: center;
-  /* margin: auto; */
-  gap: 5px; /* Adjust the gap between items as needed */
-  /* margin-right: 10px; */
-  max-height: 240px;
-  overflow-y: auto;
+  max-width: 320px;
+  height: 300px;
+  gap: 10px;
+  /* overflow-y: auto; */
 }
 
 .toolbox .args ul{
   list-style: none;
   padding: 0;
-  margin-left: 20px;
+  /* margin-left: 20px; */
   gap: 2px; /* Adjust the gap between items as needed */
 }
 
@@ -403,7 +382,11 @@ body {
   background-color: #f0f0f0; /* Background color for each item */
   border: 1px solid #ccc; /* Border for each item */
   border-radius: 4px; /* Optional: rounded corners */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: shadow effect */
+  margin-bottom: 4px;
+}
+
+.toolbox .args li :hover{
+  background-color:#dddbdb ;
 }
 
 .toolbox .args .arguments-img{
@@ -417,13 +400,10 @@ body {
 
 .toolbox .args .arg-button{
   display: flex;
-  /* flex-direction: column; */
-  /* align-items: center; */
   justify-content: center;
   width: 100%;
   height: 100%;
   border: none;
-  /* background: none; */
   cursor: pointer;
   padding: 6px;
   box-sizing: border-box;
@@ -435,7 +415,6 @@ body {
 }
 
 .toolbox .args .cancelArgs{
-  /* padding: 10px; */
   background-color: #071a65;
   color: #d9dce6;
   border: none;
@@ -446,8 +425,8 @@ body {
 }
 
 .toolbox .connectors{
-  gap: 5px; /* Adjust the gap between items as needed */
-  padding: 5px; /* Add some padding around the container */
+  gap: 5px;
+  padding: 5px;
   margin-right: 10px;
   max-height: 260px;
   overflow-y: auto;
@@ -469,10 +448,16 @@ body {
   background-color: #f0f0f0; 
   border: 1px solid #ccc; 
   border-radius: 4px; 
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: shadow effect */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 2px;
   padding-top: 2px;
   padding-bottom: 6px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.toolbox .connectors .connector:hover{
+  background-color: #e0e0e0;
 }
 
 .toolbox .connectors .radio-label {
@@ -533,14 +518,20 @@ body {
   margin-top: 4px;
   z-index: 1000px;
   background-color: white;
-  width: 680px;
+  width: 700px;
   justify-content: center;
   text-align: center;
 }
 
+.search-form{
+  top: 20%;
+  right: 30%;
+  background-color: white;
+}
+
 .search-form .search-input{
   width: 610px;
-  margin-left: 43px;
+  /* margin-left: 43px; */
   margin-bottom: 4px;
   margin-top: 10px;
 }
@@ -553,7 +544,6 @@ body {
 .search-form .ul{
   list-style: none;
   gap: 1px;
-  margin: 4px;
 }
 
 .search-form li{
@@ -564,6 +554,11 @@ body {
   background-color: whitesmoke;
   border: solid 2px #606164;
   border-radius: 5px;
+  width: 610px;
+}
+
+.search-form li :hover{
+  background-color: rgb(226, 226, 226);
 }
 
 .search-form .button{
@@ -594,7 +589,7 @@ body {
   color: #555;
 }
 
-.search-form .cancelSearch, .constructor-input-box .contents .cancelButton, .ConfirmSaveConstructorBox button{
+.search-form .cancelSearch, .constructor-input-box .contents .cancelButton, .ConfirmSaveConstructorBox button, .cancelButton{
   background-color: #071a65;
   padding: 10px;
   color: #d9dce6;
@@ -606,6 +601,7 @@ body {
 
 .vc-form{
   height: 35%;
+  right: 30%;
   text-align: center;
   justify-content: center;
 }
@@ -658,7 +654,13 @@ body {
 }
 
 .vc-input-form{
-  height: 15%;
+  height: 20%;
+  right: 30%;
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   justify-content: center;
 }
@@ -681,28 +683,18 @@ body {
 /* Constructor input label */
 
 .constructor-input-box{
-  background-color: white;
-  padding: 4px;
-  border: 1px solid grey;
-  border-radius: 5px;
-  box-shadow: gray;
-  z-index: 1000px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 40%;
-  height: 20%;
-  text-align: center;
   margin: auto;
+  justify-content: center;
 }
 
 .constructor-input-box .contents{
-  margin-top: 40px;
+  width: 100%;
 }
 
 .constructor-input-box .input{
   width: 70%;
+  height: 30px;
+  margin-bottom: 10px;
 }
 
 .constructor-input-box p{
@@ -722,7 +714,7 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 40%;
-  height: 20%;
+  height: 15%;
   text-align: center;
   margin: auto;
 }
@@ -762,21 +754,12 @@ body {
 /* SAVE CONSTRUCTOR FORM */
 
 .SaveConstructorBox{
-  background-color: white;
-  padding: 4px;
-  border: 1px solid grey;
-  border-radius: 5px;
-  box-shadow: gray;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 40%;
-  height: 55%;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  height: 65%;
+  text-align: left;
+}
+
+.NewCollectionBox{
+  height: 35%;
 }
 
 .save-input, .description-input{
@@ -788,8 +771,24 @@ body {
   font-family: sans-serif;
 }
 
+.save-error{
+  border: solid 1px red;
+  background-color: rgb(251, 209, 209);
+  color: red;
+  width: 80%;
+  margin: 0;
+  padding: 0;
+  font-size: small;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 30px;
+}
+
 #collections-dd{
-  width: 83.6%;
+  width: 80%;
   padding: 10px;
   font-family: sans-serif;
   font-size: 16px;
@@ -807,12 +806,21 @@ body {
   font-size: 13px;
 }
 
+.addConstructorCancel{
+  background-color: #2e3760;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
 /* MY CONSTRUCTORS -- i.e. user made constructors */
 
 .ConstructorManager{
   font-family: sans-serif;
   margin-left: 20px;
-  height: 100%;
+  height: 100vh;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -828,32 +836,31 @@ body {
 
 .ConstructorManager .MyConstructor-Box{
   max-height: 75%;
-  background-color: #d9dce6;
+  background-color: #f3f3ff;
   flex-grow: 1; /* Fills the remaining space */
   padding: 20px;
   overflow-y: auto;
   width: 95%;
-  
 }
 
 .MyConstructorList{
   list-style: none;
 }
 .my-constructors{
-  background-color: rgb(158, 192, 219);
+  background-color: rgb(209, 231, 249);
   width: 70%;
   padding: 10px;
   margin-top: 10px;
-  border: 2px solid #14192d;
+  border: 2px solid #162872;
   border-radius: 15px;
   font-family: sans-serif;
-  color: #14192d;
+  color: #162872;
   cursor: pointer;
   position: relative;
 }
 
 .my-constructors:hover{
-  background-color: rgb(116, 166, 206);
+  background-color: rgb(161, 203, 237);
 }
 
 .MyConstructorButton{
@@ -861,7 +868,7 @@ body {
   display: flex;
   background: none;
   border: none;
-  color: #14192d;
+  color: #162872;
 }
 
 .MyConstructorButton h1{
@@ -872,6 +879,25 @@ body {
   flex: 1;
   cursor: pointer;
 }
+
+.EmptyConstructorList{
+  text-align: center;
+  justify-content: center;
+  margin: auto;
+  margin-top: 200px;
+}
+
+.EmptyConstructorList .NC-button{
+  background-color: #2e3760;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  margin-left: 5px;
+}
+
+/* DELETE BUTTON */
+
 .ellipsis-menu {
   position: absolute;
   margin-bottom: 80px;
@@ -948,6 +974,7 @@ body {
 .element-tooltip {
   position: relative; /* Keep it relative to the button */
   display: inline-block; /* Align with the button */
+  overflow: visible;
 }
 .element-tooltip .element-tooltip-text{
   visibility: hidden;
@@ -961,7 +988,7 @@ body {
   font-size: small;
   font-family: sans-serif;
   position: absolute;
-  z-index: 2;
+  z-index: 9999;
   top: 100%; /* Position below the button */
   left: 50%; /* Center horizontally under the button */
   transform: translateX(-50%); /* Center the tooltip */
@@ -1010,6 +1037,7 @@ body {
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
 .LoginBox input {
@@ -1021,7 +1049,7 @@ body {
 }
 
 .LoginBox button {
-  width: 100%;
+  width: 93%;
   padding: 10px;
   background-color: #14192d; 
   border: none;
@@ -1033,27 +1061,29 @@ body {
   font-family: sans-serif;
 }
 
+.Login-error{
+  padding-bottom: 10px;
+  color: red;
+  width: 30%;
+}
+
+.login-error-button{
+  width: 100px;
+  padding: 4px;
+  background-color: #14192d; 
+  border: none;
+  border-radius: 4px; 
+  cursor: pointer;
+  color: white;
+  font-family: sans-serif;
+}
+
 .LoginBox button:hover {
   background-color: #0056b3; 
 }
 
 .DeleteBox{
-  background-color: white;
-  padding: 4px;
-  border: 1px solid grey;
-  border-radius: 5px;
-  box-shadow: gray;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 40%;
   height: 25%;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
 .DeleteBox button{
@@ -1066,23 +1096,20 @@ body {
 }
 
 .ConfirmSaveConstructorBox{
-  background-color: white;
-  padding: 4px;
-  border: 1px solid grey;
-  border-radius: 5px;
-  box-shadow: gray;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 40%;
   height: 25%;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-family: sans-serif;
+}
+
+.error-message, .save-message, .constructor-input-box, .clearBox{
+  height: 20%;
+}
+
+.clearBox .clearBox-button{
+  background-color: #2e3760;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  margin-left: 5px;
 }
 
 /* User Manual */
@@ -1094,6 +1121,10 @@ body {
   font-family: sans-serif;
   align-items: center;
   justify-content: center;
+}
+
+.CS-banner{
+  width: 1300px;
 }
 
 .toggle-box{
@@ -1149,20 +1180,31 @@ body {
     width: 200px;
   }
 
+  .Sidebar-container{
+    width: 200px;
+  }
+
   .Sidebar p{
     font-size: medium;
+  }
+
+  .content.shrink {
+    margin-left: 200px;
+  }
+
+  .content.expand {
+    margin-left: 0;
   }
 
   .FlowTest h1{
     margin-top: 8px;
     margin-bottom: 10px;
-    text-align: left;
     font-size: 25px;
   }
 
   .ConstructorBuilder{
     margin-left: 30px;
-    margin-right: 30px;
+    margin-right: 12px;
   }
 
   .ConstructorBuilder .Textbox{
@@ -1170,42 +1212,63 @@ body {
     padding-top: 5px;
     padding-bottom: 10px;
     max-height: 135px;
+    margin-bottom: 20px;
   }
 
   .ConstructorBuilder .Builder{
     width: 820px;
-    height: 280px;
+    height: 330px;
+  }
+
+  .ConstructorBuilder.full-width .Builder{
+    width: 1025px;
+    transition: width 0.5s;
   }
 
   .toolbox{
-    /* margin-right: 5px; */
     padding: 0;
-    width: 200px;
+    width: 220px;
   }
 
   .toolbox .elements li {
-    width: 75px; /* Fixed width for each item */
+    width: 85px; /* Fixed width for each item */
     height: 70px; /* Fixed height for each item */
   }
 
   .toolbox .elements{
     height: 250px;
-    width:170px;
+    width: 210px;
+    gap: 1px;
+    margin: 0;
+  }
+
+  .element-tooltip .element-tooltip-text{
+    font-size: smaller;
+    width: 90px;
   }
 
   .toolbox .connectors{
-    height: 180px;
+    /* height: 210px; */
+    max-height: 220px;
   }
 
   .toolbox .connectors li{
-    width: 160px;
-    height: 25px;
+    width: 180px;
+    height: 30px;
+    padding: 3px;
   }
 
   .toolbox .connectors .name {
     font-size: 10.5px;
     text-align: right; 
-    width: 100%;
+    margin-right: 3px;
+  }
+
+  .toolbox .connectors .selector-img {
+    max-width: 45px;
+    max-height: 25px;
+    margin-right: 2px;
+    flex-shrink: 0; /* Prevent the image from shrinking */
   }
 
   .ConstructorSaver{
@@ -1228,5 +1291,43 @@ body {
     margin-right: 5px;
     margin-top: 10px;
     margin-bottom: 2px;
+  }
+  
+  .CS-banner{
+    width: 900px;
+  }
+ 
+  .UM-container{
+    margin-top: 0;
+    padding: 10px;
+  }
+
+  .search-form{
+    top: 10%;
+    left: 0;
+  }
+
+  .vc-form{
+    top: 20%;
+    left:0;
+    height: 45%;
+  }
+
+  .vc-input-form{
+    top: 35%;
+    height: 20%;
+    left: 0;
+  }
+
+  .constructor-input-box{
+    height: 30%;
+  }
+
+  .SaveConstructorBox{
+    height: 75%;
+  }
+
+  .constructorSearch{
+    top: 25%;
   }
 }

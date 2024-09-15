@@ -40,9 +40,7 @@ const InputNode = ({id, data, selected}) =>{
     };
 
     return(
-        <div>
-            {/* <Handle type="source" position={Position.Top} id="IN-top"/> */}
-            
+        <div>            
             <div>
                 <div style={{ textAlign: 'center', color: getTextColor(), fontWeight: 'bold', fontFamily:'sans-serif', marginTop:'5px'}}>
                     {getDisplayText()}

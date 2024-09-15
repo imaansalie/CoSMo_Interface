@@ -67,7 +67,7 @@ export const ConstructorForm = ({setConstructorForm, setAddedNodes, setAddedEdge
     return(
         <>
             {collection === '' && (
-                <Box className = "search-form">
+                <Box className = "constructorSearch search-form">
                 <Input placeholder='Search...' value={searchTermCollection} onChange={handleCollectionSearch} mb={2} className='search-input'/>
                 <ul>
                     {filteredCollections.map(item=>(
@@ -80,13 +80,13 @@ export const ConstructorForm = ({setConstructorForm, setAddedNodes, setAddedEdge
                         </li>
                     ))}
                 </ul>
-                <button onClick={()=>setConstructorForm(false)}>Cancel</button>
+                <button className= "addConstructorCancel" onClick={()=>setConstructorForm(false)}>Cancel</button>
             </Box>
             )}
             
 
             {collection !== '' &&(
-                <Box className="search-form">
+                <Box className="constructorSearch search-form">
                 <Input placeholder='Search...' value={searchTermConstructor} onChange={handleConstructorSearch} mb={2} className='search-input'/>
                 <ul>
                     {filteredConstructors.map(item=>(
@@ -102,7 +102,7 @@ export const ConstructorForm = ({setConstructorForm, setAddedNodes, setAddedEdge
                         </li>
                     ))}
                 </ul>
-                <button onClick={()=>setConstructorForm(false)}>Cancel</button>
+                <button className= "addConstructorCancel" onClick={()=>setConstructorForm(false)}>Cancel</button>
                 </Box>
             )}
             

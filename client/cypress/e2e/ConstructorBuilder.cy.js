@@ -123,6 +123,502 @@ describe('ConstructorBuilder Tests', () => {
     });
   });
 
+  it('should add a constructor of type "InstanceConstructor" and verify text', () => {
+    cy.get('.FlowTest').should('be.visible');
+
+    // Add nodes and edges
+    cy.window().then((win) => {
+      const nodes = [
+        {
+            "id": "node_fkrs2ffbh",
+            "data": {
+                "label": "Instance Constructor",
+                "inputType": "InstanceConstructor",
+                "picture": "InstanceConstructor",
+                "itemLabel": "test",
+                "conID": 16,
+                "itemID": "",
+                "roleID": null
+            },
+            "type": "InstanceConstructor",
+            "position": {
+                "x": 20.498229730133176,
+                "y": 65.74884874232973
+            },
+            "width": 108,
+            "height": 98,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 20.498229730133176,
+                "y": 65.74884874232973
+            },
+            "dragging": false
+        },
+        {
+            "id": "node_sssz9xwjj",
+            "data": {
+                "label": "Object",
+                "inputType": "Object",
+                "picture": "Object",
+                "itemLabel": "parent",
+                "conID": 16,
+                "itemID": "Q7566",
+                "roleID": null
+            },
+            "type": "Object",
+            "position": {
+                "x": 229.89291349735993,
+                "y": 79.51556441304051
+            },
+            "width": 163,
+            "height": 71,
+            "selected": true,
+            "positionAbsolute": {
+                "x": 229.89291349735993,
+                "y": 79.51556441304051
+            },
+            "dragging": false
+        }
+    ];
+      const edges = [
+        {
+            "source": "node_fkrs2ffbh",
+            "sourceHandle": "source-right",
+            "target": "node_sssz9xwjj",
+            "targetHandle": "target-left",
+            "type": "InstanceConstructor_Connector",
+            "id": "reactflow__edge-node_fkrs2ffbhsource-right-node_sssz9xwjjtarget-left"
+        }
+    ];
+
+      // Call the custom method to add nodes and edges
+      win.addNodesAndEdges(nodes, edges);
+
+      // Continue with your test assertions
+      cy.wait(1000); // Wait for the state to update
+
+      // Call generateText and check the results
+      cy.window().then((win) => {
+        if (typeof win.generateText === 'function') {
+          win.generateText(); // Call the function
+        } else {
+          throw new Error("Generate Text function is not available");
+        }
+      });
+
+      cy.wait(1000); // Adjust time as needed to allow for async operations
+
+      cy.get('.Textbox p').should(($p) => {
+        const text = $p.html(); // Get the HTML content
+        expect(text).to.contain('InstanceConstructor:C16(<br>)<br><br>');
+      });
+    });
+  });
+
+  it('should add a constructor with a "Value Constraint" and verify text', () => {
+    cy.get('.FlowTest').should('be.visible');
+
+    // Add nodes and edges
+    cy.window().then((win) => {
+      const nodes = [
+        {
+            "id": "node_fkrs2ffbh",
+            "data": {
+                "label": "Instance Constructor",
+                "inputType": "InstanceConstructor",
+                "picture": "InstanceConstructor",
+                "itemLabel": "test",
+                "conID": 16,
+                "itemID": "",
+                "roleID": null
+            },
+            "type": "InstanceConstructor",
+            "position": {
+                "x": 20.498229730133176,
+                "y": 65.74884874232973
+            },
+            "width": 108,
+            "height": 98,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 20.498229730133176,
+                "y": 65.74884874232973
+            },
+            "dragging": false
+        },
+        {
+            "id": "node_sssz9xwjj",
+            "data": {
+                "label": "Object",
+                "inputType": "Object",
+                "picture": "Object",
+                "itemLabel": "parent",
+                "conID": 16,
+                "itemID": "Q7566",
+                "roleID": null
+            },
+            "type": "Object",
+            "position": {
+                "x": 229.89291349735993,
+                "y": 79.51556441304051
+            },
+            "width": 163,
+            "height": 71,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 229.89291349735993,
+                "y": 79.51556441304051
+            },
+            "dragging": false
+        },
+        {
+            "id": "node_0vv9h221l",
+            "type": "ValueConstraint",
+            "data": {
+                "label": "Value Constraint",
+                "inputType": "ValueConstraint",
+                "picture": "ValueConstraint",
+                "itemLabel": "parent",
+                "itemID": "Q7566",
+                "conID": 16
+            },
+            "position": {
+                "x": 283.2542506670586,
+                "y": 186.62250329996252
+            },
+            "width": 61,
+            "height": 41,
+            "selected": true,
+            "positionAbsolute": {
+                "x": 283.2542506670586,
+                "y": 186.62250329996252
+            },
+            "dragging": false
+        }
+    ];
+      const edges = [
+        {
+            "source": "node_fkrs2ffbh",
+            "sourceHandle": "source-right",
+            "target": "node_sssz9xwjj",
+            "targetHandle": "target-left",
+            "type": "InstanceConstructor_Connector",
+            "id": "reactflow__edge-node_fkrs2ffbhsource-right-node_sssz9xwjjtarget-left"
+        },
+        {
+            "source": "node_0vv9h221l",
+            "sourceHandle": "IN-top",
+            "target": "node_sssz9xwjj",
+            "targetHandle": "target-bottom",
+            "type": "Instance",
+            "id": "reactflow__edge-node_0vv9h221lIN-top-node_sssz9xwjjtarget-bottom"
+        }
+    ];
+
+      // Call the custom method to add nodes and edges
+      win.addNodesAndEdges(nodes, edges);
+
+      // Continue with your test assertions
+      cy.wait(1000); // Wait for the state to update
+
+      // Call generateText and check the results
+      cy.window().then((win) => {
+        if (typeof win.generateText === 'function') {
+          win.generateText(); // Call the function
+        } else {
+          throw new Error("Generate Text function is not available");
+        }
+      });
+
+      cy.wait(1000); // Adjust time as needed to allow for async operations
+
+      cy.get('.Textbox p').should(($p) => {
+        const text = $p.html(); // Get the HTML content
+        expect(text).to.contain('InstanceConstructor:C16(<br>&nbsp;&nbsp;&nbsp;&nbsp;ObjectType(Q7566)={Q7566})<br><br>');
+      });
+    });
+  });
+
+  it('should add a constructor with a "Role Name" and verify text', () => {
+    cy.get('.FlowTest').should('be.visible');
+
+    // Add nodes and edges
+    cy.window().then((win) => {
+      const nodes = [
+        {
+            "id": "node_fkrs2ffbh",
+            "data": {
+                "label": "Instance Constructor",
+                "inputType": "InstanceConstructor",
+                "picture": "InstanceConstructor",
+                "itemLabel": "test",
+                "conID": 16,
+                "itemID": "",
+                "roleID": null
+            },
+            "type": "InstanceConstructor",
+            "position": {
+                "x": 20.498229730133176,
+                "y": 65.74884874232973
+            },
+            "width": 108,
+            "height": 98,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 20.498229730133176,
+                "y": 65.74884874232973
+            },
+            "dragging": false
+        },
+        {
+            "id": "node_sssz9xwjj",
+            "data": {
+                "label": "Object",
+                "inputType": "Object",
+                "picture": "Object",
+                "itemLabel": "parent",
+                "conID": 16,
+                "itemID": "Q7566",
+                "roleID": null
+            },
+            "type": "Object",
+            "position": {
+                "x": 229.89291349735993,
+                "y": 79.51556441304051
+            },
+            "width": 163,
+            "height": 71,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 229.89291349735993,
+                "y": 79.51556441304051
+            },
+            "dragging": false
+        },
+        {
+            "id": "node_cmazateto",
+            "data": {
+                "label": "Two Roles",
+                "inputType": "Property",
+                "picture": "Property",
+                "itemLabel": "child",
+                "conID": 16,
+                "itemID": "P40",
+                "roleID": 2
+            },
+            "type": "Property",
+            "position": {
+                "x": 458.88552561607696,
+                "y": 90.13128793165487
+            },
+            "width": 133,
+            "height": 48,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 458.88552561607696,
+                "y": 90.13128793165487
+            },
+            "dragging": false
+        },
+        {
+            "id": "node_cr5g1asjg",
+            "data": {
+                "label": "Object",
+                "inputType": "Object",
+                "picture": "Object",
+                "itemLabel": "child",
+                "conID": 16,
+                "itemID": "Q29514218",
+                "roleID": null
+            },
+            "type": "Object",
+            "position": {
+                "x": 663.7349250740697,
+                "y": 80.7619796298959
+            },
+            "width": 163,
+            "height": 71,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 663.7349250740697,
+                "y": 80.7619796298959
+            },
+            "dragging": false
+        },
+        {
+            "id": "node_3pdn3q313",
+            "type": "Role_name",
+            "data": {
+                "label": "Role Name",
+                "inputType": "Role_name",
+                "picture": "Role_name",
+                "itemLabel": "Albert Einstein",
+                "itemID": "Q9960",
+                "conID": 16
+            },
+            "position": {
+                "x": 244.48165133817054,
+                "y": 33.43965835642027
+            },
+            "width": 187,
+            "height": 41,
+            "selected": true,
+            "positionAbsolute": {
+                "x": 244.48165133817054,
+                "y": 33.43965835642027
+            },
+            "dragging": false
+        }
+    ];
+      const edges = [
+        {
+            "source": "node_fkrs2ffbh",
+            "sourceHandle": "source-right",
+            "target": "node_sssz9xwjj",
+            "targetHandle": "target-left",
+            "type": "InstanceConstructor_Connector",
+            "id": "reactflow__edge-node_fkrs2ffbhsource-right-node_sssz9xwjjtarget-left"
+        },
+        {
+            "source": "node_sssz9xwjj",
+            "sourceHandle": "source-right",
+            "target": "node_cmazateto",
+            "targetHandle": "target-left",
+            "type": "Role",
+            "id": "reactflow__edge-node_sssz9xwjjsource-right-node_cmazatetotarget-left"
+        },
+        {
+            "source": "node_cmazateto",
+            "sourceHandle": "source-right",
+            "target": "node_cr5g1asjg",
+            "targetHandle": "target-left",
+            "type": "Role",
+            "id": "reactflow__edge-node_cmazatetosource-right-node_cr5g1asjgtarget-left"
+        },
+        {
+            "source": "node_3pdn3q313",
+            "sourceHandle": "IN-right",
+            "target": "node_cmazateto",
+            "targetHandle": "target-left",
+            "type": "Role_name",
+            "id": "reactflow__edge-node_3pdn3q313IN-right-node_cmazatetotarget-left"
+        }
+    ];
+
+      // Call the custom method to add nodes and edges
+      win.addNodesAndEdges(nodes, edges);
+
+      // Continue with your test assertions
+      cy.wait(1000); // Wait for the state to update
+
+      // Call generateText and check the results
+      cy.window().then((win) => {
+        if (typeof win.generateText === 'function') {
+          win.generateText(); // Call the function
+        } else {
+          throw new Error("Generate Text function is not available");
+        }
+      });
+
+      cy.wait(1000); // Adjust time as needed to allow for async operations
+
+      cy.get('.Textbox p').should(($p) => {
+        const text = $p.html(); // Get the HTML content
+        expect(text).to.contain('InstanceConstructor:C16(<br>&nbsp;&nbsp;&nbsp;&nbsp;Property(P40(r1,r2)),<br>&nbsp;&nbsp;&nbsp;&nbsp;r1[Q9960]:ObjectType(Q7566),<br>&nbsp;&nbsp;&nbsp;&nbsp;r2:ObjectType(Q29514218))<br><br>');
+      });
+    });
+  });
+
+  it('should add a constructor with a "Part Of" connector and verify text', () => {
+    cy.get('.FlowTest').should('be.visible');
+
+    // Add nodes and edges
+    cy.window().then((win) => {
+      const nodes = [
+        {
+            "id": "node_hgs6c3bc6",
+            "data": {
+                "label": "Instance Constructor",
+                "inputType": "InstanceConstructor",
+                "picture": "InstanceConstructor",
+                "itemLabel": "test",
+                "conID": 16,
+                "itemID": "",
+                "roleID": null
+            },
+            "type": "InstanceConstructor",
+            "position": {
+                "x": 21.05667420357147,
+                "y": 40.66876298194379
+            },
+            "width": 108,
+            "height": 98,
+            "positionAbsolute": {
+                "x": 21.05667420357147,
+                "y": 40.66876298194379
+            }
+        },
+        {
+            "id": "node_sjojsxxb2",
+            "data": {
+                "label": "Instance Constructor",
+                "inputType": "InstanceConstructor",
+                "picture": "InstanceConstructor",
+                "itemLabel": "test1",
+                "conID": 17,
+                "itemID": "",
+                "roleID": null
+            },
+            "type": "InstanceConstructor",
+            "position": {
+                "x": 206.13521982818958,
+                "y": 42.837740396689725
+            },
+            "width": 108,
+            "height": 98,
+            "selected": true,
+            "positionAbsolute": {
+                "x": 206.13521982818958,
+                "y": 42.837740396689725
+            },
+            "dragging": false
+        }
+    ];
+      const edges = [
+        {
+            "source": "node_hgs6c3bc6",
+            "sourceHandle": "source-right",
+            "target": "node_sjojsxxb2",
+            "targetHandle": "target-left",
+            "type": "PartOf_Object",
+            "id": "reactflow__edge-node_hgs6c3bc6source-right-node_sjojsxxb2target-left"
+        }
+    ];
+
+      // Call the custom method to add nodes and edges
+      win.addNodesAndEdges(nodes, edges);
+
+      // Continue with your test assertions
+      cy.wait(1000); // Wait for the state to update
+
+      // Call generateText and check the results
+      cy.window().then((win) => {
+        if (typeof win.generateText === 'function') {
+          win.generateText(); // Call the function
+        } else {
+          throw new Error("Generate Text function is not available");
+        }
+      });
+
+      cy.wait(1000); // Adjust time as needed to allow for async operations
+
+      cy.get('.Textbox p').should(($p) => {
+        const text = $p.html(); // Get the HTML content
+        expect(text).to.contain('PartOf(C16, C17)<br><br>');
+      });
+    });
+  });
+
   //testing adding an element to the editor
 
   it('should add a node of type "Object" and assign a data item to it',()=>{
@@ -133,6 +629,836 @@ describe('ConstructorBuilder Tests', () => {
 
     cy.get('.Builder').contains('Q41').should('exist');
   })
+
+  //test invalid syntax
+
+  it(`should add a constructor with an invalid 'Role' connection check for an error`, () => {
+    cy.get('.FlowTest').should('be.visible');
+
+    // Add nodes and edges
+    cy.window().then((win) => {
+      const nodes = [
+        {
+            "id": "node_fkrs2ffbh",
+            "data": {
+                "label": "Instance Constructor",
+                "inputType": "InstanceConstructor",
+                "picture": "InstanceConstructor",
+                "itemLabel": "test",
+                "conID": 16,
+                "itemID": "",
+                "roleID": null
+            },
+            "type": "InstanceConstructor",
+            "position": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "width": 108,
+            "height": 98,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "dragging": false
+        },
+        {
+            "id": "node_rqaj06f8q",
+            "data": {
+                "label": "Object",
+                "inputType": "Object",
+                "picture": "Object",
+                "itemLabel": "parent",
+                "conID": 16,
+                "itemID": "Q7566",
+                "roleID": null
+            },
+            "type": "Object",
+            "position": {
+                "x": 408.5835340538304,
+                "y": 108.11347085793875
+            },
+            "width": 163,
+            "height": 71,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 408.5835340538304,
+                "y": 108.11347085793875
+            },
+            "dragging": false
+        }
+    ];
+      const edges = [
+        {
+            "source": "node_fkrs2ffbh",
+            "sourceHandle": "source-right",
+            "target": "node_rqaj06f8q",
+            "targetHandle": "target-left",
+            "type": "Role",
+            "id": "reactflow__edge-node_fkrs2ffbhsource-right-node_rqaj06f8qtarget-left"
+        }
+    ];
+
+      // Call the custom method to add nodes and edges
+      win.addNodesAndEdges(nodes, edges);
+
+      // Continue with your test assertions
+      cy.wait(1000); // Wait for the state to update
+
+      // Call generateText and check the results
+      cy.window().then((win) => {
+        if (typeof win.generateText === 'function') {
+          win.generateText(); // Call the function
+        } else {
+          throw new Error("Generate Text function is not available");
+        }
+      });
+
+      cy.wait(1000); // Adjust time as needed to allow for async operations
+
+      cy.get('.error-message').should(($p) => {
+        const text = $p.html(); // Get the HTML content
+        expect(text).to.contain('CoSMo syntax error: Invalid connection for role connector.');
+      });
+    });
+  });
+
+  it(`should add a constructor with an invalid 'Sub Constructor Of' connection and check for an error`, () => {
+    cy.get('.FlowTest').should('be.visible');
+
+    // Add nodes and edges
+    cy.window().then((win) => {
+      const nodes = [
+        {
+            "id": "node_fkrs2ffbh",
+            "data": {
+                "label": "Instance Constructor",
+                "inputType": "InstanceConstructor",
+                "picture": "InstanceConstructor",
+                "itemLabel": "test",
+                "conID": 16,
+                "itemID": "",
+                "roleID": null
+            },
+            "type": "InstanceConstructor",
+            "position": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "width": 108,
+            "height": 98,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "dragging": false
+        },
+        {
+            "id": "node_rqaj06f8q",
+            "data": {
+                "label": "Object",
+                "inputType": "Object",
+                "picture": "Object",
+                "itemLabel": "parent",
+                "conID": 16,
+                "itemID": "Q7566",
+                "roleID": null
+            },
+            "type": "Object",
+            "position": {
+                "x": 408.5835340538304,
+                "y": 108.11347085793875
+            },
+            "width": 163,
+            "height": 71,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 408.5835340538304,
+                "y": 108.11347085793875
+            },
+            "dragging": false
+        }
+    ];
+      const edges = [
+        {
+            "source": "node_fkrs2ffbh",
+            "sourceHandle": "source-right",
+            "target": "node_rqaj06f8q",
+            "targetHandle": "target-left",
+            "type": "Sub-constructor",
+            "id": "reactflow__edge-node_fkrs2ffbhsource-right-node_rqaj06f8qtarget-left"
+        }
+    ];
+
+      // Call the custom method to add nodes and edges
+      win.addNodesAndEdges(nodes, edges);
+
+      // Continue with your test assertions
+      cy.wait(1000); // Wait for the state to update
+
+      // Call generateText and check the results
+      cy.window().then((win) => {
+        if (typeof win.generateText === 'function') {
+          win.generateText(); // Call the function
+        } else {
+          throw new Error("Generate Text function is not available");
+        }
+      });
+
+      cy.wait(1000); // Adjust time as needed to allow for async operations
+
+      cy.get('.error-message').should(($p) => {
+        const text = $p.html(); // Get the HTML content
+        expect(text).to.contain('CoSMo syntax error: Sub Constructor connector can only be used between a Type Constructor and a Type Constructor.');
+      });
+    });
+  });
+
+  it(`should add a constructor with an invalid 'Instance Of' connection and check for an error`, () => {
+    cy.get('.FlowTest').should('be.visible');
+
+    // Add nodes and edges
+    cy.window().then((win) => {
+      const nodes = [
+        {
+            "id": "node_fkrs2ffbh",
+            "data": {
+                "label": "Instance Constructor",
+                "inputType": "InstanceConstructor",
+                "picture": "InstanceConstructor",
+                "itemLabel": "test",
+                "conID": 16,
+                "itemID": "",
+                "roleID": null
+            },
+            "type": "InstanceConstructor",
+            "position": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "width": 108,
+            "height": 98,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "dragging": false
+        },
+        {
+            "id": "node_rqaj06f8q",
+            "data": {
+                "label": "Object",
+                "inputType": "Object",
+                "picture": "Object",
+                "itemLabel": "parent",
+                "conID": 16,
+                "itemID": "Q7566",
+                "roleID": null
+            },
+            "type": "Object",
+            "position": {
+                "x": 408.5835340538304,
+                "y": 108.11347085793875
+            },
+            "width": 163,
+            "height": 71,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 408.5835340538304,
+                "y": 108.11347085793875
+            },
+            "dragging": false
+        }
+    ];
+      const edges = [
+        {
+            "source": "node_fkrs2ffbh",
+            "sourceHandle": "source-right",
+            "target": "node_rqaj06f8q",
+            "targetHandle": "target-left",
+            "type": "Instance",
+            "id": "reactflow__edge-node_fkrs2ffbhsource-right-node_rqaj06f8qtarget-left"
+        }
+    ];
+
+      // Call the custom method to add nodes and edges
+      win.addNodesAndEdges(nodes, edges);
+
+      // Continue with your test assertions
+      cy.wait(1000); // Wait for the state to update
+
+      // Call generateText and check the results
+      cy.window().then((win) => {
+        if (typeof win.generateText === 'function') {
+          win.generateText(); // Call the function
+        } else {
+          throw new Error("Generate Text function is not available");
+        }
+      });
+
+      cy.wait(1000); // Adjust time as needed to allow for async operations
+
+      cy.get('.error-message').should(($p) => {
+        const text = $p.html(); // Get the HTML content
+        expect(text).to.contain('CoSMo syntax error: Instance Of connector can only be used between an Instance Constructor and a Type Constructor, or a Value Constraint and an Object.');
+      });
+    });
+  });
+
+  it(`should add a constructor with an invalid 'Part Of' connection and check for an error`, () => {
+    cy.get('.FlowTest').should('be.visible');
+
+    // Add nodes and edges
+    cy.window().then((win) => {
+      const nodes = [
+        {
+            "id": "node_fkrs2ffbh",
+            "data": {
+                "label": "Instance Constructor",
+                "inputType": "InstanceConstructor",
+                "picture": "InstanceConstructor",
+                "itemLabel": "test",
+                "conID": 16,
+                "itemID": "",
+                "roleID": null
+            },
+            "type": "InstanceConstructor",
+            "position": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "width": 108,
+            "height": 98,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "dragging": false
+        },
+        {
+            "id": "node_rqaj06f8q",
+            "data": {
+                "label": "Object",
+                "inputType": "Object",
+                "picture": "Object",
+                "itemLabel": "parent",
+                "conID": 16,
+                "itemID": "Q7566",
+                "roleID": null
+            },
+            "type": "Object",
+            "position": {
+                "x": 408.5835340538304,
+                "y": 108.11347085793875
+            },
+            "width": 163,
+            "height": 71,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 408.5835340538304,
+                "y": 108.11347085793875
+            },
+            "dragging": false
+        }
+    ];
+      const edges = [
+        {
+            "source": "node_fkrs2ffbh",
+            "sourceHandle": "source-right",
+            "target": "node_rqaj06f8q",
+            "targetHandle": "target-left",
+            "type": "PartOf_Object",
+            "id": "reactflow__edge-node_fkrs2ffbhsource-right-node_rqaj06f8qtarget-left"
+        }
+    ];
+
+      // Call the custom method to add nodes and edges
+      win.addNodesAndEdges(nodes, edges);
+
+      // Continue with your test assertions
+      cy.wait(1000); // Wait for the state to update
+
+      // Call generateText and check the results
+      cy.window().then((win) => {
+        if (typeof win.generateText === 'function') {
+          win.generateText(); // Call the function
+        } else {
+          throw new Error("Generate Text function is not available");
+        }
+      });
+
+      cy.wait(1000); // Adjust time as needed to allow for async operations
+
+      cy.get('.error-message').should(($p) => {
+        const text = $p.html(); // Get the HTML content
+        expect(text).to.contain('CoSMo syntax error: Part Of connector can only be used between a Type Constructor and a Type Constructor, or an Instance Constructor and an Instance Constructor.');
+      });
+    });
+  });
+
+  it(`should add a constructor with an invalid 'Instance Constructor' and check for an error`, () => {
+    cy.get('.FlowTest').should('be.visible');
+
+    // Add nodes and edges
+    cy.window().then((win) => {
+      const nodes = [
+        {
+            "id": "node_fkrs2ffbh",
+            "data": {
+                "label": "Instance Constructor",
+                "inputType": "InstanceConstructor",
+                "picture": "InstanceConstructor",
+                "itemLabel": "test",
+                "conID": 16,
+                "itemID": "",
+                "roleID": null
+            },
+            "type": "InstanceConstructor",
+            "position": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "width": 108,
+            "height": 98,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "dragging": false
+        },
+        {
+            "id": "node_9n3acf3dk",
+            "data": {
+                "label": "Function",
+                "inputType": "Function",
+                "picture": "Function",
+                "itemLabel": "if",
+                "conID": 16,
+                "itemID": "Z802",
+                "roleID": null
+            },
+            "type": "Function",
+            "position": {
+                "x": 348.3283988506118,
+                "y": 107.01534338324045
+            },
+            "width": 163,
+            "height": 76,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 348.3283988506118,
+                "y": 107.01534338324045
+            },
+            "dragging": false
+        }
+    ];
+      const edges = [
+        {
+            "source": "node_fkrs2ffbh",
+            "sourceHandle": "source-right",
+            "target": "node_9n3acf3dk",
+            "targetHandle": "target-left",
+            "type": "InstanceConstructor_Connector",
+            "id": "reactflow__edge-node_fkrs2ffbhsource-right-node_9n3acf3dktarget-left"
+        }
+    ];
+
+      // Call the custom method to add nodes and edges
+      win.addNodesAndEdges(nodes, edges);
+
+      // Continue with your test assertions
+      cy.wait(1000); // Wait for the state to update
+
+      // Call generateText and check the results
+      cy.window().then((win) => {
+        if (typeof win.generateText === 'function') {
+          win.generateText(); // Call the function
+        } else {
+          throw new Error("Generate Text function is not available");
+        }
+      });
+
+      cy.wait(1000); // Adjust time as needed to allow for async operations
+
+      cy.get('.error-message').should(($p) => {
+        const text = $p.html(); // Get the HTML content
+        expect(text).to.contain('CoSMo syntax error: Only an object can participate in a relationship with an Instance Constructor or a Type Constructor.');
+      });
+    });
+  });
+
+  it(`should add a constructor with an invalid 'Is Mandatory' connection and check for an error`, () => {
+    cy.get('.FlowTest').should('be.visible');
+
+    // Add nodes and edges
+    cy.window().then((win) => {
+      const nodes = [
+        {
+            "id": "node_fkrs2ffbh",
+            "data": {
+                "label": "Instance Constructor",
+                "inputType": "InstanceConstructor",
+                "picture": "InstanceConstructor",
+                "itemLabel": "test",
+                "conID": 16,
+                "itemID": "",
+                "roleID": null
+            },
+            "type": "InstanceConstructor",
+            "position": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "width": 108,
+            "height": 98,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "dragging": false
+        },
+        {
+            "id": "node_x09m9gjvt",
+            "data": {
+                "label": "Object",
+                "inputType": "Object",
+                "picture": "Object",
+                "itemLabel": "parent",
+                "conID": 16,
+                "itemID": "Q7566",
+                "roleID": null
+            },
+            "type": "Object",
+            "position": {
+                "x": 345.642455548327,
+                "y": 107.10917812552509
+            },
+            "width": 163,
+            "height": 71,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 345.642455548327,
+                "y": 107.10917812552509
+            },
+            "dragging": false
+        }
+    ];
+      const edges = [
+        {
+            "source": "node_fkrs2ffbh",
+            "sourceHandle": "source-right",
+            "target": "node_x09m9gjvt",
+            "targetHandle": "target-left",
+            "type": "IsMandatory",
+            "id": "reactflow__edge-node_fkrs2ffbhsource-right-node_x09m9gjvttarget-left"
+        }
+    ];
+
+      // Call the custom method to add nodes and edges
+      win.addNodesAndEdges(nodes, edges);
+
+      // Continue with your test assertions
+      cy.wait(1000); // Wait for the state to update
+
+      // Call generateText and check the results
+      cy.window().then((win) => {
+        if (typeof win.generateText === 'function') {
+          win.generateText(); // Call the function
+        } else {
+          throw new Error("Generate Text function is not available");
+        }
+      });
+
+      cy.wait(1000); // Adjust time as needed to allow for async operations
+
+      cy.get('.error-message').should(($p) => {
+        const text = $p.html(); // Get the HTML content
+        expect(text).to.contain('CoSMo syntax error: Is Mandatory connector can only be applied to roles (between an Object and a Property).');
+      });
+    });
+  });
+
+  it(`should add a constructor with an invalid 'Join' connection and check for an error`, () => {
+    cy.get('.FlowTest').should('be.visible');
+
+    // Add nodes and edges
+    cy.window().then((win) => {
+      const nodes = [
+        {
+            "id": "node_fkrs2ffbh",
+            "data": {
+                "label": "Instance Constructor",
+                "inputType": "InstanceConstructor",
+                "picture": "InstanceConstructor",
+                "itemLabel": "test",
+                "conID": 16,
+                "itemID": "",
+                "roleID": null
+            },
+            "type": "InstanceConstructor",
+            "position": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "width": 108,
+            "height": 98,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "dragging": false
+        },
+        {
+            "id": "node_x09m9gjvt",
+            "data": {
+                "label": "Object",
+                "inputType": "Object",
+                "picture": "Object",
+                "itemLabel": "parent",
+                "conID": 16,
+                "itemID": "Q7566",
+                "roleID": null
+            },
+            "type": "Object",
+            "position": {
+                "x": 345.642455548327,
+                "y": 107.10917812552509
+            },
+            "width": 163,
+            "height": 71,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 345.642455548327,
+                "y": 107.10917812552509
+            },
+            "dragging": false
+        }
+    ];
+      const edges = [
+        {
+            "source": "node_fkrs2ffbh",
+            "sourceHandle": "source-right",
+            "target": "node_x09m9gjvt",
+            "targetHandle": "target-left",
+            "type": "Join",
+            "id": "reactflow__edge-node_fkrs2ffbhsource-right-node_x09m9gjvttarget-left"
+        }
+    ];
+
+      // Call the custom method to add nodes and edges
+      win.addNodesAndEdges(nodes, edges);
+
+      // Continue with your test assertions
+      cy.wait(1000); // Wait for the state to update
+
+      // Call generateText and check the results
+      cy.window().then((win) => {
+        if (typeof win.generateText === 'function') {
+          win.generateText(); // Call the function
+        } else {
+          throw new Error("Generate Text function is not available");
+        }
+      });
+
+      cy.wait(1000); // Adjust time as needed to allow for async operations
+
+      cy.get('.error-message').should(($p) => {
+        const text = $p.html(); // Get the HTML content
+        expect(text).to.contain('CoSMo syntax error: Join connector can only be used between the Join element and Objects or Properties.');
+      });
+    });
+  });
+
+  it(`should add a constructor with an invalid 'Role Name Connector' connection and check for an error`, () => {
+    cy.get('.FlowTest').should('be.visible');
+
+    // Add nodes and edges
+    cy.window().then((win) => {
+      const nodes = [
+        {
+            "id": "node_fkrs2ffbh",
+            "data": {
+                "label": "Instance Constructor",
+                "inputType": "InstanceConstructor",
+                "picture": "InstanceConstructor",
+                "itemLabel": "test",
+                "conID": 16,
+                "itemID": "",
+                "roleID": null
+            },
+            "type": "InstanceConstructor",
+            "position": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "width": 108,
+            "height": 98,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "dragging": false
+        },
+        {
+            "id": "node_x09m9gjvt",
+            "data": {
+                "label": "Object",
+                "inputType": "Object",
+                "picture": "Object",
+                "itemLabel": "parent",
+                "conID": 16,
+                "itemID": "Q7566",
+                "roleID": null
+            },
+            "type": "Object",
+            "position": {
+                "x": 345.642455548327,
+                "y": 107.10917812552509
+            },
+            "width": 163,
+            "height": 71,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 345.642455548327,
+                "y": 107.10917812552509
+            },
+            "dragging": false
+        }
+    ];
+      const edges = [
+        {
+            "source": "node_fkrs2ffbh",
+            "sourceHandle": "source-right",
+            "target": "node_x09m9gjvt",
+            "targetHandle": "target-left",
+            "type": "Role_name",
+            "id": "reactflow__edge-node_fkrs2ffbhsource-right-node_x09m9gjvttarget-left"
+        }
+    ];
+
+      // Call the custom method to add nodes and edges
+      win.addNodesAndEdges(nodes, edges);
+
+      // Continue with your test assertions
+      cy.wait(1000); // Wait for the state to update
+
+      // Call generateText and check the results
+      cy.window().then((win) => {
+        if (typeof win.generateText === 'function') {
+          win.generateText(); // Call the function
+        } else {
+          throw new Error("Generate Text function is not available");
+        }
+      });
+
+      cy.wait(1000); // Adjust time as needed to allow for async operations
+
+      cy.get('.error-message').should(($p) => {
+        const text = $p.html(); // Get the HTML content
+        expect(text).to.contain('CoSMo syntax error: Role names can only be applied to roles (attach to Property).');
+      });
+    });
+  });
+
+  it(`should add a constructor with an invalid 'Value Constraint Connector' and check for an error`, () => {
+    cy.get('.FlowTest').should('be.visible');
+
+    // Add nodes and edges
+    cy.window().then((win) => {
+      const nodes = [
+        {
+            "id": "node_fkrs2ffbh",
+            "data": {
+                "label": "Instance Constructor",
+                "inputType": "InstanceConstructor",
+                "picture": "InstanceConstructor",
+                "itemLabel": "test",
+                "conID": 16,
+                "itemID": "",
+                "roleID": null
+            },
+            "type": "InstanceConstructor",
+            "position": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "width": 108,
+            "height": 98,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 168.49822973013318,
+                "y": 93.74884874232973
+            },
+            "dragging": false
+        },
+        {
+            "id": "node_x09m9gjvt",
+            "data": {
+                "label": "Object",
+                "inputType": "Object",
+                "picture": "Object",
+                "itemLabel": "parent",
+                "conID": 16,
+                "itemID": "Q7566",
+                "roleID": null
+            },
+            "type": "Object",
+            "position": {
+                "x": 345.642455548327,
+                "y": 107.10917812552509
+            },
+            "width": 163,
+            "height": 71,
+            "selected": false,
+            "positionAbsolute": {
+                "x": 345.642455548327,
+                "y": 107.10917812552509
+            },
+            "dragging": false
+        }
+    ];
+      const edges = [
+        {
+            "source": "node_fkrs2ffbh",
+            "sourceHandle": "source-right",
+            "target": "node_x09m9gjvt",
+            "targetHandle": "target-left",
+            "type": "ValueConstraint",
+            "id": "reactflow__edge-node_fkrs2ffbhsource-right-node_x09m9gjvttarget-left"
+        }
+    ];
+
+      // Call the custom method to add nodes and edges
+      win.addNodesAndEdges(nodes, edges);
+
+      // Continue with your test assertions
+      cy.wait(1000); // Wait for the state to update
+
+      // Call generateText and check the results
+      cy.window().then((win) => {
+        if (typeof win.generateText === 'function') {
+          win.generateText(); // Call the function
+        } else {
+          throw new Error("Generate Text function is not available");
+        }
+      });
+
+      cy.wait(1000); // Adjust time as needed to allow for async operations
+
+      cy.get('.error-message').should(($p) => {
+        const text = $p.html(); // Get the HTML content
+        expect(text).to.contain('CoSMo syntax error: Value constraint connectors can only be used between Value Constraints and Functions.');
+      });
+    });
+  });
 
   //testing dynamic properties
 

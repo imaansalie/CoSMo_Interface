@@ -1,6 +1,7 @@
 import React, { forwardRef, useEffect, useImperativeHandle} from 'react';
 import axios from 'axios';
 import { Button } from '@chakra-ui/react';
+import Role_name from '../Edges/Role_name';
 
 //CoSMo syntax dictionary
 
@@ -116,17 +117,15 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
             );
         }
         
-        // console.log(matchingEdges.length);
         return matchingEdges.length + isMandEdges.length >=2;
     }
 
-    const handleRoles = (key, keys, index, sourceNode, targetNode, currentRoleID, output) => {
+    const handleRoles = (key, keys, index, sourceNode, targetNode, currentRoleID, output, conID, previousConID) => {
 
         if (!hasTwoConnectors(targetNode.id, 'Role', edges)) {
             setErrorMessage("Properties must have at least two roles.");
             return '';
         }
-
     
         let localRoles = [];
         let localRoleIDs = [];
@@ -170,27 +169,20 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
                 output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}${localRoleIDs[i]}:ObjectType(${role})`;
             }
         });
-
-        if( keys.length > nextIndex){
-            if((keys[nextIndex].edge==='Instance' || keys[nextIndex].edge==='Role') && !constructor_definitions[keys[index+2].key]){
-                output+=',<br/>';
-            }
-        }
     
         if (key === 'Object_IsMandatory_Property') {
             output += `${'&nbsp;&nbsp;&nbsp;&nbsp;'}isMandatory(r${currentRoleID - 1})`;
+        }
 
-            if( keys.length > index+2){
-                if(keys[index+2].edge !== 'Role_name' && !constructor_definitions[keys[index+2].key]){
-                output+=',<br/>';
-                }
-            } 
+        if(nextIndex<keys.length && conID === previousConID && !(keys[nextIndex].key in constructor_definitions) && keys[nextIndex].edge !== 'Role_name'){
+            console.log(keys[nextIndex].key);
+            output += ',<br/>';
         }
     
         return { output, currentRoleID };
     };
 
-    const handleArguments = (keys, index, sourceNode, output) =>{
+    const handleArguments = (keys, index, sourceNode, output, conID, previousConID) =>{
         let localArgs= [];
         let functionFound= false;
         localArgs.push(sourceNode.data.itemID);
@@ -214,9 +206,8 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
                 output+=`${'&nbsp;&nbsp;&nbsp;&nbsp;'}Function(${nextKey.targetNode.data.itemID}(${localArgs.join(', ')}))`;
                 nextIndex++;
 
-                while (nextIndex < keys.length && keys[nextIndex].edge === 'ValueConstraint') {
+                if(nextIndex<keys.length && conID === previousConID && !(keys[nextIndex].key in constructor_definitions) && keys[nextIndex].edge !== 'Role_name'){
                     output += ',<br/>';
-                    nextIndex++;
                 }
 
                 functionFound = true;
@@ -248,8 +239,7 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
         if(nextIndex < keys.length){
             const nextKey = keys[nextIndex];
 
-            if (nextKey.key === 'Join_Join_Property') {
-                // console.log("handling next join");
+            if (nextKey.key === 'Join_Join_Property' || nextKey.key === 'Join_Join_Object') {
                 if (!hasTwoConnectors(nextKey.sourceNode.id, 'Join', edges)) {
                     setErrorMessage("Join must be connected to at least two objects or properties.");
                 }
@@ -266,17 +256,13 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
     }
 
     const handleRoleName = (key, keys, index, sourceNode, targetNode, output) =>{
-        // console.log(currentRoleID);
         if (key === 'Role_name_Role_name_Property') {
             const oldSequence = `r${targetNode.data.roleID - 1}:`;
-            // console.log(oldSequence);
             const newSequence = `r${targetNode.data.roleID - 1}[${sourceNode.data.itemID}]:`;
             output = output.replaceAll(oldSequence, newSequence);
         }
         else if (key === 'Property_Role_name_Role_name') {
             const oldSequence = `r${sourceNode.data.roleID}:`;
-            // console.log(oldSequence);
-            // console.log(`r${sourceNode.data.roleID}:`);
             const newSequence = `r${sourceNode.data.roleID}[${targetNode.data.itemID}]:`;
             output = output.replaceAll(oldSequence, newSequence);
         }
@@ -292,8 +278,6 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
         let output = '';
         checkNodesForEdges(nodes);
         let keys = generateTextDFS(nodes, edges);
-        // console.log(keys);
-
         let previousConID = null;
     
         keys.forEach((item, index) => {
@@ -306,7 +290,7 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
             
             if( key === 'Object_Role_Property' || key === 'Object_IsMandatory_Property'){
                 //handle roles
-                const result= handleRoles(key, keys, index, sourceNode, targetNode, currentRoleID, output);
+                const result= handleRoles(key, keys, index, sourceNode, targetNode, currentRoleID, output, conID, previousConID);
                 output=result.output;
                 currentRoleID = result.currentRoleID;
             }
@@ -317,9 +301,9 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
             }
             else if(key === 'Object_Role_Arguments'){
                 //handle arguments
-                output = handleArguments(keys, index, sourceNode, output);
+                output = handleArguments(keys, index, sourceNode, output, conID, previousConID);
             }
-            else if(key === 'Join_Join_Property'){
+            else if(key === 'Join_Join_Property' || key === 'Join_Join_Object'){
                 //handle join
                 output = handleJoin(keys, index, sourceNode, targetNode, output);
             }
@@ -330,7 +314,7 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
             else if(edge_string){
                 //handle default types
                 output += `${edge_string(sourceNode, targetNode)}`;
-                
+
                 if(key.startsWith('ValueConstraint_')){
                     if(index< keys.length-1 && !keys[index+1].key.startsWith('Role_name') && keys[index+1].sourceNode.data.conID===previousConID){
                         output+=`,<br/>`;
@@ -338,7 +322,6 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
                 }
             }
             else if (constructor_string){
-                // console.log(`${constructor_string(sourceNode, targetNode)}`);
                 output += `${constructor_string(sourceNode, targetNode)}`;
             }
 
@@ -373,6 +356,11 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
     function generateTextDFS(nodes, edges) {
         const nodeMap = new Map(nodes.map(node => [node.id, node]));
         const edgeMap = new Map(edges.map(edge => [edge.id, edge]));
+
+        if(!nodes.length>0){
+            setErrorMessage("Constructor is empty.");
+            return [];
+        }
     
         // Prioritize 'InstanceConstructor' or 'TypeConstructor' nodes with highest y position
         const sortedNodes = [...nodes].sort((a, b) => {
@@ -422,7 +410,7 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
                 const key = `${nodeType}_${edgeType}_${targetType}`;
     
                 result.push({ key, sourceNode: node, edge: edge.type, targetNode, conID: node.data.conID });
-    
+                console.log(key);
                 dfs(edge.target);
             }
         }
@@ -443,7 +431,6 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
     //handle first layer of multilingualism
 
     const translateOutput = async(output) =>{
-        console.log(output);
         for(let label of labels){
             if(output.includes(label)){
                 try{
@@ -461,15 +448,12 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
             }
         }
         setNodeLabels([output]);
-        // console.log(nodeLabels);
     }
 
     const findLabel = async (label) =>{
         try{
             const response = await axios.post('http://localhost:3001/getLabel', {label, selectedLanguage});
-            // const column = `${selectedLanguage}`
             const responseData= response.data;
-            // console.log(responseData);
             if (responseData.translatedLabel) {
                 return responseData.translatedLabel;
             } else {
@@ -481,13 +465,11 @@ export const TextGenerator = forwardRef(({nodes, edges, nodeLabels, setNodeLabel
         }
     }
 
-    
     //testing
     useEffect(() => {
         // Attach generateText to the window object
         if (typeof window !== 'undefined') {
           window.generateText = generateText;
-        //   console.log("Generate Text function attached to window.");
         }
     
         // Clean up

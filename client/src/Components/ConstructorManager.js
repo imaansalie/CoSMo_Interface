@@ -133,18 +133,21 @@ const ConstructorManager = ({addedNodes, addedEdges, setAddedNodes, setAddedEdge
                     </div>
                 ))}
                 {Object.keys(constructors).length===0 && (
-                    <p style ={{marginTop: '200px', marginLeft:'350px'}}>Your saved constructors will appear here.</p>
+                    <div className="EmptyConstructorList">
+                        <p>Your saved constructors will appear here.</p>
+                        <button onClick = {()=> navigate('/ConstructorBuilder')}className="NC-button">Build your first constructor</button>
+                    </div>
                 )}
 
                 {deletedMessage !== '' && (
-                    <Box className="DeleteBox">
+                    <Box className="DeleteBox box-common">
                         <p>{deletedMessage}</p>
                         <button onClick={() => setDeletedMessage('')}>Okay</button>
                     </Box>
                 )}
 
                 {confirmationForm && (
-                    <Box className="DeleteBox">
+                    <Box className="DeleteBox box-common">
                         <p>Are you sure you would like to delete the constructor: C{selectedConID}? </p>
                         <div>
                             <button onClick={() => handleDelete(selectedConID)}>Confirm</button>

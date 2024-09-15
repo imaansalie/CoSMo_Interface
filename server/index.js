@@ -1,3 +1,4 @@
+require('dotenv').config({ path: './credentials.env' });
 const express = require('express')
 const app = express()
 const mysql = require('mysql')
@@ -7,10 +8,10 @@ app.use(cors());
 app.use(express.json());
 
 const db= mysql.createConnection({
-    user: 'slxima002',
-    host: 'nightmare.cs.uct.ac.za',
-    password: 'aeC3OeVa',
-    database: 'slxima002',
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
 })
 
 app.post('/getUser', (req, res) => {
@@ -411,6 +412,25 @@ app.post('/deleteConstructor', (req, res) => {
             }
             else{
                 res.send("Constructor deleted.");
+            }
+        }
+    )    
+})
+
+app.post('/getLanguages', (req, res) =>{
+    let query= `SELECT COLUMN_NAME
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_NAME = 'languages'
+    AND TABLE_SCHEMA = 'slxima002';`
+
+    db.query(
+        query,
+        (err, result)=>{
+            if(err){
+                console.log(err);
+            }
+            else{
+                res.json(result);
             }
         }
     )    

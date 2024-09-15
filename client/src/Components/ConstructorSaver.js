@@ -18,6 +18,7 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
     const [confirmForm, setConfirmForm] = useState(false);
     const [conID, setConID] = useState(0);
     const [saveButtonClicked, setSaveButtonClicked] = useState(false);
+    const [saveError, setSaveError] = useState('');
 
     useEffect(() =>{
         axios.post('http://localhost:3001/getCollections').then((response) =>{
@@ -37,6 +38,11 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
 
     const handleSave = async () =>{
         setSaveMessage(""); // Reset save message
+        setSaveError('');
+        if(!nodes.length>0){
+            setSaveMessage("Constructor is empty.");
+            return;
+        }
         setSaveButtonClicked(true);
         setIsGenerating(true);
         try {
@@ -51,8 +57,6 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
     }
 
     const checkForExistingConstructor = async () =>{
-        //check if constructor exists
-        //check if constructor was made by user
         let maxConID= -1;
 
         nodes.forEach(node =>{
@@ -81,12 +85,20 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
             console.error("Error getting items: ", error);
             throw error;
         }
-        //if it was, ask user to confirm changes
     }
 
     const handleFormSubmit = async (event) =>{
         event.preventDefault();
-        await saveConstructor();
+        if(conName === ''){
+            setSaveError("Name the constructor.");
+        }
+        else if(description === ''){
+            setSaveError("Enter a description.");
+        }
+        else{
+            await saveConstructor();
+        }
+        
     }
 
     const saveConstructor = async() =>{
@@ -154,12 +166,22 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
     }
 
     const handleCollectionAdded = (newCollection) =>{
-        const updatedCollections = [...collections, { name: newCollection, idcollections: newCollection }];
-        setCollections(updatedCollections);
-        setConCollection(newCollection);
-        setNewCollectionForm(false);
-        setSaveForm(true);
-        setNewCollection('');
+        if(newCollection.length>0){
+            const updatedCollections = [...collections, { name: newCollection, idcollections: newCollection }];
+            setCollections(updatedCollections);
+            setConCollection(newCollection);
+            setNewCollectionForm(false);
+            setSaveForm(true);
+            setNewCollection('');
+        }
+        else{
+            setSaveError("Name the collection.");
+        }
+    }
+
+    const handleCancel = () =>{
+        setSaveForm(false);
+        setSaveButtonClicked(false);
     }
 
     return(
@@ -169,8 +191,14 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
             </Button>
 
             {saveForm && (
-                <Box className="SaveConstructorBox">
+                <Box className="SaveConstructorBox box-common">
                     <h1>Enter Constructor details</h1>
+                    {saveError !== '' && !newCollectionForm &&(
+                        <div className="save-error">
+                            <p>{saveError}</p>
+                        </div>
+                    )}
+                    
                     <input 
                         className="save-input"
                         placeholder="Name the constructor..." 
@@ -178,6 +206,7 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
                         onChange={(e) => setConName(e.target.value)}
                     ></input>
 
+                    <p>Choose a collection:</p>
                     <select
                         id="collections-dd"
                         value={conCollection}
@@ -192,6 +221,7 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
 
                     <Button className="saveForm-button" onClick={() => handleNewCollection()}>Add a new collection</Button>
 
+                    <p>Enter a description:</p>
                     <textarea
                         className="description-input"
                         value={description}
@@ -202,14 +232,20 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
                     
                     <div>
                         <Button className="saveForm-button" type="submit" onClick={handleFormSubmit}>Confirm details</Button>
-                        <Button className="saveForm-button" onClick={()=>setSaveForm(false)}>Cancel</Button>
+                        <Button className="saveForm-button" onClick={()=>handleCancel()}>Cancel</Button>
                     </div>
                     
                 </Box>
             )}
 
             {newCollectionForm &&(
-                <Box className="SaveConstructorBox" style ={{margin: 'auto', justifyContent: 'center', maxHeight:'30%'}}>
+                <Box className="NewCollectionBox box-common">
+                    {saveError ==='Name the collection.' &&(
+                        <div className="save-error">
+                            <p>{saveError}</p>
+                        </div>
+                    )}
+                    
                     <Input
                         className="save-input"
                         placeholder="Name the collection..." 
@@ -219,14 +255,14 @@ export const ConstructorSaver = ({nodes, edges, nodeLabels, setConstructorAdded,
 
                     <div>
                         <Button className="saveForm-button" onClick={() => handleCollectionAdded(newCollection)}>Save</Button>
-                        <Button className="saveForm-button" onClick = {() => {setNewCollectionForm(false); setSaveForm(true)}}>Cancel</Button>
+                        <Button className="saveForm-button" onClick = {() => {setNewCollectionForm(false); setSaveForm(true); setSaveError('');}}>Cancel</Button>
                     </div>
                     
                 </Box>
             )}
 
             {confirmForm && (
-                <Box className = 'ConfirmSaveConstructorBox'>
+                <Box className = 'ConfirmSaveConstructorBox box-common'>
                     <p>Are you sure you want to save changes to constructor {conID}?</p>
                     <button onClick={()=> saveConstructor()}>Confirm</button>
                 </Box>

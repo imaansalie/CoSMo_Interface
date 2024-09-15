@@ -51,7 +51,7 @@ const UserManual = () =>{
 
     return(
         <div className='UM-container'>
-            <img src='./icons/CoSMoStudio.png' alt='CS-banner' width={"1300px"} className='CS-banner'></img>
+            <img src='./icons/CoSMoStudio.png' alt='CS-banner' className='CS-banner'></img>
             <div className={`toggle-box ${divOne ? 'expanded' : ''}`}>
                 <p className='toggle-heading'>How to Initiate a Constructor</p>
                 <button onClick={toggleDiv1} className='toggle-button'>
@@ -140,7 +140,12 @@ const UserManual = () =>{
                 </button>
                 {divSix &&(
                     <div  className="toggle-content">
-                        <p>blah blah combine</p>
+                        <p>After building your own constructor, click on the "Add an Existing Constructor" button to add constructors from the central repository. Constructors can then be combined using the following connectors:</p>
+                        <ul>
+                            <li>Sub-Constructor: Subtype constructor between local variables.</li>
+                            <li>Instance Of: Instance constructor between local variables. </li>
+                            <li>Part Of: Connect a Type Constructor as part of another Type Constructor, or an Instance Constructor as part of another Instance Constructor.</li>
+                        </ul>
                     </div>
                 )}
             </div>
@@ -151,8 +156,11 @@ const UserManual = () =>{
                 </button>
                 {divSeven &&(
                     <div  className="toggle-content">
-                        <p>blah blah generate text
-                        </p>
+                        <p>After building a constructor, select your preferred language from the language drop-down. Thereafter, click the "Generate Text" button to generate the textual version of your constructor.</p>
+
+                        <img src='./icons/GenText.png' width="800px"></img>
+
+                        <p>You can then scroll through the textbox below the node editor to view the textual constructor.</p>
                     </div>
                 )}
             </div>
@@ -164,6 +172,7 @@ const UserManual = () =>{
                 {divEight &&(
                     <div  className="toggle-content">
                         <p>
+                            After building a constructor, save it by clicking on the "Save Constructor" button. Provide a name, collection and description for the constructor. New collections can be added by clicking on the "Add a new collection" button. You can then view your saved constructor in the "My Constructors" tab.
                         </p>
                     </div>
                 )}
@@ -175,8 +184,24 @@ const UserManual = () =>{
                 </button>
                 {divNine &&(
                     <div  className="toggle-content">
-                        <p>
-                        </p>
+                        <p>CoSMo constructors must adhere to the CoSMo syntax. The rules for the CoSMo syntax are as follows:</p>
+                        <ul>
+                            <li>There can be no "hanging" nodes in a constructor, meaning that every node must have at least one connector.</li>
+                            <li>Property elements must have at least two roles.</li>
+                            <li>Argument elements must be connected to at least one function and one object.</li>
+                            <li>Every constructor must have a starting element of type 'Instance Constructor' or 'Type Constructor'.</li>
+                            <li>Join nodes must be connected to two objects.</li>
+                            <li>The Role connector can only be used between an Object and a Property, a Property and an Object, an Object and an Argument or an Argument and a function.</li>
+                            <li>The Sub Constructor connector can only be used between two Type Constructor elements.</li>
+                            <li>The Instance Of connector can only be used between an Instance Constructor element and a Type Constructor element, or between a Value Constraint and an Object element.</li>
+                            <li>The Part Of connector can only be used between two Type Constructor elements or two Instance Constructor elements.</li>
+                            <li>The Is Mandatory connector can only be used between an Object and a Property.</li>
+                            <li>The Join connector can only be used two Object elements or two Property elements.</li>
+                            <li>The Role Name connector can only be used between a Role Name and a Property.</li>
+                            <li>The Value Constraint connector can only be used between a Value Constraint and a Function.</li>
+                        </ul>
+
+                        <p>CoSMo syntax errors will guide you in building constructors in the correct CoSMo syntax. Upon encountering a CoSMo syntax error, click "Okay" and modify the constructor according to the given error.</p>
                     </div>
                 )}
             </div>

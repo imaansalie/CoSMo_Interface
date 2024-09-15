@@ -15,7 +15,7 @@ import Role_name from '../Edges/Role_name';
 import ValueConstraint from '../Edges/ValueConstraint';
 import { SearchForm } from './SearchForm';
 import { TextGenerator } from './TextGenerator';
-import { Settings } from './Settings';
+import { LanguageDD } from './LanguageDD';
 import {ConstructorSaver} from './ConstructorSaver';
 import {ConstructorForm} from './ConstructorForm';
 import { BsPlusCircle } from 'react-icons/bs';
@@ -64,10 +64,6 @@ const initialNodes = [];
 const initialEdges = [];
 
 const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNodes, setAddedEdges}) => {
- 
-  //state hooks for nodes and edges
-  // const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  // const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   //state hook for text generator string
   const [nodeLabels, setNodeLabels] = useState([]);
@@ -169,7 +165,6 @@ const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNo
       }
 
       if(sourceNode.data.inputType === 'Arguments' && targetNode.data.inputType==='Object'){
-        // console.log("in");
         updateNodeConID(params.target, updatedConID_src);
       }
     
@@ -203,9 +198,7 @@ const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNo
 
   // assign selected data item to node
   const handleAssign = (item, itemType) => {
-
     if(item === 'cancelled'){
-      // console.log('in cancelled');
       setNodes((prevNodes) => prevNodes.filter((node) => node.id !==newNodeId));
       setNewNodeId(null);
     }
@@ -222,12 +215,10 @@ const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNo
             : node //if it doesn't match, return the node as is
         ),
       );
-      // console.log(item.itemID);
       setNewNodeId(null);
     }
     else{
       if(!VCinput){
-        console.log("in");
         setNodes((prevNodes) => //update state of nodes
           prevNodes.map((node) =>//check each node
             node.id === newNodeId ? { //check if node ID matches newNodeID
@@ -240,10 +231,8 @@ const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNo
               : node //if it doesn't match, return the node as is
           ),
         );
-        // console.log(item.itemID);
         setNewNodeId(null);
       }else{
-        console.log(item);
         setNodes((prevNodes) =>
           prevNodes.map((node) =>//check each node
           node.id === newNodeId ? { //check if node ID matches newNodeID
@@ -308,6 +297,12 @@ const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNo
     setNodeLabels([]);
   }
 
+  const handleClearButton = () =>{
+    if(nodes.length>0 || edges.length>0){
+      setClearNodes(true);
+    }
+  }
+
   //after informing element selector, reset checkDeleted boolean to true after 1 second
   useEffect(() =>{
     if(checkDeleted){
@@ -338,43 +333,64 @@ const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNo
       ];
     };
 
+    const calculateConstructorHeight = (nodes) => {
+      const minY = Math.min(...nodes.map(node => node.position.y));
+      const maxY = Math.max(...nodes.map(node => node.position.y));
+      return maxY - minY;
+    };
+
     const calculateNewPosition = (existingNodes) =>{
       if (existingNodes.length === 0) return 0;
       else{
-        const maxY = Math.max(...existingNodes.map(node => node.position.y));
-        return maxY;
+        const minY = Math.min(...existingNodes.map(node => node.position.y));
+        return minY;
       }
     }
 
-    const positionNodes = (nodes, existingNodes) =>{
+    const positionNodes = (newNodes, existingNodes) =>{
       const newPosition = calculateNewPosition(existingNodes);
-      return nodes.map((node, index) => ({
+      const constructorHeight = calculateConstructorHeight(newNodes);
+      return newNodes.map((node, index) => ({
         ...node,
         position:{
           x:node.position.x,
-          y:node.position.y+newPosition+100,
+          y:node.position.y-newPosition - constructorHeight - 200,
         }
       }))
     }
 
-    if (locationNodes.length > 0 || locationEdges.length > 0) {
+    if (nodes.length > 0) {
+      if(locationNodes.length > 0 || locationEdges.length > 0) {
 
-      const positionedLocationNodes= positionNodes(locationNodes, nodes);
-      // Merge location nodes and edges into the state
-      setNodes(nds => mergeUniqueItems(nds, positionedLocationNodes, 'id'));
-      setEdges(eds => mergeUniqueItems(eds, locationEdges, 'id'));
+        const positionedLocationNodes= positionNodes(locationNodes, nodes);
+        // Merge location nodes and edges into the state
+        setNodes(nds => mergeUniqueItems(nds, positionedLocationNodes, 'id'));
+        setEdges(eds => mergeUniqueItems(eds, locationEdges, 'id'));
+    
+        // Clear location nodes and edges after setting them
+        locationNodes.length = 0;
+        locationEdges.length = 0;
+      }
   
-      // Clear location nodes and edges after setting them
-      locationNodes.length = 0;
-      locationEdges.length = 0;
-    }
+      if(addedNodes.length>0 && addedEdges.length>0){
+        const positionedAddedNodes= positionNodes(addedNodes, nodes);
+        setNodes(nds => mergeUniqueItems(nds, positionedAddedNodes, 'id'));
+        setEdges(eds => mergeUniqueItems(eds, addedEdges, 'id'));
+        setAddedNodes([]);
+        setAddedEdges([]);
+      }
+    }else{
+      if (locationNodes.length > 0 || locationEdges.length > 0) {
+        setNodes(nds => mergeUniqueItems(nds, locationNodes, 'id'));
+        setEdges(eds => mergeUniqueItems(eds, locationEdges, 'id'));
+      }
 
-    if(addedNodes.length>0 && addedEdges.length>0){
-      const positionedAddedNodes= positionNodes(addedNodes, nodes);
-      setNodes(nds => mergeUniqueItems(nds, positionedAddedNodes, 'id'));
-      setEdges(eds => mergeUniqueItems(eds, addedEdges, 'id'));
-      setAddedNodes([]);
-      setAddedEdges([]);
+      if (addedNodes.length > 0 && addedEdges.length > 0) {
+          setNodes(nds => mergeUniqueItems(nds, addedNodes, 'id'));
+          setEdges(eds => mergeUniqueItems(eds, addedEdges, 'id'));
+          setAddedNodes([]);
+          setAddedEdges([]);
+      }
     }
   }, [locationNodes, locationEdges, addedNodes, addedEdges]);
 
@@ -414,7 +430,7 @@ const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNo
               <h1>Constructor Builder </h1>
 
               <div className='CB-options'>
-                <Settings
+                <LanguageDD
                   selectedLanguage={selectedLanguage}
                   setSelectedLanguage={setSelectedLanguage}
                 />
@@ -463,7 +479,7 @@ const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNo
                   textGeneratorRef={textGeneratorRef}
                 />
 
-                <button className='clear-button' onClick={() => setClearNodes(true)}>Clear all</button>
+                <button className='clear-button' onClick={() => handleClearButton()}>Clear all</button>
               </div>
 
               <div data-testid = 'text' className='Textbox'>
@@ -493,6 +509,7 @@ const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNo
                   setShowForm={setShowForm}
                   setCurrentNodeID={setCurrentNodeID}
                   handleAssign={handleAssign}
+                  constructorAdded={constructorAdded}
                   />  
               </div>
             
@@ -506,7 +523,7 @@ const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNo
               <div className='connectors'>
                 <ul>
                 {connectors.map((connector, index) => (
-                  <li key={index}>
+                  <li key={index} className='connector'>
                     <label className='radio-label'>
                       <input
                         type='radio'
@@ -533,7 +550,7 @@ const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNo
             )}
 
             {showForm && (
-              <Box className='constructor-input-box'>
+              <Box className='constructor-input-box box-common'>
                 <div className='contents'> 
                   <p>Provide a label for the constructor:</p>
                   <form onSubmit={handleFormSubmit}>
@@ -552,7 +569,7 @@ const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNo
               <div>
                 <Box className='error-message'>
                   <p className='error-text'>{errorMessage}</p>
-                  <button onClick={()=>handleClearError()}>Okay</button>
+                  <button className="cancelButton" onClick={()=>handleClearError()}>Okay</button>
                 </Box>
               </div>
             )}
@@ -561,7 +578,7 @@ const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNo
               <div>
                 <Box className='save-message'>
                   <p className='save-text'>{saveMessage}</p>
-                  <button onClick={()=>setSaveMessage(null)}>Okay</button>
+                  <button className="cancelButton" onClick={()=>setSaveMessage(null)}>Okay</button>
                 </Box>
               </div>
             )}
@@ -569,8 +586,8 @@ const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNo
             {constructorAdded && (
               <div>
                 <Box className='error-message'>
-                  <p className='save-text'>Constructor has been sucessfully saved.</p>
-                  <button onClick={()=>setConstructorAdded(false)}>Okay</button>
+                  <p className='save-text'>Constructor has been successfully saved.</p>
+                  <button className= "cancelButton" onClick={()=>setConstructorAdded(false)}>Okay</button>
                 </Box>
               </div>
             )}
@@ -584,7 +601,7 @@ const ConstructorBuilder = ({isNavbarVisible, addedNodes, addedEdges, setAddedNo
             )}
 
             {(nodes.length>0 || edges.length>0) && clearNodes &&(
-              <Box className='clearBox'>
+              <Box className='clearBox box-common'>
                 <p className='clearBox-text'>Are you sure you want to clear all constructors?</p>
                 <div className='clearBox-buttons'>
                   <Button className='clearBox-button' onClick={() => clearAllNodes()}>Confirm</Button>

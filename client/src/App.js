@@ -12,29 +12,36 @@ import UserManual from './Components/UserManual';
 export const App = () => {
   
   const location = useLocation();
-  const hideNavbar = location.pathname === "/";
+  const isLoginScreen = location.pathname === "/";
   const toggleNavbarBool= useState(false);
   const [addedNodes, setAddedNodes] = useState([]);
   const [addedEdges, setAddedEdges] = useState([]);
-  const [isNavbarVisible, setIsNavbarVisible] = useState(!toggleNavbarBool);
+  const [isNavbarVisible, setIsNavbarVisible] = useState(toggleNavbarBool && !isLoginScreen);
 
   const toggleNavbar = () => setIsNavbarVisible(prev => !prev);
 
   return (
     <div className="App">
-      {!hideNavbar && (
+      {!isLoginScreen && (
         <div className={`Sidebar-container ${isNavbarVisible ? 'visible' : 'hidden'}`}>
           <Navbar 
             setIsNavbarVisible={setIsNavbarVisible}
           />
         </div>
       )}
-      <button className={`hamburger-menu ${isNavbarVisible ? 'white' : 'black'}`} onClick={toggleNavbar}>
-        ☰
-      </button>
+      {!isLoginScreen && (
+        <button className={`hamburger-menu ${isNavbarVisible ? 'white' : 'black'}`} onClick={toggleNavbar}>
+          ☰
+        </button>
+      )}
       <div className={`content ${isNavbarVisible? 'shrink' : 'expand'}`}>
       <Routes>
-        <Route path="/" element={<LogIn setIsNavbarVisible={setIsNavbarVisible}/>} />
+        <Route path="/" 
+          element={
+          <LogIn 
+            setIsNavbarVisible={setIsNavbarVisible}
+          />} 
+        />
         <Route path="/ConstructorBuilder" element={
           <PrivateRoute>
             <ConstructorBuilder

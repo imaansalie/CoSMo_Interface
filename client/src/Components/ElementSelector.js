@@ -15,9 +15,9 @@ const elements =[
 ];
 
 const adornments =[
-  {code:"RN", name:"Role_name", type: "InputNode", label: "Role Name"},
-  {code:"VC", name:"ValueConstraint", type: "InputNode", label: "Value Constraint"},
-  {code: "JO", name: "Join", type: "Object", label: "Join"},
+  {code:"RN", name:"Role_name", type: "InputNode", label: "Role Name", tooltip: "Name a role by connecting it to the corresponding Property handle."},
+  {code:"VC", name:"ValueConstraint", type: "InputNode", label: "Value Constraint", tooltip: "Add a Value Constraint to an object or function."},
+  {code: "JO", name: "Join", type: "Object", label: "Join", tooltip: "Join two objects or properties by connecting it to both with the Join connector."},
 ];
 
 const args = [
@@ -34,7 +34,7 @@ const properties = [
   {code: "P5", picture:"Property_5", type: "Object", label:"Five Roles", name: 'Property'},
 ];
 
-const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyDeleted, nextGroup, setShowForm, setCurrentNodeID, handleAssign}) =>{
+const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyDeleted, nextGroup, setShowForm, setCurrentNodeID, handleAssign, constructorAdded}) =>{
 
     const {setNodes} =useReactFlow(); // hook to access and manipulate nodes
     const generateUniqueId = () => `node_${Math.random().toString(36).substr(2, 9)}`;
@@ -44,11 +44,12 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
     const [showProps, setShowProps] = useState(false);
     const [selectedProperty, setSelectedProperty] = useState(null);
     const [initialConID, setInitialConID] = useState(0);
+    const [VCinput, setVCInput] = useState(null);
 
     //function to add text node (value constraint and role type -- must adapt to use search form as well)
     const addTextNode = (adornment) => {
 
-      const newNodeId=generateUniqueId();      
+      const newNodeId=generateUniqueId();
       setNodes((prevNodes) => [
         ...prevNodes,
         {
@@ -80,7 +81,6 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
       const newNodeId= generateUniqueId();
 
       if (element.name === 'InstanceConstructor'|| element.name ==='TypeConstructor'){
-        // console.log("in");
         setConID(conID + 1);
         setShowForm(true);
         setCurrentNodeID(newNodeId);
@@ -161,7 +161,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
     const handlePropClick = (property) =>{
       setShowProps(!showProps);
       setSelectedProperty(property);
-      // console.log(localRoleID);
+      console.log(selectedProperty);
       
       const x= Math.random() * 100;
       const y= Math.random() * 100;
@@ -207,9 +207,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
       }
     }
 
-    //decrement constructor counter on node delete
-    useEffect(() =>{
-      const initializeConID = async() =>{
+    const initializeConID = async() =>{
       try{
         const DB_ConID = await getConID();
         setInitialConID(DB_ConID);
@@ -218,12 +216,16 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
         console.error("Failed to initialize conID", error);
       }
     }
-    initializeConID();
-  }, []);
+
+    //decrement constructor counter on node delete
+    useEffect(() =>{
+      initializeConID();
+    }, [constructorAdded]);
 
     useEffect(() => {
       if(elementDeleted){
         setConID(Math.max(conID -1, initialConID));
+        console.log("after delete: ", conID);
       }
     }, [elementDeleted])
 
@@ -231,7 +233,6 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
       if(propertyDeleted){
         setLocalRoleID(Math.max(localRoleID -2, 0));
       }
-      // console.log(localRoleID);
     }, [propertyDeleted])
 
     useEffect(() => {
@@ -261,9 +262,12 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
           <ul>
           {adornments.map((adornment,index)=>(
             <li key={index}>
-              <button onClick={() => onElementClick(adornment)}>
+              <button onClick={() => onElementClick(adornment)} className='element-button'>
                 <img src={"/icons/"+adornment.name+".png"} className='selector-img' alt='img'/>
                   <span className='name'>{adornment.label}</span>
+                  <div className='element-tooltip'>
+                    <span className='element-tooltip-text'>{adornment.tooltip}</span>
+                  </div>
               </button>  
             </li>
           ))}
@@ -271,7 +275,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
         </div>
         
         {showArgs && (
-          <Box className='args'>
+          <Box className='args box-common'>
             <p>Choose the number of arguments:</p>
             <ul>
               {args.map((arg, index) => (
@@ -288,7 +292,7 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
         )}
 
         {showProps && (
-          <Box className='args'>
+          <Box className='args box-common'>
             <p>Choose the number of roles:</p>
             <ul>
             {properties.map((property, index) => (
@@ -303,7 +307,6 @@ const ElementSelector= ({setCurrentType, setNewNodeId, elementDeleted, propertyD
             <button className= 'cancelArgs' onClick={() => setShowProps(false)}>Cancel</button>
           </Box>
         )}
-        {selectedProperty && <SearchForm onAssign={handleAssign} itemType='Property'></SearchForm>}
       </div>     
     );
 };

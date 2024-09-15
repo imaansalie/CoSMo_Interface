@@ -52,3 +52,6 @@ This project is licensed under the Apache Open Source License - see the [LICENSE
 
 # Third-party Licenses
 This project uses React Flow, which is licensed under the MIT License. For more information, refer to their [license](https://github.com/wbkd/react-flow/blob/main/LICENSE).
+
+# github
+The github repository for this project can be found at https://github.com/imaansalie/CoSMo_Interface 
